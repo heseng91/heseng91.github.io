@@ -308,16 +308,16 @@
 <li>易于维护：由于被依赖的 lib 是程序执行时才 link 的，所以这些 lib 很容易做更新。系统升级只需要替换掉对应的共享模块，当程序下次启动时新版本的共享模块会被自动装载并链接起来，程序就无感的对接到了新版本。</li>
 <li>减少可执行文件体积：相比静态链接，动态链接在编译时不需要打进去，所以可执行文件的体积要小很多</li>
 </ol>
-<h2 id="dyld"><a href="#dyld" class="headerlink" title="dyld"></a>dyld</h2><p>引入动态装载后，就不得不提dyld，全名 The dynamic link editor，他是苹果的平台用于加载链接库的帮助程序，主要提供动态加载的支持。APP启动的时候会把 dyld 加载到进程的地址空间里，然后把后续的启动过程交给 dyld。dyld是开源的，我们可以在<a href="https://link.juejin.cn/?target=https%3A%2F%2Fopensource.apple.com%2Ftarballs%2Fdyld%2F">官网</a>下载它的源码来阅读理解。</p>
-<h3 id="dyld发展简史"><a href="#dyld发展简史" class="headerlink" title="dyld发展简史"></a>dyld发展简史</h3><h4 id="dyld-1-0-1996-2004"><a href="#dyld-1-0-1996-2004" class="headerlink" title="dyld 1.0 (1996-2004)"></a>dyld 1.0 (1996-2004)</h4><p>dyld 最初是作为NeXTStep 3.3的一部分于1996年上市的，所以其实没有版本号的，为了方便追溯苹果将当时的dyld版本命名的为1.0。dyld诞生背景：</p>
+<h3 id="dyld"><a href="#dyld" class="headerlink" title="dyld"></a>dyld</h3><p>引入动态装载后，就不得不提dyld，全名 The dynamic link editor，他是苹果的平台用于加载链接库的帮助程序，主要提供动态加载的支持。APP启动的时候会把 dyld 加载到进程的地址空间里，然后把后续的启动过程交给 dyld。dyld是开源的，我们可以在<a href="https://link.juejin.cn/?target=https%3A%2F%2Fopensource.apple.com%2Ftarballs%2Fdyld%2F">官网</a>下载它的源码来阅读理解。</p>
+<h4 id="dyld发展简史"><a href="#dyld发展简史" class="headerlink" title="dyld发展简史"></a>dyld发展简史</h4><h5 id="dyld-1-0-1996-2004"><a href="#dyld-1-0-1996-2004" class="headerlink" title="dyld 1.0 (1996-2004)"></a>dyld 1.0 (1996-2004)</h5><p>dyld 最初是作为NeXTStep 3.3的一部分于1996年上市的，所以其实没有版本号的，为了方便追溯苹果将当时的dyld版本命名的为1.0。dyld诞生背景：</p>
 <ul>
 <li>dyld 1.0 发明之前NeXT使用的都是静态二进制数据</li>
 <li>POSIX dlopen调用还没有标准化：当时人们采用的是定制拓展的方式来在Unix上支持dlopen。在NeXTStep上使用的是不同的拓展。为了在NeXTStep上运行标准的Unix软件，有人在macOS 10的早期版本上编写了第三方包装程序。问题是由于并不完全支持相同的语义，在一些奇怪的边缘情况下，会不起作用，而且也会导致程序运行的比较慢。</li>
 <li>没有广泛使用C++动态库：很重要的一点，dyld 1.0 发布时，大多数系统还没有使用大型c++动态库。c++有一些特性，比如初始化命令，在静态系统中可以很好的运行，但是在动态系统中很难至少是性能方面很难高性能的运行。基于c++的庞大代码库会导致动态链接器需要做很多工作，而且速度相当慢。</li>
 </ul>
 <p>在发布macOS 10.0(Cheetah)前，苹果为dyld增加了一个特性，即Prebinding预绑定。预绑定会尝试查找每个系统dylib和程序二进制文件中需要修正地址，然后动态加载程序会尝试加载所有这些地址中需要的文件，如果加载成功，它会编辑所有的二进制文件，使用预计算地址替换需要修正的地址。这样当下一次需要加载到相同的地址时，就不需要做任何额外的工作了。这大大加快了启动速度，但这意味着我们在每次启动时都要编辑你的二进制文件，这不仅不安全，也会有一些其它的问题。</p>
-<h4 id="dyld-2-2004-2007"><a href="#dyld-2-2004-2007" class="headerlink" title="dyld 2 (2004-2007)"></a>dyld 2 (2004-2007)</h4><p>鉴于dyld已经不能满足软件需要，并且也会有安全问题等等的问题。dyld 2作为苹果macOS Tiger的一部分被出了。dyld 2 是对dyld的完全重写，可以正确支持C++ initializer语义，同时扩展了mach-o格式并更新dyld,以获得了高效率C++库的支持。dyld 2使用正确的语义完整实现了本地的dlopen和dlsym功能，由此苹果弃用了传统API。dyld 2 是为提升速度而设计，因此只有有限的完整性检查，当时不像今天有这么多的恶意软件。也正因为只有有限的完整性检查，dyld 2会有安全问题，为此苹果不得不重新调整一些功能，使它在今天的平台上更安全。最后由于启动速度的大幅提升，我们可以减少Prebinding的工作量。相较于dyld 1的编辑程序数据，现在仅会编辑系统库，且可以仅在软件更新时做这些事情。现在Prebinding被用于所有的优化，但那是推动力。因此在软件更新过程中，可能会看到“优化系统性能”类似的文字。这就是在更新时进行Prebinding。当今这已被用于所有的优化。</p>
-<h4 id="dyld-2-x-2007-2017"><a href="#dyld-2-x-2007-2017" class="headerlink" title="dyld 2.x (2007-2017)"></a>dyld 2.x (2007-2017)</h4><p>相较于 dyld 2，过去的几年里我们做了很多非常重要的改进。</p>
+<h5 id="dyld-2-2004-2007"><a href="#dyld-2-2004-2007" class="headerlink" title="dyld 2 (2004-2007)"></a>dyld 2 (2004-2007)</h5><p>鉴于dyld已经不能满足软件需要，并且也会有安全问题等等的问题。dyld 2作为苹果macOS Tiger的一部分被出了。dyld 2 是对dyld的完全重写，可以正确支持C++ initializer语义，同时扩展了mach-o格式并更新dyld,以获得了高效率C++库的支持。dyld 2使用正确的语义完整实现了本地的dlopen和dlsym功能，由此苹果弃用了传统API。dyld 2 是为提升速度而设计，因此只有有限的完整性检查，当时不像今天有这么多的恶意软件。也正因为只有有限的完整性检查，dyld 2会有安全问题，为此苹果不得不重新调整一些功能，使它在今天的平台上更安全。最后由于启动速度的大幅提升，我们可以减少Prebinding的工作量。相较于dyld 1的编辑程序数据，现在仅会编辑系统库，且可以仅在软件更新时做这些事情。现在Prebinding被用于所有的优化，但那是推动力。因此在软件更新过程中，可能会看到“优化系统性能”类似的文字。这就是在更新时进行Prebinding。当今这已被用于所有的优化。</p>
+<h5 id="dyld-2-x-2007-2017"><a href="#dyld-2-x-2007-2017" class="headerlink" title="dyld 2.x (2007-2017)"></a>dyld 2.x (2007-2017)</h5><p>相较于 dyld 2，过去的几年里我们做了很多非常重要的改进。</p>
 <p>1、首先，我们添加了大量的架构和平台。</p>
 <ul>
 <li>自从dyld 2在PowerPC发布之后，增加了<code>x86</code>、<code>x86_64</code>、<code>arm</code>、<code>arm64</code>和许多的衍生平台。</li>
@@ -340,7 +340,7 @@
 <p>1、首先，性能方面：针对一些不能复现的场景，我们希望能采集到启动速度全面的数据。除此之外，我们还在思考，怎样最小化或者理论上最小化app启动过程中的工作量，以及我们要怎样实现这一目标；</p>
 <p>2、其次，安全方面：如前所述，苹果在dyld 2中通过多种方式增加了安全性。但是后面再想增加更多安全性已经很困难了，因此需要有更积极的安全检查，也需要预先为安全方面。</p>
 <p>3、最后，可测试性和可靠性：苹果发布了大量优秀的测试框架，例如XCTest，这些框架都依赖于动态链接器的底层功能来将这些库插入到进程中，从根本上说不能用于测试现有的dyld代码，所以很难验证其安全性和性能。</p>
-<h4 id="dyld-3-2017-至今"><a href="#dyld-3-2017-至今" class="headerlink" title="dyld 3 (2017-至今)"></a>dyld 3 (2017-至今)</h4><p>鉴于以上原因，苹果在2017年WWDC推出了全新的动态链接器，dyld 3。dyld 3是苹果对动态连接的一次全新思考。2017 年开始Apple OS平台上的所有系统程序都已经默认使用dyld 3。iOS 13 开始 Apple 对三方 App 启用了 dyld3。</p>
+<h5 id="dyld-3-2017-至今"><a href="#dyld-3-2017-至今" class="headerlink" title="dyld 3 (2017-至今)"></a>dyld 3 (2017-至今)</h5><p>鉴于以上原因，苹果在2017年WWDC推出了全新的动态链接器，dyld 3。dyld 3是苹果对动态连接的一次全新思考。2017 年开始Apple OS平台上的所有系统程序都已经默认使用dyld 3。iOS 13 开始 Apple 对三方 App 启用了 dyld3。</p>
 <p>那么dyld 3相比 dyld 2是怎么做优化的呢？要回答这个问题，需要先简要介绍分别介绍一下app的启动流程。</p>
 <p>用户点击图标之后，会发送一个系统调用 execve 到内核，内核创建进程。接着会把主二进制 mmap 进来，读取 load command 中的<code>LC_LOAD_DYLINKER</code>，找到 dyld 的的路径。然后 mmap dyld 到虚拟内存，找到 dyld 的入口函数<code>_dyld_start</code>，把 PC 寄存器设置成<code>_dyld_start</code>，接下来启动流程交给了 dyld。</p>
 <p>dyld 2的工作流程图如下：</p>
@@ -371,7 +371,7 @@
 <p>2、一个启动闭包缓存服务：系统 App 的启动闭包被构建在前文提到的 <code>Shared Cache</code> 中， 我们甚至不需要打开一个单独的文件。对于第三方的 App，会系统库发生变化时，即 App 安装或者升级的时候构建启动闭包。所以默认情况下，在App运行之前，启动闭包就已经在iOS上预先构建了。</p>
 <p>3、进程内执行启动闭包的引擎：这是进程内执行的部分，主要负责：验证启动闭包的安全性、映射 dylib 到内存、每个 Mach-O 做 fixup、以及Run initiazlizers最后跳转到 main 函数。相比dyld 2，不再需要解析 Mach-O 的 Header 和依赖，也不需要进行符号查找。因为这是启动流程中花费大部分时间的步骤，所以将会为你带来更快的应用启动。</p>
 <p>dyld 3将安全敏感的部分和占用大量资源的部分移至进程之外，并创建一个启动闭包写到磁盘里。这样后续启动的时候，就可以直接读入缓存，不再需要调用进程外的mach-o解析器或编译器，进程内执行的操作尽可能少，从而增强应用程序安全性。这样也加快了启动速度，俗话说，最快的代码是从未编写的代码，紧随其后的是几乎从未执行的代码。mach-o解析器或编译器被移至进程外之后，就变成了是一个常规的daemon进程，苹果就可以使用测试框架来测试，也就能在未来更好地改进它。</p>
-<h2 id="main函数之后"><a href="#main函数之后" class="headerlink" title="main函数之后"></a>main函数之后</h2><p>dyld 执行完毕之后， 会把启动流程交给 App，开始执行 main 函数。main 函数里要做的最重要的事情就是初始化 UIKit。UIKit 主要会做两个大的初始化：初始化 UIApplication 和 启动主线程的 Runloop。UIKit 初始化之后，就进入了我们熟悉的 UIApplicationDelegate 回调了。</p>
+<h3 id="main函数之后"><a href="#main函数之后" class="headerlink" title="main函数之后"></a>main函数之后</h3><p>dyld 执行完毕之后， 会把启动流程交给 App，开始执行 main 函数。main 函数里要做的最重要的事情就是初始化 UIKit。UIKit 主要会做两个大的初始化：初始化 UIApplication 和 启动主线程的 Runloop。UIKit 初始化之后，就进入了我们熟悉的 UIApplicationDelegate 回调了。</p>
 <h3 id="Runloop"><a href="#Runloop" class="headerlink" title="Runloop"></a>Runloop</h3><p>线程在执行完代码就会退出，很明显主线程是不能退出的，那么就需要一种机制：事件来的时候执行任务，否则让线程休眠，Runloop 就是实现这个功能的。</p>
 <p>Runloop 本质上是一个<code>While</code> 循环，在图中橙色部分的 <code>mach_msg_trap</code> 就是触发一个系统调用，让线程休眠，等待事件到来，唤醒 Runloop，继续执行这个 <code>while</code>循环。</p>
 <p>Runloop 主要处理几种任务：Source0，Source1，Timer，GCD MainQueue，Block。在循环的合适时机，会以 Observer 的方式通知外部执行到了哪里。</p>
