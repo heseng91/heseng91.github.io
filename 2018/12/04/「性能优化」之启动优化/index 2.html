@@ -1,0 +1,853 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"heseng91.github.io","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="启动是 App 给用户的第一印象，启动越慢用户流失的概率就越高，良好的启动速度是用户体验不可缺少的一环。本文先梳理app构建和启动流程，并结合app构建和启动流程讲述一些可优化点。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="「性能优化」之启动优化">
+<meta property="og:url" content="http://heseng91.github.io/2018/12/04/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96/index.html">
+<meta property="og:site_name" content="和僧">
+<meta property="og:description" content="启动是 App 给用户的第一印象，启动越慢用户流失的概率就越高，良好的启动速度是用户体验不可缺少的一环。本文先梳理app构建和启动流程，并结合app构建和启动流程讲述一些可优化点。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://heseng91.github.io/2018/12/04/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96/%E5%8D%95Target%E6%9E%84%E5%BB%BA%E6%B5%81%E7%A8%8B.png">
+<meta property="og:image" content="http://heseng91.github.io/2018/12/04/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96/%E7%BC%96%E8%AF%91%E5%99%A8%E6%9E%84%E6%88%90.png">
+<meta property="og:image" content="http://heseng91.github.io/2018/12/04/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96/%E9%93%BE%E6%8E%A5%E7%94%9F%E6%88%90mach-o.png">
+<meta property="og:image" content="http://heseng91.github.io/2018/12/04/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96/%E9%9D%99%E6%80%81%E9%93%BE%E6%8E%A5%E9%9D%99%E6%80%81%E8%A3%85%E5%85%A5%E5%86%85%E5%AD%98%E5%92%8C%E7%A1%AC%E7%9B%98%E4%BD%BF%E7%94%A8%E6%83%85%E5%86%B5.png">
+<meta property="og:image" content="http://heseng91.github.io/2018/12/04/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96/%E8%99%9A%E6%8B%9F%E5%86%85%E5%AD%98%E7%9A%84%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86.png">
+<meta property="og:image" content="http://heseng91.github.io/2018/12/04/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96/%E9%9D%99%E6%80%81%E9%93%BE%E6%8E%A5%E5%8A%A8%E6%80%81%E8%A3%85%E5%85%A5%E5%86%85%E5%AD%98%E5%92%8C%E7%A1%AC%E7%9B%98%E4%BD%BF%E7%94%A8%E6%83%85%E5%86%B5.png">
+<meta property="og:image" content="http://heseng91.github.io/2018/12/04/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96/%E5%8A%A8%E6%80%81%E9%93%BE%E6%8E%A5%E5%8A%A8%E6%80%81%E8%A3%85%E5%85%A5%E5%86%85%E5%AD%98%E5%92%8C%E7%A1%AC%E7%9B%98%E4%BD%BF%E7%94%A8%E6%83%85%E5%86%B5.png">
+<meta property="og:image" content="http://heseng91.github.io/2018/12/04/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96/dyld2%E5%B7%A5%E4%BD%9C%E6%B5%81%E7%A8%8B.png">
+<meta property="og:image" content="http://heseng91.github.io/2018/12/04/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96/runloop%E5%B7%A5%E4%BD%9C%E6%B5%81%E7%A8%8B.png">
+<meta property="og:image" content="http://heseng91.github.io/2018/12/04/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96/Runloop%E4%B8%8E%E5%90%AF%E5%8A%A8%E7%9A%84%E5%85%B3%E7%B3%BB.png">
+<meta property="og:image" content="http://heseng91.github.io/2018/12/04/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96/%E5%B1%8F%E5%B9%95%E6%89%AB%E6%8F%8F%E6%B5%81%E7%A8%8B.png">
+<meta property="og:image" content="http://heseng91.github.io/2018/12/04/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96/iOS%E6%B8%B2%E6%9F%93%E7%9A%84%E5%A4%A7%E8%87%B4%E6%B5%81%E7%A8%8B.png">
+<meta property="og:image" content="http://heseng91.github.io/2018/12/04/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96/iOS%E6%B8%B2%E6%9F%93%E6%B5%81%E6%B0%B4%E7%BA%BF.png">
+<meta property="og:image" content="http://heseng91.github.io/2018/12/04/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96/app%E5%90%AF%E5%8A%A8%E6%B5%81%E7%A8%8B.png">
+<meta property="og:image" content="http://heseng91.github.io/2018/12/04/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96/%E9%A2%84%E5%8A%A0%E8%BD%BD%E5%AD%90%E7%BA%BF%E7%A8%8B%E5%90%AF%E5%8A%A8%E4%BB%BB%E5%8A%A1.png">
+<meta property="og:image" content="http://heseng91.github.io/2018/12/04/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96/Fishhook%E4%BF%AE%E6%94%B9%E6%98%A0%E5%B0%84%E5%85%B3%E7%B3%BB%E8%BF%87%E7%A8%8B.png">
+<meta property="og:image" content="http://heseng91.github.io/2018/12/04/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96/%E4%BA%8C%E8%BF%9B%E5%88%B6%E9%87%8D%E6%8E%92.png">
+<meta property="og:image" content="http://heseng91.github.io/2018/12/04/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96/%E6%AE%B5%E9%87%8D%E5%91%BD%E5%90%8D.png">
+<meta property="article:published_time" content="2018-12-04T08:30:33.000Z">
+<meta property="article:modified_time" content="2022-07-25T19:30:09.325Z">
+<meta property="article:author" content="和僧">
+<meta property="article:tag" content="和僧-技术博客，技术博客">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://heseng91.github.io/2018/12/04/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96/%E5%8D%95Target%E6%9E%84%E5%BB%BA%E6%B5%81%E7%A8%8B.png">
+
+<link rel="canonical" href="http://heseng91.github.io/2018/12/04/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>「性能优化」之启动优化 | 和僧</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">和僧</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://heseng91.github.io/2018/12/04/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="和僧">
+      <meta itemprop="description" content="技术博客">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="和僧">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          「性能优化」之启动优化
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2018-12-04 16:30:33" itemprop="dateCreated datePublished" datetime="2018-12-04T16:30:33+08:00">2018-12-04</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-07-26 03:30:09" itemprop="dateModified" datetime="2022-07-26T03:30:09+08:00">2022-07-26</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/" itemprop="url" rel="index"><span itemprop="name">性能优化</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>启动是 App 给用户的第一印象，启动越慢用户流失的概率就越高，良好的启动速度是用户体验不可缺少的一环。本文先梳理app构建和启动流程，并结合app构建和启动流程讲述一些可优化点。</p>
+<a id="more"></a>
+
+<p>因为启动涉及面很广，牵扯很多概念。鉴于网上相关概念定义已经比较多了，本文将通过技术的发展及实际问题来介绍这个技术 or 概念。</p>
+<h2 id="IPA-构建"><a href="#IPA-构建" class="headerlink" title="IPA 构建"></a>IPA 构建</h2><h3 id="编译和链接技术发展史"><a href="#编译和链接技术发展史" class="headerlink" title="编译和链接技术发展史"></a>编译和链接技术发展史</h3><p>计算机只能处理由0和1两个二进制数组成的数据。各种用二进制编码方式表示的指令，叫做机器指令码。</p>
+<p>在计算机早期阶段，必须用机器码写程序。具体来讲，就是先在纸上用英语写一个高层次的版本，也就是对程序的高层次描述，叫 “伪代码”，然后用”操作码表”把伪代码转成二进制机器码，再给计算机喂码。</p>
+<p>机器语言虽然能够被计算机理解和接受，但和人们的语言差别太大，不易被人们理解和记忆，而且需要人工计算每个子程序或者跳转的目标地址，当程序修改的时候，这些位置需要重新计算，十分繁琐又耗时，并且很容易出错。</p>
+<p>于是，先驱者发明了汇编语言。汇编语言使用使用接近人类的各种符号和标记来帮助记忆，于是程序员不再使用0和1写代码，转而使用 “jmp”这样的助记符；汇编语言还可以用符号来标记位置。比如如果一种计算机，它的每条指令是一个字节，也就是8位，我们假设有一种跳转指令，它的高4位是0001，表示这是一条跳转指令，低4位存放的是跳转目的地的绝对地址。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">0 0001 0100</span><br><span class="line">1 ...</span><br><span class="line">2 ...</span><br><span class="line">3 ...</span><br><span class="line">4 1000 0111</span><br><span class="line">5 ...</span><br></pre></td></tr></table></figure>
+
+<p>那么以上表示的就是程序的第一条指令为一个跳转指令，它的目的地址是第5条指令。使用汇编后，如果我们把刚开始第5条指令开始的子程序命名为“foo”，那么第一条指令的汇编就是：jmp foo，相比 00010100要好记太多。</p>
+<p>然而虽然使用汇编语言之后，方便了人类记忆和编码，但是计算机并不认识助记符和符号（symbol），于是就需要使用二进制编制”汇编器” 来转译”助记符”或者叫做”汇编语言”，形成”机器码” 这样计算机就可以读懂了。汇编器在每次汇编程序的时候，会重新计算“foo”这个符号的地址，然后把所有引用到“foo”的指令修正到这个正确的地址。整个过程不需要人工参与，极大地提高了生产力。随着生产力的提高，软件的规模也开始日渐庞大，代码量开始快速膨胀。人们开始思考将不同功能的代码以一定的方式组织起来，使得更加容易阅读和理解，以便于日后修改和重复使用。自然而然，人们开始将代码按照功能和性质划分，分别形成不同的功能模块，不同的模块之间按照层次结构或其他结构来组织。随着软件规模变大，多则数百万行，如果都放在一个模块肯定无法想象。所以大型软件往往拥有成千上万个模块，这些模块互相依赖又相对独立。在一个程序被分割成多个模块以后，这些模块之间最后如何组合形成一个单一的程序是须解决的问题。模块之间如何组合的问题可以归结为模块之间如何通信的问题，通信可分两种，一种是模块间的函数调用，另外一种是模块间的变量访问。函数访问须知道目标函数的地址，变量访问也须知道目标变量的地址，所以这两种方式都可以归结为一种方式，那就是模块间符号的引用。模块间依靠符号来通信类似于拼图版，定义符号的模块多出一块区域，引用该符号的模块刚好少了那一块区域，两者一拼刚好完美组合，这个模块的拼接过程就是：链接。从原理上来讲，链接的工作无非就是把一些指令对其它符号的引用加以修正。</p>
+<p>汇编只是修饰了一下机器码。一般来说，一条汇编指令对应一条机器指令，所以汇编码和底层硬件的连接很紧密。汇编器仍然强迫程序员思考，用什么寄存器和内存地址。所以汇编语言编写起来也不容易，阅读和理解很难。而且汇编语言的编写严格依赖于特定的机器，所以在一种计算机编写的代码在应用于另一种算机时可能需要完全重写。</p>
+<p>为了进一步将程序员从直接使用地址编程的梦魇中解救出来，人们开始探索以一个更类似于数学定义或自然语言的简洁形式来编写程序的操作，它应与任何机器都无关，而且也可由一个程序翻译为可执行的代码。在这种背景下，以后很多人开始创作编程语言，编译器也应运而生。这些语言中就包括上世纪80年代初被发明的Objective-C，它需要<strong>编译器</strong>专门把高级语言转换成低级语言。大多数编译器由两部分组成：前端和后端。</p>
+<ul>
+<li>前端负责词法分析、语法分析、生成中间代码；</li>
+<li>后端以中间代码作为输入，进行与架构无关的代码优化，接着针对不同架构生成汇编不同的机器码。</li>
+</ul>
+<p>前后端依赖统一格式的中间代码（IR），使得前后端可以独立的变化。新增一门语言只需要修改前端，而新增一个 CPU 架构只需要修改后端即可。</p>
+<p>Objective-C/C/C++ 使用的编译器前端是<a href="https://clang.llvm.org/docs/index.html" target="_blank" rel="noopener">clang</a>，swift 是 <a href="https://swift.org/compiler-stdlib/#compiler-architecture" target="_blank" rel="noopener">swiftc</a>，后端都是 <a href="https://llvm.org/" target="_blank" rel="noopener">LLVM</a>。</p>
+<p>clang 编译源代码转化生成mach-o的大致流程如下：</p>
+
+
+<h3 id="pipeline"><a href="#pipeline" class="headerlink" title="pipeline"></a>pipeline</h3><p>除了代码文件之外，现代移动软件不可避免为会有一些资源文件（如 storyboard，asset ），这些资源文件也需要编译以加快加载速度，然后，同资源文件一起打包成.app。最后出乎安全考虑，还需要对.app进行签名，防篡改。</p>
+<p>以单 Target 为例，整个构建流程如下：</p>
+<img src="/2018/12/04/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96/%E5%8D%95Target%E6%9E%84%E5%BB%BA%E6%B5%81%E7%A8%8B.png" class title="单Target构建流程">
+
+<ul>
+<li>源文件(.m/.c/.swift 等)是单独编译的，输出对应的目标文件(.o)</li>
+<li>目标文件和静态库/动态库一起，链接出最后的 Mach-O</li>
+<li>Mach-O 会被裁剪，去掉一些不必要的信息</li>
+<li>资源文件如 storyboard，asset 也会编译，编译后加载速度会变快</li>
+<li>Mach-O 和资源文件一起，打包出最后的.app</li>
+<li>对.app 签名，防篡改</li>
+</ul>
+<p>主要可分为如下几个阶段：</p>
+<h4 id="编译"><a href="#编译" class="headerlink" title="编译"></a>编译</h4><p>编译器构成如下：</p>
+<img src="/2018/12/04/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96/%E7%BC%96%E8%AF%91%E5%99%A8%E6%9E%84%E6%88%90.png" class title="编译器构成">
+
+<p>编译的具体转化过程如下：</p>
+<p>1、预处理（preprocessor）：预处理会进行头文件引入、宏替换、注释处理、条件编译（#ifdef）等操作；</p>
+<p>2、词法分析（lexical anaysis）：词法分析器读入源文件的字符流，将它们组织成有意义的词素（lexeme）序列，对于每个词素，词法分析器产生词法单元（token）作为输出；</p>
+<p>3、语法分析（semantic analysis）：词法分析的 Token 流会被解析成一颗抽象语法树（abstract syntax tree - AST）。有了抽象语法树，clang 就可以对这个树进行分析，找出代码中的错误。比如类型不匹配，亦或 Objective-C 中向 target 发送了一个未实现的消息。AST 是开发者编写 clang 插件主要交互的数据结构，clang 也提供很多 API 去读取 AST。更多细节：<a href="https://clang.llvm.org/docs/IntroductionToTheClangAST.html" target="_blank" rel="noopener">Introduction to the Clang AST</a>；</p>
+<p>4、CodeGen：CodeGen 遍历语法树，生成 LLVM IR 代码。LLVM IR 是前端的输出，后端的输入。Objective-C 代码在这一步会进行 runtime 的桥接：property 合成、ARC 处理等。LLVM 会对生成的 IR 进行优化，优化会调用相应的 Pass 进行处理。Pass 由多个节点组成，都是 <a href="http://llvm.org/doxygen/classllvm_1_1Pass.html" target="_blank" rel="noopener">Pass</a> 类的子类，每个节点负责做特定的优化，更多细节：<a href="https://llvm.org/docs/WritingAnLLVMPass.html" target="_blank" rel="noopener">Writing an LLVM Pass</a>；</p>
+<p>5、生成汇编代码：LLVM 对 IR 进行优化后，会针对不同架构生成不同的目标代码，最后以汇编代码的格式输出；</p>
+<p>6、汇编器以汇编代码作为输入，将汇编代码转换为机器代码，最后输出目标文件（object file）。</p>
+<h4 id="链接"><a href="#链接" class="headerlink" title="链接"></a>链接</h4><p>连接器把编译产生的 .o 文件和（dylib、a、tbd）文件，生成一个 mach-o 文件。链接的过程并不产生新的代码，只会做一些移动和补丁。</p>
+<img src="/2018/12/04/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96/%E9%93%BE%E6%8E%A5%E7%94%9F%E6%88%90mach-o.png" class title="链接生成mach-o">
+
+<ul>
+<li>tbd 的全称是 text-based stub library，是因为链接的过程中只需要符号就可以了，所以 Xcode 6 开始，像 UIKit 等系统库就不提供完整的 Mach-O，而是提供一个只包含符号等信息的 tbd 文件。</li>
+</ul>
+<h4 id="裁剪"><a href="#裁剪" class="headerlink" title="裁剪"></a>裁剪</h4><p>编译完 Mach-O 之后会进行裁剪(strip)，是因为里面有些信息，如调试符号，是不需要带到线上去的。裁剪有多种级别，一般的配置如下：</p>
+<ul>
+<li>All Symbols，主二进制</li>
+<li>Non-Global Symbols，动态库</li>
+<li>Debugging Symbols，二方静态库</li>
+</ul>
+<p><strong>为什么二方库在出静态库的时候要选择 Debugging Symbols 呢？是因为像 order_file 等链接期间的优化是基于符号的，如果把符号裁剪掉，那么这些优化也就不会生效了</strong>。</p>
+<h4 id="签名-amp-上传"><a href="#签名-amp-上传" class="headerlink" title="签名 &amp; 上传"></a>签名 &amp; 上传</h4><p>裁剪完二进制后，会和编译好的资源文件一起打包成.app 文件，接着对这个文件进行签名。签名的作用是保证文件内容不多不少，没有被篡改过。接着会把包上传到 iTunes Connect，上传后会对<code>__TEXT</code>段加密，加密会减弱 IPA 的压缩效果，增加包大小，也会降低启动速度<strong>（iOS 13 优化了加密过程，不会对包大小和启动耗时有影响）</strong>。</p>
+<p>以上就是ipa构建相关，接下来重点了解一下App启动流程。</p>
+<h2 id="启动流程"><a href="#启动流程" class="headerlink" title="启动流程"></a>启动流程</h2><h3 id="概念"><a href="#概念" class="headerlink" title="概念"></a>概念</h3><p>从appstore下载的安装包，是保存在磁盘中的，要运行就需要载入到内存。</p>
+<p>下面介绍一下链接和装入技术的发展史：</p>
+<h4 id="一、静态链接、静态装入"><a href="#一、静态链接、静态装入" class="headerlink" title="一、静态链接、静态装入"></a>一、静态链接、静态装入</h4><p>这种方法最早被采用，其特点是简单，不需要操作系统提供任何额外的支持。程序的不同模块可以并行开发，分别独立编译为相应的目标文件。在得到了所有的目标文件后，静态链接、静态装入的做法是将所有目标文件链接成一个可执行映象，随后在创建进程时将该可执行映象一次全部装入内存。</p>
+<p>举个简单的例子，假设我们开发了两个程序Program1和Program2，Program1由main1.c、utilities.c以及errhdl1.c三部分组成，分别对应程序的主框架、一些公用的辅助函数（其作用相当于库）以及错误处理部分，这三部分代码编译后分别得到各自对应的目标文件main1.o、utilities.o以及errhdl1.o。同样，Program2由main2.c、utilities.c以及errhdl2.c三部分组成，三部分代码编译后分别得到各自对应的目标文件main2.o、utilities.o以及errhdl2.o。值得注意的是，这里Program1和Program2使用了相同的公用辅助函数utilities.o。当我们采用静态链接、静态装入的方法，同时运行这两个程序时内存和硬盘的使用情况如下图所示：</p>
+<img src="/2018/12/04/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96/%E9%9D%99%E6%80%81%E9%93%BE%E6%8E%A5%E9%9D%99%E6%80%81%E8%A3%85%E5%85%A5%E5%86%85%E5%AD%98%E5%92%8C%E7%A1%AC%E7%9B%98%E4%BD%BF%E7%94%A8%E6%83%85%E5%86%B5.png" class title="静态链接静态装入内存和硬盘使用情况">
+
+<p>这种方式会带来如下问题：</p>
+<p><code>安全问题</code> ：由于在内存条中使用的都是真实物理地址，而且内存条中各个应用进程都是按顺序依次排列的。 那么在 <code>进程1</code> 中通过地址偏移就可以访问到 <code>其他进程</code> 的内存。</p>
+<p><code>内存空间浪费问题</code>：假如程序在运行过程中没有出现任何错误，那么错误处理部分的代码就不应该被装入内存。但是操作系统在创建进程时将程序的可执行映象一次全部装入内存，之后进程才能开始运行。造成很大的内存浪费。</p>
+<p> <code>硬盘空间浪费问题</code>：就硬盘的使用来讲，既然两个程序共享使用了utilities，那么我们只要在硬盘上保存utilities.o的一份拷贝应该就足够了，但这并没有在硬盘保存的可执行程序映象上体现出来。相反，utilities.o被链接进了每一个用到它的程序的可执行映象。</p>
+<h4 id="二、静态链接、动态装入"><a href="#二、静态链接、动态装入" class="headerlink" title="二、静态链接、动态装入"></a>二、静态链接、动态装入</h4><p>前面提到，<strong>静态链接、静态装入</strong>由于直接暴露的是物理地址，所以进程可以访问到任何物理地址，地址空间缺乏保护，会有比较严重的安全问题。另外，内存紧张的问题在早期的系统中显得更加突出，因此人们首先想到的是要解决内存空间使用方面的问题。为了给进程提供独立而互不访问的内存空间同时提高内存使用效率，于是虚拟内存应运而生了。</p>
+<h5 id="虚拟内存工作原理"><a href="#虚拟内存工作原理" class="headerlink" title="虚拟内存工作原理"></a>虚拟内存工作原理</h5><p>虚拟内存是在物理内存之上建立的一层逻辑地址，保证内存访问安全的同时为应用提供了连续的地址空间。</p>
+<p>引用了虚拟内存后，在进程创建时，虚拟内存管理器会为每个进程创建一个称作逻辑地址的空间，并将这些地址空间分割成了大小一致的块，这样的块称之为“页”。分页的概念，下面会详细讲述。对进程而言，它的逻辑地址空间中的地址总是可访问的。因此进程会认为自己拥有连续的可用的<a href="https://baike.baidu.com/item/内存" target="_blank" rel="noopener">内存</a>（一个连续完整的<a href="https://baike.baidu.com/item/地址空间" target="_blank" rel="noopener">地址空间</a>），但是实际上这个内存地址只是一个虚拟地址，虚拟地址需要经过一张映射表映射后才可以获取到真实的物理地址，这样就限制了对真实物理地址的访问。映射表是进程和它的内存管理单元（MMU）维护的一个页表，该页表将程序的逻辑内存地址空间和实际的物理内存地址空间做了映射。映射过程如下：</p>
+<p>1、<code>cpu</code>通过虚拟内存地址，找到对应进程的映射表。</p>
+<p>2、通过映射表找到其对应的真实物理地址，进而找到数据。</p>
+<p>这个过程又被称为 <strong>地址翻译</strong>，是由操作系统以及 <code>cpu</code>上集成的 <a href="https://baike.baidu.com/item/MMU/4542218?fr=aladdin" target="_blank" rel="noopener"><code>硬件单元 MMU</code></a> 协同来完成的。找到数据后，mmap到内存。<strong>mmap</strong>的全称是 memory map，是一种内存映射技术，可以把文件映射到虚拟内存的地址空间里，这样就可以像直接操作内存那样来读写文件。</p>
+<p>整个虚拟内存的工作原理这里用一张图来展示：</p>
+<img src="/2018/12/04/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96/%E8%99%9A%E6%8B%9F%E5%86%85%E5%AD%98%E7%9A%84%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86.png" class title="虚拟内存的工作原理">
+
+<h5 id="虚拟内存解决效率问题"><a href="#虚拟内存解决效率问题" class="headerlink" title="虚拟内存解决效率问题"></a>虚拟内存解决效率问题</h5><p>刚刚提到虚拟内存空间会被分页，实际上物理内存也会被划分为大小相同的页（page）。虚拟内存空间和物理内存空间都以页作为内存空间的最小单位，而映射表同样是以页为单位的。换句话说，映射表最小只会映射到一页，并不会映射到具体每一个地址。页的大小跟硬件有关，在 arm64 架构一页是 16KB，其余为 4KB。</p>
+<p>对内存分页之后，可以对物理内存进行离散使用。由于存在映射过程，所以虚拟内存对应的物理内存可以任意存放，也不需要一一对应，这样就方便了操作系统对物理内存的管理，也能够可以最大化利用物理内存。同时，也可以采用一些页面调度（Paging）算法，利用翻译过程中也存在的局部性原理，将大概率被使用的帧地址加入到 <a href="https://baike.baidu.com/item/转译后备缓冲区/22685572?fromtitle=TLB&fromid=2339981&fr=aladdin" target="_blank" rel="noopener">TLB</a> 或者页表之中，提高翻译的效率。</p>
+<p>由于可以对物理内存进行离散使用，人们就可以采用动态装入的方式来优化内存浪费问题。其想法也非常简单，即一个函数只有当它被调用时，其所在的模块才会被装入内存。</p>
+<p>仍然以上面提到的两个程序Program1和Program2为例，假如Program1运行过程中出现了错误而Program2在运行过程中没有出现任何错误。当我们采用静态链接、动态装入的方法，同时运行这两个程序时内存和硬盘的使用情况如下图所示：</p>
+<img src="/2018/12/04/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96/%E9%9D%99%E6%80%81%E9%93%BE%E6%8E%A5%E5%8A%A8%E6%80%81%E8%A3%85%E5%85%A5%E5%86%85%E5%AD%98%E5%92%8C%E7%A1%AC%E7%9B%98%E4%BD%BF%E7%94%A8%E6%83%85%E5%86%B5.png" class title="静态链接动态装入内存和硬盘使用情况">
+
+<p>（ 上图中我们也看出，实际物理内存并不是连续以及某个进程完整的）。</p>
+<p>当应用被加载到内存中时，并不会将整个应用加载到内存中 。只会放用到的那一部分。也就是动态载入的概念，换句话说就是应用使用多少，实际物理内存就实际存储多少。映射表左侧的 <code>0</code>和 <code>1</code>代表当前地址有没有在物理内存中。当应用访问到某个地址，映射表中为 <code>0</code>，也就是说并没有被加载到物理内存中时，系统就会立刻阻塞整个进程， 触发一个我们所熟知的 <a href="https://link.juejin.cn/?target=https%3A%2F%2Fbaike.baidu.com%2Fitem%2F%E7%BC%BA%E9%A1%B5%E4%B8%AD%E6%96%AD%2F5029040%3Ffr%3Daladdin"><code>缺页中断 - Page Fault</code></a>。当一个缺页中断被触发，操作系统会从磁盘中重新读取这页数据到物理内存上，然后将映射表中虚拟内存指向对应（如果当前内存已满，操作系统会通过置换页算法 <strong>找一页数据进行覆盖</strong>，这也是为什么开再多的应用也不会崩掉， 但是之前开的应用再打开时，就重新启动了的根本原因）。通过这种分页和覆盖机制，就完美的解决了内存浪费和效率问题。</p>
+<h5 id="安全问题："><a href="#安全问题：" class="headerlink" title="安全问题："></a>安全问题：</h5><p>针对静态链接、静态装入阶段通过地址偏移就可以访问到 <code>其他进程</code> 的内存的安全问题，引用虚拟内存后就不存在了。因为每个进程的映射表是单独的，实际上在进程中每次进行地址翻译，都会先使用界限寄存器判断是否越界，没有越界才会加上基址寄存器的值，转换为物理内存地址。这样就能保证真实物理地址永远在规定范围内，也就不存在通过偏移获取到其他进程的内存空间的问题了。</p>
+<p>但是随之而来的确是另外一个安全问题。当应用开发完成以后由于采用了虚拟内存 , 那么其中一个函数无论如何运行，运行多少次，都会是虚拟内存中的固定地址。假设应用有一个函数，基于首地址偏移量为 <code>0x00a000</code>，那么虚拟地址从 <code>0x000000 ~ 0xffffff</code>，基于这个，那么这个函数我无论如何只需要通过 <code>0x00a000</code>这个虚拟地址就可以拿到其真实实现地址。而这种机制就给了很多黑客可操作性的空间，他们可以很轻易的提前写好程序获取固定函数的实现进行修改 <code>hook</code>操作。</p>
+<p>为了解决这个问题 , <a href="https://link.juejin.cn/?target=https%3A%2F%2Fbaike.baidu.com%2Fitem%2F%E5%9C%B0%E5%9D%80%E7%A9%BA%E9%97%B4%E9%85%8D%E7%BD%AE%E9%9A%8F%E6%9C%BA%E5%8A%A0%E8%BD%BD%3Ffromtitle%3Daslr%26fromid%3D5779647"><code>ASLR</code></a>应运而生。 其原理就是 <strong>每次</strong>虚拟地址在映射真实地址之前，增加一个随机偏移值，以此来解决我们刚刚所提到的这个问题。</p>
+<h4 id="三、动态链接、动态装入"><a href="#三、动态链接、动态装入" class="headerlink" title="三、动态链接、动态装入"></a>三、动态链接、动态装入</h4><p>采用静态链接、动态装入的方法后看似只剩下硬盘空间使用效率不高的问题了，实际上内存使用效率不高的问题仍然没有完全解决。图2中，既然两个程序用到的是相同的utilities.o，那么理想的情况是系统中只保存一份utilities.o的拷贝，无论是在内存中还是在硬盘上，于是人们想到了动态链接。</p>
+<p>下面我们就来看看上面提到的两个程序Program1和Program2在采用动态链接、动态装入的方法，同时运行这两个程序时内存和硬盘的使用情况（见下图）。仍然假设Program1运行过程中出现了错误而Program2在运行过程中没有出现任何错误。</p>
+<img src="/2018/12/04/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96/%E5%8A%A8%E6%80%81%E9%93%BE%E6%8E%A5%E5%8A%A8%E6%80%81%E8%A3%85%E5%85%A5%E5%86%85%E5%AD%98%E5%92%8C%E7%A1%AC%E7%9B%98%E4%BD%BF%E7%94%A8%E6%83%85%E5%86%B5.png" class title="动态链接动态装入内存和硬盘使用情况">
+
+<p>动态链接的这一特性对于库的升级（比如错误的修正）是至关重要的。当一个库升级到一个新版本时，所有用到这个库的程序将自动使用新的版本。如果不使用动态链接技术，那么所有这些程序都需要被重新链接才能得以访问新版的库。为了避免程序意外使用到一些不兼容的新版的库，通常在程序和库中都包含各自的版本信息。内存中可能会同时存在着一个库的几个版本，但是每个程序可以通过版本信息来决定它到底应该使用哪一个。如果对库只做了微小的改动，库的版本号将保持不变；如果改动较大，则相应递增版本号。因此，如果新版库中含有与早期不兼容的改动，只有那些使用新版库进行编译的程序才会受到影响，而在新版库安装之前进行过链接的程序将继续使用以前的库。这样的系统被称作共享库系统。</p>
+<p>相比之前的静态链接，动态链接有以下几点好处：</p>
+<ol>
+<li>代码共用：图中，无论是硬盘还是内存中都只存在一份utilities.o的拷贝。内存中，两个进程通过将地址映射到相同的utilities.o实现对其的共享。解决了共享的目标文件存在多个副本浪费磁盘和内存空间的问题；</li>
+<li>提高载入速度：减少物理页面的换入换出，还增加了CPU的缓存命中率，因为不同进程间的数据和指令访问都集中在了同一个共享模块上；</li>
+<li>易于维护：由于被依赖的 lib 是程序执行时才 link 的，所以这些 lib 很容易做更新。系统升级只需要替换掉对应的共享模块，当程序下次启动时新版本的共享模块会被自动装载并链接起来，程序就无感的对接到了新版本。</li>
+<li>减少可执行文件体积：相比静态链接，动态链接在编译时不需要打进去，所以可执行文件的体积要小很多</li>
+</ol>
+<h3 id="dyld"><a href="#dyld" class="headerlink" title="dyld"></a>dyld</h3><p>引入动态装载后，就不得不提dyld，全名 The dynamic link editor，他是苹果的平台用于加载链接库的帮助程序，主要提供动态加载的支持。APP启动的时候会把 dyld 加载到进程的地址空间里，然后把后续的启动过程交给 dyld。dyld是开源的，我们可以在<a href="https://link.juejin.cn/?target=https%3A%2F%2Fopensource.apple.com%2Ftarballs%2Fdyld%2F">官网</a>下载它的源码来阅读理解。</p>
+<h4 id="dyld发展简史"><a href="#dyld发展简史" class="headerlink" title="dyld发展简史"></a>dyld发展简史</h4><h5 id="dyld-1-0-1996-2004"><a href="#dyld-1-0-1996-2004" class="headerlink" title="dyld 1.0 (1996-2004)"></a>dyld 1.0 (1996-2004)</h5><p>dyld 最初是作为NeXTStep 3.3的一部分于1996年上市的，所以其实没有版本号的，为了方便追溯苹果将当时的dyld版本命名的为1.0。dyld诞生背景：</p>
+<ul>
+<li>dyld 1.0 发明之前NeXT使用的都是静态二进制数据</li>
+<li>POSIX dlopen调用还没有标准化：当时人们采用的是定制拓展的方式来在Unix上支持dlopen。在NeXTStep上使用的是不同的拓展。为了在NeXTStep上运行标准的Unix软件，有人在macOS 10的早期版本上编写了第三方包装程序。问题是由于并不完全支持相同的语义，在一些奇怪的边缘情况下，会不起作用，而且也会导致程序运行的比较慢。</li>
+<li>没有广泛使用C++动态库：很重要的一点，dyld 1.0 发布时，大多数系统还没有使用大型c++动态库。c++有一些特性，比如初始化命令，在静态系统中可以很好的运行，但是在动态系统中很难至少是性能方面很难高性能的运行。基于c++的庞大代码库会导致动态链接器需要做很多工作，而且速度相当慢。</li>
+</ul>
+<p>在发布macOS 10.0(Cheetah)前，苹果为dyld增加了一个特性，即Prebinding预绑定。预绑定会尝试查找每个系统dylib和程序二进制文件中需要修正地址，然后动态加载程序会尝试加载所有这些地址中需要的文件，如果加载成功，它会编辑所有的二进制文件，使用预计算地址替换需要修正的地址。这样当下一次需要加载到相同的地址时，就不需要做任何额外的工作了。这大大加快了启动速度，但这意味着我们在每次启动时都要编辑你的二进制文件，这不仅不安全，也会有一些其它的问题。</p>
+<h5 id="dyld-2-2004-2007"><a href="#dyld-2-2004-2007" class="headerlink" title="dyld 2 (2004-2007)"></a>dyld 2 (2004-2007)</h5><p>鉴于dyld已经不能满足软件需要，并且也会有安全问题等等的问题。dyld 2作为苹果macOS Tiger的一部分被出了。dyld 2 是对dyld的完全重写，可以正确支持C++ initializer语义，同时扩展了mach-o格式并更新dyld,以获得了高效率C++库的支持。dyld 2使用正确的语义完整实现了本地的dlopen和dlsym功能，由此苹果弃用了传统API。dyld 2 是为提升速度而设计，因此只有有限的完整性检查，当时不像今天有这么多的恶意软件。也正因为只有有限的完整性检查，dyld 2会有安全问题，为此苹果不得不重新调整一些功能，使它在今天的平台上更安全。最后由于启动速度的大幅提升，我们可以减少Prebinding的工作量。相较于dyld 1的编辑程序数据，现在仅会编辑系统库，且可以仅在软件更新时做这些事情。现在Prebinding被用于所有的优化，但那是推动力。因此在软件更新过程中，可能会看到“优化系统性能”类似的文字。这就是在更新时进行Prebinding。当今这已被用于所有的优化。</p>
+<h5 id="dyld-2-x-2007-2017"><a href="#dyld-2-x-2007-2017" class="headerlink" title="dyld 2.x (2007-2017)"></a>dyld 2.x (2007-2017)</h5><p>相较于 dyld 2，过去的几年里我们做了很多非常重要的改进。</p>
+<p>1、首先，我们添加了大量的架构和平台。</p>
+<ul>
+<li>自从dyld 2在PowerPC发布之后，增加了<code>x86</code>、<code>x86_64</code>、<code>arm</code>、<code>arm64</code>和许多的衍生平台。</li>
+<li>还推出了<code>iOS</code>、<code>tvOS</code>和<code>watchOS</code>，这些都需要新的dyld功能</li>
+</ul>
+<p>2、通过多种方式增加安全性</p>
+<ul>
+<li>增加 <code>codeSigning</code>代码签名</li>
+<li><code>ASLR（Address space layout randomization）</code>地址空间配置随机加载：每次加载库时，可能位于不同的地址</li>
+<li><code>bound checking</code>边界检查：mach-o文件中增加了Header的边界检查功能，从而避免恶意二进制数据的注入</li>
+</ul>
+<p>3、提升性能</p>
+<p>用<code>share cache</code>共享缓存完全替代prebinding。<code>share cache</code>是一个包含大多数系统dylibs的单一文件，由苹果在iOS 3.1和macOS Snow Leopard中引入。由于是单一文件，我们可以以下通过多种方式优化：</p>
+<ul>
+<li>重新排列二进制文件以提高加载速度</li>
+<li>预链接dylibs</li>
+<li>预构建dyld和obc在运行时使用的数据结构</li>
+</ul>
+<p>尽管dyld 2.x已经有了比较多的改进，但是仍有一些不足：</p>
+<p>1、首先，性能方面：针对一些不能复现的场景，我们希望能采集到启动速度全面的数据。除此之外，我们还在思考，怎样最小化或者理论上最小化app启动过程中的工作量，以及我们要怎样实现这一目标；</p>
+<p>2、其次，安全方面：如前所述，苹果在dyld 2中通过多种方式增加了安全性。但是后面再想增加更多安全性已经很困难了，因此需要有更积极的安全检查，也需要预先为安全方面。</p>
+<p>3、最后，可测试性和可靠性：苹果发布了大量优秀的测试框架，例如XCTest，这些框架都依赖于动态链接器的底层功能来将这些库插入到进程中，从根本上说不能用于测试现有的dyld代码，所以很难验证其安全性和性能。</p>
+<h5 id="dyld-3-2017-至今"><a href="#dyld-3-2017-至今" class="headerlink" title="dyld 3 (2017-至今)"></a>dyld 3 (2017-至今)</h5><p>鉴于以上原因，苹果在2017年WWDC推出了全新的动态链接器，dyld 3。dyld 3是苹果对动态连接的一次全新思考。2017 年开始Apple OS平台上的所有系统程序都已经默认使用dyld 3。iOS 13 开始 Apple 对三方 App 启用了 dyld3。</p>
+<p>那么dyld 3相比 dyld 2是怎么做优化的呢？要回答这个问题，需要先简要介绍分别介绍一下app的启动流程。</p>
+<p>用户点击图标之后，会发送一个系统调用 execve 到内核，内核创建进程。接着会把主二进制 mmap 进来，读取 load command 中的<code>LC_LOAD_DYLINKER</code>，找到 dyld 的的路径。然后 mmap dyld 到虚拟内存，找到 dyld 的入口函数<code>_dyld_start</code>，把 PC 寄存器设置成<code>_dyld_start</code>，接下来启动流程交给了 dyld。</p>
+<p>dyld 2的工作流程图如下：</p>
+<img src="/2018/12/04/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96/dyld2%E5%B7%A5%E4%BD%9C%E6%B5%81%E7%A8%8B.png" class title="dyld2工作流程">
+
+<p>1、首先，dyld 会解析mach-o header，从中找到依赖的库。然后这些库也可能依赖其它库，所以dyld会不断递归找到所有依赖的库，并形成一张动态库的依赖图。一个iOS应用平均3 到 600 动态链接库，所以这个步骤包含了较大的工作量。</p>
+<p>2、接着dyld会把依赖的动态库映射到应用地址空间。</p>
+<p>3、然后开始符号查找，比如，如果我们的应用使用了printf函数，dyld会从系统库中找到函数地址。</p>
+<p>4、下一步，会对每个 Mach-O 做 fixup，包括 Rebase 和 Bind。</p>
+<ul>
+<li><strong>Rebase：修复内部指针</strong>。这是因为引入用了ASLR后， Mach-O 在 mmap 到虚拟内存的时候，起始地址会有一个随机的偏移量 slide，需要把内部的指针指向加上这个 slide。</li>
+<li><strong>Bind：修复外部指针</strong>。这个比较好理解，因为像 printf 等外部函数，只有运行时才知道它的地址是什么，bind 就是把指针指向第三步中找到的函数地址。</li>
+</ul>
+<p>5、最后，我们可以运行所有的initializers。</p>
+<ul>
+<li>LibSystem Initializer：Bind &amp; Rebase 之后，首先会执行 LibSystem 的 Initializer，做一些最基本的初始化，包括：初始化 libdispatch、初始化 objc runtime，注册 sel，加载 category</li>
+<li>Load &amp; Static Initializer：接下来会进行 main 函数之前的一些初始化，主要包括+load 和 static initializer。</li>
+</ul>
+<p>dyld 2是纯粹的in-process，即在程序进程内执行的，也就意味着只有当应用程序被启动时，dyld 2才能开始执行任务。</p>
+<p>相比dyld 2，dyld 3将安全敏感的部分和占用大量资源的部分移至进程外。</p>
+<p>安全敏感部分：在苹果看来，最大的安全敏感部分是：Parse mach-o headers 和 Find dependencies。因为被撰改的mach-o headers存在被攻击的风险，另外如果我们项目中使用了@rpath（搜索路径），通过篡改这些篡改这些路径或在正确的地方插入库，人们可以破坏应用程序。</p>
+<p>占用大量资源的部分：这里主要指的是symbol lookups。对于给定的库，除非执行了软件更新或更改了磁盘上的库，否则该库中的符号将始终处于相同的偏移量。所以这是可以缓存的。</p>
+<p>以下是dyld 2 和 dyld 3流程对比：</p>
+
+
+<p>dyld 3主要被分为三个组件：</p>
+<p>1、进程外的Mach-O分析器/编译器：负责预先处理所有可能影响启动速度的 search path、@rpaths 和环境变量，然后分析 Mach-O 的 Header 和依赖，并完成了所有符号查找的工作，最后将这些结果创建成了一个启动闭包。启动闭包是为了提升速度而生，是内存映射文件，不需要以任何复杂的方式解析，比Mach-O简单的多，它包含了启动app所需的一切。</p>
+<p>2、一个启动闭包缓存服务：系统 App 的启动闭包被构建在前文提到的 <code>Shared Cache</code> 中， 我们甚至不需要打开一个单独的文件。对于第三方的 App，会系统库发生变化时，即 App 安装或者升级的时候构建启动闭包。所以默认情况下，在App运行之前，启动闭包就已经在iOS上预先构建了。</p>
+<p>3、进程内执行启动闭包的引擎：这是进程内执行的部分，主要负责：验证启动闭包的安全性、映射 dylib 到内存、每个 Mach-O 做 fixup、以及Run initiazlizers最后跳转到 main 函数。相比dyld 2，不再需要解析 Mach-O 的 Header 和依赖，也不需要进行符号查找。因为这是启动流程中花费大部分时间的步骤，所以将会为你带来更快的应用启动。</p>
+<p>dyld 3将安全敏感的部分和占用大量资源的部分移至进程之外，并创建一个启动闭包写到磁盘里。这样后续启动的时候，就可以直接读入缓存，不再需要调用进程外的mach-o解析器或编译器，进程内执行的操作尽可能少，从而增强应用程序安全性。这样也加快了启动速度，俗话说，最快的代码是从未编写的代码，紧随其后的是几乎从未执行的代码。mach-o解析器或编译器被移至进程外之后，就变成了是一个常规的daemon进程，苹果就可以使用测试框架来测试，也就能在未来更好地改进它。</p>
+<h3 id="main函数之后"><a href="#main函数之后" class="headerlink" title="main函数之后"></a>main函数之后</h3><p>dyld 执行完毕之后， 会把启动流程交给 App，开始执行 main 函数。main 函数里要做的最重要的事情就是初始化 UIKit。UIKit 主要会做两个大的初始化：初始化 UIApplication 和 启动主线程的 Runloop。UIKit 初始化之后，就进入了我们熟悉的 UIApplicationDelegate 回调了。</p>
+<h3 id="Runloop"><a href="#Runloop" class="headerlink" title="Runloop"></a>Runloop</h3><p>线程在执行完代码就会退出，很明显主线程是不能退出的，那么就需要一种机制：事件来的时候执行任务，否则让线程休眠，Runloop 就是实现这个功能的。</p>
+<p>Runloop 本质上是一个<code>While</code> 循环，在图中橙色部分的 <code>mach_msg_trap</code> 就是触发一个系统调用，让线程休眠，等待事件到来，唤醒 Runloop，继续执行这个 <code>while</code>循环。</p>
+<p>Runloop 主要处理几种任务：Source0，Source1，Timer，GCD MainQueue，Block。在循环的合适时机，会以 Observer 的方式通知外部执行到了哪里。</p>
+<img src="/2018/12/04/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96/runloop%E5%B7%A5%E4%BD%9C%E6%B5%81%E7%A8%8B.png" class title="runloop工作流程">
+
+<p>那么，Runloop 与启动又有什么关系呢？</p>
+<ul>
+<li><strong>App 的 LifeCycle 方法是基于 Runloop 的 Source0 的</strong></li>
+<li><strong>首帧渲染是基于 Runloop Block 的</strong></li>
+</ul>
+<img src="/2018/12/04/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96/Runloop%E4%B8%8E%E5%90%AF%E5%8A%A8%E7%9A%84%E5%85%B3%E7%B3%BB.png" class title="Runloop与启动的关系">
+
+<p>Runloop 在启动上主要有几点应用：</p>
+<ul>
+<li>精准统计启动时间</li>
+<li>找到一个时机，在启动结束去执行一些预热任务</li>
+<li>利用 Runloop 打散耗时的启动预热任务</li>
+</ul>
+<blockquote>
+<p><strong>Tips :</strong> 会有一些逻辑要在启动之后 delay 一小段时间再回到主线程上执行，对于性能较差的设备，主线程 Runloop 可能一直处于忙的状态，所以这个 delay 的任务并不一定能按时执行。</p>
+</blockquote>
+<h3 id="AppLifeCycle"><a href="#AppLifeCycle" class="headerlink" title="AppLifeCycle"></a>AppLifeCycle</h3><p>UIKit 初始化之后，就进入了我们熟悉的 UIApplicationDelegate 回调了，在这些会调里去做一些业务上的初始化：</p>
+<ul>
+<li><code>willFinishLaunch</code></li>
+<li><code>didFinishLaunch</code></li>
+<li><code>didFinishLaunchNotification</code></li>
+</ul>
+<p>要特别提一下 <code>didFinishLaunchNotification</code>，是因为大家在埋点的时候通常会忽略还有这个通知的存在，导致把这部分时间算到 UI 渲染里。</p>
+<h3 id="First-Frame-Render"><a href="#First-Frame-Render" class="headerlink" title="First Frame Render"></a>First Frame Render</h3><p>一般会用 Root Controller 的 viewDidApper 作为渲染的终点，但其实这时候首帧已经渲染完成一小段时间了，Apple 在 MetricsKit 里对启动终点定义是第一个<code>CA::Transaction::commit()</code>。</p>
+<p>什么是 CATransaction 呢？我们先来看一下渲染的大致流程。</p>
+<img src="/2018/12/04/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96/%E5%B1%8F%E5%B9%95%E6%89%AB%E6%8F%8F%E6%B5%81%E7%A8%8B.png" class title="屏幕扫描流程">
+
+<p>回到过去的 CRT 显示器时期，CRT 的电子枪按照上面方式，从上到下一行行扫描，扫描完成后显示器就呈现一帧画面，随后电子枪回到初始位置继续下一次扫描。为了把显示器的显示过程和系统的视频控制器进行同步，显示器（或者其他硬件）会用硬件时钟产生一系列的定时信号。当电子枪换到新的一行，准备进行扫描时，显示器会发出一个水平同步信号（horizonal synchronization），简称 HSync；而当一帧画面绘制完成后，电子枪回复到原位，准备画下一帧前，显示器会发出一个垂直同步信号（vertical synchronization），简称 VSync。显示器通常以固定频率进行刷新，这个刷新率就是 VSync 信号产生的频率。尽管现在的设备大都是液晶显示屏了，但原理仍然没有变。</p>
+<p>了解了显示器的显示原理之后，我们来看下渲染的大致流程。通常来说，渲染是由计算机系统中 CPU、GPU、显示器按下图方式共同协同完成的。</p>
+<img src="/2018/12/04/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96/iOS%E6%B8%B2%E6%9F%93%E7%9A%84%E5%A4%A7%E8%87%B4%E6%B5%81%E7%A8%8B.png" class title="iOS渲染的大致流程">
+
+<p>1、首先，在VSync 信号到来后，系统图形服务会通过 CADisplayLink 等机制通知 App，App 主线程开始在 CPU 中计算显示内容，比如视图的创建、布局计算、图片解码、文本绘制等。</p>
+<p>2、app 本身并不负责渲染，渲染是在一个单独的进程 RenderServer 做的。在完成对显示内容的计算之后，app通过 IPC 将渲染任务及相关数据进行打包并发送至 Render Server。</p>
+<p>3、Render Server 主要执行 Open GL、Core Graphics 等相关程序处理完数据后再传递至 GPU。</p>
+<p>4、GPU 进行变换、合成、渲染，渲染完成后将渲染结果放入帧缓冲区。</p>
+<p>5、视频控制器会按照 VSync 信号逐行读取帧缓冲区的数据，经过可能的数模转换传递给显示器显示。</p>
+<p>如果上述步骤串联执行，它们执行所消耗的时间将远远超过 16.67 ms。为了满足对屏幕的 60 FPS 刷新率的支持，需要将这些步骤进行分解，通过流水线的方式并行执行，如下图所示。</p>
+<img src="/2018/12/04/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96/iOS%E6%B8%B2%E6%9F%93%E6%B5%81%E6%B0%B4%E7%BA%BF.png" class title="iOS渲染流水线">
+
+<p>整个流水线一共有下面几个步骤：</p>
+<p><strong>Handle Events</strong>：这个过程中会先处理点击事件，这个过程中有可能会需要改变页面的布局和界面层次。</p>
+<p><strong>Commit Transaction</strong>：此时 app 会通过 CPU 处理显示内容的前置计算，比如视图的创建、布局计算、图片解码、文本绘制等任务。之后将计算好的图层进行打包发给 <code>Render Server</code>。</p>
+<p><strong>Decode</strong>：打包好的图层被传输到 <code>Render Server</code> 之后，首先会进行解码。注意完成解码之后需要等待下一个 RunLoop 才会执行下一步 <code>Draw Calls</code>。</p>
+<p><strong>Draw Calls</strong>：解码完成后，Core Animation 会调用下层渲染框架（比如 OpenGL 或者 Metal）的方法进行绘制，进而调用到 GPU。</p>
+<p><strong>Render</strong>：这一阶段主要由 GPU 进行渲染。</p>
+<p><strong>Display</strong>：显示阶段，需要等 <code>render</code> 结束的下一个 RunLoop 触发显示。</p>
+<h4 id="Commit-Transaction"><a href="#Commit-Transaction" class="headerlink" title="Commit Transaction"></a>Commit Transaction</h4><p>一般开发当中能影响到的就是 Handle Events 和 Commit Transaction 这两个阶段，这也是开发者接触最多的部分。Handle Events 就是处理触摸事件，而 Commit Transaction 这部分中主要进行的是：Layout、Display、Prepare、Commit 等四个具体的操作。</p>
+<p><strong>Layout：构建视图</strong></p>
+<p>这个阶段主要处理视图的构建和布局，具体步骤包括：</p>
+<ol>
+<li>调用重载的 <code>layoutSubviews</code> 方法</li>
+<li>创建视图，并通过 <code>addSubview</code> 方法添加子视图</li>
+<li>计算视图布局，即所有的 Layout Constraint</li>
+</ol>
+<p><strong>Display：绘制视图</strong></p>
+<p>这个阶段主要是交给 Core Graphics 进行视图的绘制，得到三角形、线段、顶点等数据，这部分信息被叫做图元（primitives）：</p>
+<ol>
+<li>根据上一阶段 Layout 的结果创建得到图元信息。</li>
+<li>如果重写了 <code>drawRect:</code> 方法，那么会调用重载的 <code>drawRect:</code> 方法，在 <code>drawRect:</code> 方法中手动绘制得到 bitmap 数据，从而自定义视图的绘制。</li>
+</ol>
+<p>注意正常情况下 Display 阶段只会得到图元 primitives 信息，而位图 bitmap 是在 GPU 中根据图元信息绘制得到的。但是如果重写了 <code>drawRect:</code> 方法，这个方法会直接调用 Core Graphics 绘制方法得到 bitmap 数据，同时系统会额外申请一块内存，用于暂存绘制好的 bitmap。</p>
+<p>由于重写了  <code>drawRect:</code> 方法，导致绘制过程从 GPU 转移到了 CPU，这就导致了一定的效率损失。与此同时，这个过程会额外使用 CPU 和内存，因此需要高效绘制，否则容易造成 CPU 卡顿或者内存爆炸。</p>
+<p><strong>Prepare：Core Animation 额外的工作</strong></p>
+<p>这一步主要是：图片解码和转换</p>
+<p><strong>Commit：打包并发送</strong></p>
+<p>这一步主要是：图层打包并发送到 Render Server。</p>
+<h3 id="启动pipeline"><a href="#启动pipeline" class="headerlink" title="启动pipeline"></a>启动pipeline</h3><p>详细回顾下整个启动过程，以及各个阶段耗时的影响因素：</p>
+<img src="/2018/12/04/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96/app%E5%90%AF%E5%8A%A8%E6%B5%81%E7%A8%8B.png" class title="app启动流程">
+
+<p>1、用户点击图标之后，会发送一个系统调用 execve 到内核，内核创建进程；</p>
+<p>2、接着会把主二进制 mmap 进来，读取 load command 中的<code>LC_LOAD_DYLINKER</code>，找到 dyld 的的路径，本阶段影响启动速度的因素主要是主二进制大小，可以通过下线代码来优化；</p>
+<p>3、然后 mmap dyld 到虚拟内存，找到 dyld 的入口函数<code>_dyld_start</code>，把 PC 寄存器设置成<code>_dyld_start</code>，接下来启动流程交给了 dyld。</p>
+<p>4、重启手机/更新/下载 App 的第一次启动，会创建启动闭包，并存储在沙盒的 tmp/com.apple.dyld 目录。闭包包含的内容有：</p>
+<ul>
+<li>dependends，依赖动态库列表</li>
+<li>fixup：bind &amp; rebase 的地址</li>
+<li>initializer-order：初始化调用顺序</li>
+<li>optimizeObjc: Objective C 的元数据</li>
+<li>其他：main entry, uuid…</li>
+</ul>
+<p>本阶段影响启动速度的因素主要有：依赖的动态库数量、需要修正（fix-up）的指针数量和Objective-C类的数量等，可以通过减少动态库数量、减少指针数量和下线代码的方式进行优化。</p>
+<p>5、有了闭包之后，就可以用闭包启动 App 了。这时候很多动态库还没有加载进来，会首先对这些动态库 mmap 加载到虚拟内存里，可以通过减少动态库数量来优化启动速度；</p>
+<p>6、接着会对每个 Mach-O 做 fixup，包括 Rebase 和 Bind；</p>
+<ul>
+<li><p><strong>Rebase：修复内部指针</strong>。这是因为引入用了ASLR后， Mach-O 在 mmap 到虚拟内存的时候，起始地址会有一个随机的偏移量 slide，需要把内部的指针指向加上这个 slide。</p>
+</li>
+<li><p><strong>Bind：修复外部指针</strong>。这个比较好理解，因为像 printf 等外部函数，只有运行时才知道它的地址是什么，bind 就是把指针指向第三步中找到的函数地址。</p>
+<p>Rebase/Binding阶段时间主要耗费在Page In 和计算上，可以通过下线代码、二进制重排和减少指针数量来减少Page In的次数和计算量。对于单次Page In，因为App Store 会对上传的 App 的 TEXT 段加密，在发生 Page In 的时候会解密，解密的过程是很耗时的，所以可以通过 <code>rename_section</code> 重命名，把 TEXT 段中的内容移动到其它段来优化（这个优化方式在 iOS 13 下有效，因为 <strong>iOS 13 优化了解密流程，Page In 的时候不需要解密了</strong>，这是 iOS 13 启动速度变快的原因之一。）。</p>
+</li>
+</ul>
+<p>7、Bind &amp; Rebase 之后，首先会执行 LibSystem 的 Initializer，做一些最基本的初始化：</p>
+<ul>
+<li><p>初始化 libdispatch</p>
+</li>
+<li><p>初始化 objc runtime，注册 sel，加载 category</p>
+<p>这里没有初始化 objc 的类方法等信息，是因为启动闭包的缓存数据已经包含了 optimizeObjc。</p>
+<p>本阶段主要可以通过减少<code>Class</code>、<code>selector</code> 和 <code>category</code> 这些元数据的数量来进行优化，即下线代码。</p>
+</li>
+</ul>
+<p>8、接下来会进行 main 函数之前的一些初始化，主要包括+load 和 static initializer。想要查看代码里有哪些 load 和 static initializer，可以在 Build Settings 里可以配置 write linkmap，这样在生成的 linkmap 文件里就可以找到有哪些文件里包含 load 或者 static initializer：</p>
+<ul>
+<li><code>__mod_init_func</code>，static initializer</li>
+<li><code>__objc_nlclslist</code>，实现+load 的类</li>
+<li><code>__objc_nlcatlist</code>，实现+load 的 Category</li>
+</ul>
+<p>不是所有的 static 变量都会产生static initializer，对于在编译期间就能确定的变量是会直接 inline。会导致静态初始化的代码有：</p>
+<ul>
+<li><p><code>__attribute__((constructor))</code></p>
+</li>
+<li><p><code>static class object</code></p>
+</li>
+<li><p><code>static object in global namespace</code></p>
+<p>静态初始化和 +load 方法除了方法本身的耗时，还会引起大量 Page In，可以通过+load 迁移和静态初始化迁移的方式来进行优化。</p>
+</li>
+</ul>
+<p>9、接着，dyld 会把启动流程交给 App，开始执行 main 函数，main 函数调用了UIApplicationMain 函数来初始化 UIKit。UIKit 主要会做两个大的初始化：</p>
+<ul>
+<li>初始化 UIApplication</li>
+<li>启动主线程的 Runloop</li>
+</ul>
+<p>10、UIKit 初始化之后，基于 Runloop 的 Source0 的 App LifeCycle 方法就被触发了。在这些会调里去做一些业务上的初始化：</p>
+<ul>
+<li><p><code>willFinishLaunch</code></p>
+</li>
+<li><p><code>didFinishLaunch</code></p>
+</li>
+<li><p><code>didFinishLaunchNotification</code></p>
+<p>在生命周期回调里主要执行的是App自身的代码，主要可以通过Xcode里的<strong>Time Profiler</strong>、<strong>System Trace</strong>、<strong>os_signpost</strong>、<strong>Static Initializer</strong>、<strong>App Launch</strong>等来检测并发现耗时部分，并针对性优化。主要优化的方向有：使用启动器来管理任务的顺序和线程、下线或者联系提供方优化耗时的三方SDK、优化高频次方法、线程阻塞、线程数量等。</p>
+</li>
+</ul>
+<p>11、Layout，这个阶段主要处理视图的构建和布局。在<code>didFinishLaunch</code>方法中我们会初始化keyWindow 并设置 rootViewController。当第一次访问rootViewController的view时会调用view的get方法，进而调用loadView来创建UIViewController的view。view创建完毕加载到内存后会调用viewDidLoad方法，在viewDidLoad方法中进行页面布局，接着调用Layoutsubviews；</p>
+<p>12、Display，这个阶段主要是交给 Core Graphics 进行视图的绘制，得到三角形、线段、顶点等图元数据。如果重写了 <code>drawRect:</code> 方法，那么会调用重载的 <code>drawRect:</code> 方法；</p>
+<p>13、prepare，这个阶段主要是图片解码和转换；</p>
+<p>14、commit，这个阶段主要是打包 Render Tree 通过 XPC 的方式发给 Render Server。这也是是Apple 在 MetricsKit 里对启动终点的定义，即第一个CA::Transaction::commit()。首帧渲染是基于 Runloop Block 的，可以基于Runloop来精准统计启动时间。11、12、13、14 四步统称为Commit Transaction。</p>
+<p>15、随后，请求网络并更新数据，至此整个启动流程结束。</p>
+<h3 id="优化"><a href="#优化" class="headerlink" title="优化"></a>优化</h3><h4 id="动态库"><a href="#动态库" class="headerlink" title="动态库"></a>动态库</h4><p>减少动态库数量可以加减少启动闭包创建和加载动态库阶段的耗时，官方建议动态库数量小于 6 个。</p>
+<p><strong>推荐的方式是动态库转静态库</strong>，因为还能额外减少包大小。另外一个方式是合并动态库，但实践下来可操作性不大。最后一点要提的是，<strong>不要链接那些用不到的库</strong>（包括系统），因为会拖慢创建闭包的速度。</p>
+<h4 id="下线代码"><a href="#下线代码" class="headerlink" title="下线代码"></a>下线代码</h4><p>下线代码首先要筛选出用不到的代码，一般的无用代码筛查方式可以分为动态和静态两种方式。静态的方式主要是通过代码扫描、参与编译构建过程或者分析最终产物来确认哪些代码没有被用到。而动态的方式主要是靠插桩或者运行时信息来获取哪些代码没有执行。由于 Objc 强大的动态特性，我们在样本量足够大的场景使用动态方式会比静态方式准确率高很多。</p>
+<p><strong>静态筛查筛查方案：</strong></p>
+<p>最简单的静态扫描是基于 AppCode，但是项目大了之后 AppCode 的索引速度非常慢。另一种方式是基于 Mach-O 的的一种静态扫描方式，在 otool dump 最终产物中的 __objc_class_list &amp; __objc_class_refs 做差集找到未使用的 Objc 类。</p>
+<p>如果代码采用 C 、C++ 等静态语言编写代码时，编译期已经确定了基本的代码逻辑，编译器会帮助我们将没有使用到的代码标记为 Dead code 最终不会打包到安装包中。但 Objc 是典型的动态语言，很多逻辑都是在运行时决议的，我们通过静态扫描的方式扫描出来的误差会比较大。</p>
+<p>Objc 动态特性引入的的主要的问题包括：</p>
+<ul>
+<li><p>实际用到了但被扫描成无用类：</p>
+<ul>
+<li>一个类确实没有被其他地方使用， 但是本身逻辑依赖 <code>+load</code>、<code>+initialize</code>、<code>__attribute__((constructor))</code>在启动时调用</li>
+<li>通过 string 动态调用</li>
+<li>抽象基类、基类等会被认为是无用类</li>
+<li>通过运行时动态生成的代码引用了某个类</li>
+<li>一个类专门作为通知处理类</li>
+<li>MTLModel 等，通过运行时消息机制 assign value 的无法通过 classref 统计</li>
+<li>典型的 DI 场景。如果一个类声明遵循了某个 Protocol，外部使用的时候使用了这个 Protocol 进行方法调用</li>
+</ul>
+</li>
+<li><p>实际没用到但被认为有用到：</p>
+<ul>
+<li>某个对象被另外一个对象引用，但是另外一个对象本身未被使用到。这时候会遗漏掉这个对象所属 Class 的检查</li>
+</ul>
+</li>
+</ul>
+<p><strong>动态筛查方案：</strong></p>
+<ul>
+<li>基于插桩的行级别代码覆盖率</li>
+</ul>
+<p>基于 GCOV 或者 LLVM Profile 二进制的插桩方案可以实现在运行时收集插桩数据来指导无用代码的删除。但插桩方案局限性也显而易见，插桩会劣化二进制本身的大小和性能，同时原生的插桩方案是无法过审上线。数据收集只能局限于线下。</p>
+<ul>
+<li>基于 Runtime 的轻量级运行时「类覆盖率」方案</li>
+</ul>
+<p>Objc 的类首次调用类初始化时，<code>+initialize</code>被执行，系统会自动标记已被调用，在 metaClass 中 data 的 flags 字段第 29 位就存着这个这个状态。可以使用 <code>flags &amp; RW_INITIALIZED</code>获取。iOS14 之后这个值的获取方式有变化。具体参考：<a href="https://link.juejin.cn/?target=https%3A%2F%2Fdeveloper.apple.com%2Fvideos%2Fplay%2Fwwdc2020%2F10163%2F">WWDC：Advancements in the Objective-C runtime</a></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">#define RW_INITIALIZED (1&lt;&lt;29)</span><br><span class="line">bool isInitialized() &#123;</span><br><span class="line">   return getMeta()-&gt;data()-&gt;flags &amp; RW_INITIALIZED;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>上报的数据可以让我们了解我们线上真实的 Class 使用情况，对得到的数据不仅可以用来删减未使用的代码。还可以分辨使用率低的场景，如果是低频且必须的场景可以考虑使用跨端技术这种对原生包大小影响比较小的方案实现。而如果这些场景是某个渗透率很低的需求可以考虑直接下线为其他需求做置换。</p>
+<h4 id="load-迁移和静态初始化迁移"><a href="#load-迁移和静态初始化迁移" class="headerlink" title="+load 迁移和静态初始化迁移"></a>+load 迁移和静态初始化迁移</h4><p>每当一个类或类别被添加到Objective-C runtime都会调用+load方法，可以通过实现此方法以在加载时执行类特定的行为。</p>
+<p>初始化顺序如下:</p>
+<ol>
+<li>主二进制中链接的所有framework中的initializers</li>
+<li>主二进制中所有的<code>+load</code>方法</li>
+<li>主二进制中所有的 C++ static initializers 和C/C++ <code>__attribute__(constructor)</code> 方法</li>
+<li>链接主二进制的所有framework中的initializers</li>
+</ol>
+<p>如果类或者分类实现了+load方法，那么当该类或者分类被动态加载或者静态链接的时候，+load方法就会被调用，与这个类是否被用到无关，且+load方法只会被调用一次。调用顺序为父类-&gt;子类-&gt;分类，当子类未实现+load方法时，不会显示调用父类+load方法，当有多个Category都实现了load方法，这几个load方法都会执行，但执行顺序不确定，其执行顺序与Category在Compile Sources中出现的顺序一致。</p>
+<p>+load 和静态初始化除了方法本身的耗时，还会引起大量 Page In，另外 +load 的存在对 App 稳定性也是冲击，因为 Crash 了捕获不到。所以如果可以应尽量减少+load和静态初始化。</p>
+<p>对+load，迁移思路有：</p>
+<p>1、使用+initialize替代</p>
+<p>2、将一些绑定相关代码，利用 clang attribute，这个过程可以迁移到编译期</p>
+<p>针对静态初始化，典型的迁移思路有：</p>
+<p>1、将<code>std:string</code> 转换成 <code>const char *</code>  </p>
+<p>2、静态变量移动到方法内部，因为方法内部的静态变量会在方法第一次调用的时候初始化</p>
+<h4 id="main函数之后-1"><a href="#main函数之后-1" class="headerlink" title="main函数之后"></a>main函数之后</h4><p>main函数之后可以通过Xcode里的<strong>Time Profiler</strong>、<strong>System Trace</strong>、<strong>os_signpost</strong>、<strong>Static Initializer</strong>、<strong>App Launch</strong>等来检测并发现耗时部分，并针对性优化。主要优化的方向有：</p>
+<h5 id="使用启动器"><a href="#使用启动器" class="headerlink" title="使用启动器"></a>使用启动器</h5><p>为什么需要启动器呢？</p>
+<ul>
+<li>全局并发调度：比如 AB 任务并发，C 任务等待 AB 执行完毕，框架调度还能减少线程数量和控制优先级</li>
+<li>延迟执行：提供一些时机，业务可以做预热性质的初始化</li>
+<li>精细化监控：所有任务的耗时都能监控到，线下自动化监控也能受益</li>
+<li>管控：启动任务的顺序调整，新增/删除都能通过 Code Review 管控</li>
+</ul>
+<h5 id="三方-SDK"><a href="#三方-SDK" class="headerlink" title="三方 SDK"></a>三方 SDK</h5><p>针对测量发现的启动耗时很高的三方 SDK ，可以考虑下线。如果不能下线，应确认是否可以延迟，比如分享和登录的 SDK都是可以延迟。此外，在接入 SDK 之前可以先评估下对启动性能的影响，如果影响较大是可以反馈给 SDK 的提供方去修改的，尤其是付费的 SDK，他们其实很愿意配合做一些修改。</p>
+<h5 id="高频次方法"><a href="#高频次方法" class="headerlink" title="高频次方法"></a>高频次方法</h5><p>有些方法的单个耗时不高，但是在启动路径上会调用很多次的，这种累计起来的耗时也不低。这种问题在 TimeProfiler 里时间段选长一些往往就能发现，发现之后可以针对性进行优化。</p>
+<h5 id="锁"><a href="#锁" class="headerlink" title="锁"></a>锁</h5><p>锁之所以会影响启动时间，是因为有时候子线程先持有了锁，<strong>主线程就需要等待子线程锁释放。还要警惕系统会有很多隐藏的全局锁</strong>，比如 dyld 和 Runtime。可以借助System Trace来及时发现。</p>
+<h5 id="线程数量"><a href="#线程数量" class="headerlink" title="线程数量"></a>线程数量</h5><p>线程的数量和优先级都会影响启动时间。可以通过设置 QoS 来配置优先级，两个高优的 QoS 是 User Interactive/Initiated，启动的时候，<strong>需要主线程等待的子线程任务都应该设置成高优的</strong>。</p>
+<p><strong>高优的线程数量不应该多于 CPU 核心数量</strong>，可以通过 System Trace 的 System Load 来分析这种情况。</p>
+<figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">/GCD</span><br><span class="line">dispatch_queue_attr_t attr = dispatch_queue_attr_make_with_qos_class(DISPATCH_QUEUE_SERIAL, QOS_CLASS_UTILITY, <span class="number">-1</span>);</span><br><span class="line"><span class="built_in">dispatch_queue_t</span> queue = dispatch_queue_create(<span class="string">"com.custom.utility.queue"</span>, attr);</span><br><span class="line"><span class="comment">//NSOperationQueue</span></span><br><span class="line">operationQueue.qualityOfService = <span class="built_in">NSQualityOfServiceUtility</span></span><br><span class="line">复制代码</span><br></pre></td></tr></table></figure>
+
+<p>线程的数量也会影响启动时间，但 iOS 中是不太好全局管控线程的，比如二/三方库要起后台线程就不太好管控，不过业务上的线程可以通过启动任务管控。</p>
+<blockquote>
+<p>线程多没关系，只要同时<strong>并发执行的不多就好</strong>，大家可以利用 System Trace 来看看上下文切换耗时，确认线程数量是否是启动的瓶颈。</p>
+</blockquote>
+<h5 id="图片"><a href="#图片" class="headerlink" title="图片"></a>图片</h5><p>启动难免会用到很多图，有没有办法优化图片加载的耗时呢？</p>
+<p><strong>用 Asset 管理图片而不是直接放在 bundle 里</strong>。Asset 会在编译期做优化，让加载的时候更快，此外在 Asset 中加载图片是要比 Bundle 快的，因为 UIImage imageNamed 要遍历 Bundle 才能找到图。<strong>加载 Asset 中图的耗时主要在在第一次张图，因为要建立索引</strong>，可以通过把启动的图放到一个小的 Asset 里来减少这部分耗时。</p>
+<p>每次创建 UIImage 都需要 IO，在首帧渲染的时候会解码。所以可以通过提前子线程预加载（创建 UIImage）来优化这部分耗时。</p>
+<p>如下图，启动只有到了比较晚的阶段“RootWindow 创建”和“首帧渲染”才会用到图片，<strong>所以可以在启动的早期开预加载的子线程启动任务</strong>。</p>
+<img src="/2018/12/04/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96/%E9%A2%84%E5%8A%A0%E8%BD%BD%E5%AD%90%E7%BA%BF%E7%A8%8B%E5%90%AF%E5%8A%A8%E4%BB%BB%E5%8A%A1.png" class title="预加载子线程启动任务">
+
+<h3 id="Fishhook"><a href="#Fishhook" class="headerlink" title="Fishhook"></a>Fishhook</h3><p>fishhook 是一个用来 hook C 函数的库，但这个库的第一次调用耗时很高，最好<strong>不要带到线上</strong>。Fishhook 是按照下图的方式遍历 Mach-O 的多个段来找函数指针和函数符号名的映射关系，带来的<strong>副作用就是要大量的 Page In，对于大型 App 来说在 iPhone X 冷启耗时 200ms+</strong>。</p>
+<img src="/2018/12/04/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96/Fishhook%E4%BF%AE%E6%94%B9%E6%98%A0%E5%B0%84%E5%85%B3%E7%B3%BB%E8%BF%87%E7%A8%8B.png" class title="Fishhook修改映射关系过程">
+
+<p>如果不得不用 fishhook，<strong>请在子线程调用，且不要在在<code>_dyld_register_func_for_add_image</code>直接调用 fishhook</strong>。因为这个方法会持有 dyld 的一个全局互斥锁，主线程在启动的时候系统库经常会调用 <code>dlsym</code>和 <code>dlopen</code>，其内部也需要这个锁，造成上文提到的子线程阻塞主线程。</p>
+<h5 id="首帧渲染"><a href="#首帧渲染" class="headerlink" title="首帧渲染"></a>首帧渲染</h5><p>不同 App 的业务形态不同，首帧渲染优化方式也相差的比较多，几个常见的优化点：</p>
+<ul>
+<li>LottieView：lottie 是 airbnb 用来做 AE 动画的库，但是加载动画的 json 和读图是比较慢的，可以<strong>先显示一帧静态图，启动结束后再开始动画，或者子线程预先把图和 json 设置到 lottie cache 里</strong></li>
+<li>Lazy 初始化 View：<strong>不要先创建设置成 hidden，这是很不好的习惯</strong></li>
+<li>AutoLayout：AutoLayout 的耗时也是比较高的，但这块往往历史包袱比较重，可以<strong>评估 ROI 看看要不要改成 frame</strong></li>
+<li>Loading 动画：App 一般都会有个 loading 动画表示加载中，这个<strong>动画最好不要用 gif</strong>，线下测量一个 60 帧的 gif 加载耗时接近 70ms</li>
+</ul>
+<h5 id="其他-Tips"><a href="#其他-Tips" class="headerlink" title="其他 Tips"></a>其他 Tips</h5><p>启动优化里有一些需要注意的 Tips：</p>
+<p><strong>不要删除<code>tmp/com.apple.dyld</code>目录</strong>，因为这个目录下存储着 iOS 13+ 的启动闭包，如果删除了下次启动会重新创建，创建闭包的过程是很慢的。接下来是 IO 优化，常见的方式是用 <code>mmap</code>让 IO 更快一些，也可以在启动的早期预加载数据。</p>
+<p>还有一些 iPhone 6 上耗时会明显增加的点：</p>
+<ul>
+<li>WebView User Agent：第一次在启动时获取，之后缓存，每次启动结束后刷新</li>
+<li>KeyChain：可以延迟获取或者预加载</li>
+<li>VolumeView：建议直接删掉</li>
+</ul>
+<p><strong>iPhone 6 是个分水岭，性能会断崖式下跌，可以在 iPhone 6 上下掉部分用户交互来换取核心体验（记得 AB 验证）</strong>。</p>
+<h4 id="Page-In-耗时"><a href="#Page-In-耗时" class="headerlink" title="Page In 耗时"></a>Page In 耗时</h4><p>启动路径上会触发大量 Page In，优化这部分耗时有两个方向：一个是减少Page In数量 – <strong>二进制重排</strong> ，一种是减少单次Page In耗时 – <strong>段重命名</strong>。</p>
+<p><strong>二进制重排</strong></p>
+<p>启动具有局部性特征，即只有少部分函数在启动的时候用到，这些函数在中的分布是零散的，所以 Page In 读入的数据利用率并不高。如果我们可以把启动用到的函数排列到二进制的连续区间，那么就可以减少 Page In 的次数，从而优化启动时间：</p>
+<p>以下图为例，方法 1 和方法 3 是启动的时候用到的，为了执行对应的代码，就需要两次 Page In。假如我们把方法 1 和 3 排列到一起，那么只需要一次 Page In，从而提升启动速度。</p>
+<img src="/2018/12/04/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96/%E4%BA%8C%E8%BF%9B%E5%88%B6%E9%87%8D%E6%8E%92.png" class title="二进制重排">
+
+<p>链接器 ld 有个参数-order_file 支持按照符号的方式排列二进制。</p>
+<p>获取启动时候用到的符号主流有两种方式：</p>
+<ul>
+<li>静态扫描获取 +load 和 C++静态初始化，hook objc_msgSend 获取 Objective C 符号。参考：<a href="https://mp.weixin.qq.com/s/Drmmx5JtjG3UtTFksL6Q8Q" target="_blank" rel="noopener">https://mp.weixin.qq.com/s/Drmmx5JtjG3UtTFksL6Q8Q</a></li>
+<li>LLVM 函数插桩，灰度统计启动路径符号，用大多数用户的符号生成 order_file。参考：<a href="https://juejin.cn/post/6844904130406793224" target="_blank" rel="noopener">https://juejin.cn/post/6844904130406793224</a></li>
+</ul>
+<p><strong>段重命名</strong></p>
+<p>App Store 会对上传的 App 的 TEXT 段加密，在发生 Page In 的时候会解密，解密的过程是很耗时的。既然会 TEXT 段加密，那么直接的思路就是把 TEXT 段中的内容移动到其它段，ld 也有个参数 <code>rename_section</code>支持重命名：</p>
+<img src="/2018/12/04/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96/%E6%AE%B5%E9%87%8D%E5%91%BD%E5%90%8D.png" class title="段重命名">
+
+<p>抖音重命名方案：</p>
+<figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">"-Wl,-rename_section,__TEXT,__cstring,__RODATA,__cstring"</span>,</span><br><span class="line"><span class="string">"-Wl,-rename_section,__TEXT,__const,__RODATA,__const"</span>,</span><br><span class="line"><span class="string">"-Wl,-rename_section,__TEXT,__gcc_except_tab,__RODATA,__gcc_except_tab"</span>,</span><br><span class="line"><span class="string">"-Wl,-rename_section,__TEXT,__objc_methname,__RODATA,__objc_methname"</span>,</span><br><span class="line"><span class="string">"-Wl,-rename_section,__TEXT,__objc_classname,__RODATA,__objc_classname"</span>,</span><br><span class="line"><span class="string">"-Wl,-rename_section,__TEXT,__objc_methtype,__RODATA,__objc_methtype"</span></span><br><span class="line">复制代码</span><br></pre></td></tr></table></figure>
+
+<p>这个优化方式在 iOS 13 下有效，因为 <strong>iOS 13 优化了解密流程，Page In 的时候不需要解密了</strong>，这是 iOS 13 启动速度变快的原因之一。</p>
+<p>详情请参考：<a href="https://juejin.cn/post/6911121493573402638" target="_blank" rel="noopener">https://juejin.cn/post/6911121493573402638</a></p>
+<p>参考：</p>
+<p><a href="https://mp.weixin.qq.com/s/3-Sbqe9gxdV6eI1f435BDg" target="_blank" rel="noopener">抖音品质建设 - iOS启动优化《原理篇》</a></p>
+<p><a href="https://juejin.cn/post/6844904130406793224" target="_blank" rel="noopener">iOS 优化篇 - 启动优化之Clang插桩实现二进制重排</a></p>
+<p><a href="https://www.bbcyw.com/p-13197182.html" target="_blank" rel="noopener">程序的链接和装入及linux下动态链接的实现</a></p>
+<p><a href="https://juejin.cn/post/6844904130406793224" target="_blank" rel="noopener">iOS 优化篇 - 启动优化之Clang插桩实现二进制重排</a></p>
+<p><a href="http://www.cocoachina.com/articles/898639" target="_blank" rel="noopener">iOS 渲染原理解析</a></p>
+<p><a href="https://juejin.cn/post/6916317500992913421" target="_blank" rel="noopener">抖音品质建设 - iOS 安装包大小优化实践篇</a></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2018/12/04/%E3%80%8C%E5%88%A8%E6%A0%B9%E9%97%AE%E5%BA%95%E3%80%8D%E4%B9%8B%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/" rel="prev" title="「刨根问底」之内存管理">
+      <i class="fa fa-chevron-left"></i> 「刨根问底」之内存管理
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2018/12/04/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%8C%85%E4%BD%93%E5%A4%A7%E5%B0%8F/" rel="next" title="「性能优化」之包体大小">
+      「性能优化」之包体大小 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#IPA-构建"><span class="nav-number">1.</span> <span class="nav-text">IPA 构建</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#编译和链接技术发展史"><span class="nav-number">1.1.</span> <span class="nav-text">编译和链接技术发展史</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#pipeline"><span class="nav-number">1.2.</span> <span class="nav-text">pipeline</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#编译"><span class="nav-number">1.2.1.</span> <span class="nav-text">编译</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#链接"><span class="nav-number">1.2.2.</span> <span class="nav-text">链接</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#裁剪"><span class="nav-number">1.2.3.</span> <span class="nav-text">裁剪</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#签名-amp-上传"><span class="nav-number">1.2.4.</span> <span class="nav-text">签名 &amp; 上传</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#启动流程"><span class="nav-number">2.</span> <span class="nav-text">启动流程</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#概念"><span class="nav-number">2.1.</span> <span class="nav-text">概念</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#一、静态链接、静态装入"><span class="nav-number">2.1.1.</span> <span class="nav-text">一、静态链接、静态装入</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#二、静态链接、动态装入"><span class="nav-number">2.1.2.</span> <span class="nav-text">二、静态链接、动态装入</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#虚拟内存工作原理"><span class="nav-number">2.1.2.1.</span> <span class="nav-text">虚拟内存工作原理</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#虚拟内存解决效率问题"><span class="nav-number">2.1.2.2.</span> <span class="nav-text">虚拟内存解决效率问题</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#安全问题："><span class="nav-number">2.1.2.3.</span> <span class="nav-text">安全问题：</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#三、动态链接、动态装入"><span class="nav-number">2.1.3.</span> <span class="nav-text">三、动态链接、动态装入</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#dyld"><span class="nav-number">2.2.</span> <span class="nav-text">dyld</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#dyld发展简史"><span class="nav-number">2.2.1.</span> <span class="nav-text">dyld发展简史</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#dyld-1-0-1996-2004"><span class="nav-number">2.2.1.1.</span> <span class="nav-text">dyld 1.0 (1996-2004)</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#dyld-2-2004-2007"><span class="nav-number">2.2.1.2.</span> <span class="nav-text">dyld 2 (2004-2007)</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#dyld-2-x-2007-2017"><span class="nav-number">2.2.1.3.</span> <span class="nav-text">dyld 2.x (2007-2017)</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#dyld-3-2017-至今"><span class="nav-number">2.2.1.4.</span> <span class="nav-text">dyld 3 (2017-至今)</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#main函数之后"><span class="nav-number">2.3.</span> <span class="nav-text">main函数之后</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Runloop"><span class="nav-number">2.4.</span> <span class="nav-text">Runloop</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#AppLifeCycle"><span class="nav-number">2.5.</span> <span class="nav-text">AppLifeCycle</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#First-Frame-Render"><span class="nav-number">2.6.</span> <span class="nav-text">First Frame Render</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Commit-Transaction"><span class="nav-number">2.6.1.</span> <span class="nav-text">Commit Transaction</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#启动pipeline"><span class="nav-number">2.7.</span> <span class="nav-text">启动pipeline</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#优化"><span class="nav-number">2.8.</span> <span class="nav-text">优化</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#动态库"><span class="nav-number">2.8.1.</span> <span class="nav-text">动态库</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#下线代码"><span class="nav-number">2.8.2.</span> <span class="nav-text">下线代码</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#load-迁移和静态初始化迁移"><span class="nav-number">2.8.3.</span> <span class="nav-text">+load 迁移和静态初始化迁移</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#main函数之后-1"><span class="nav-number">2.8.4.</span> <span class="nav-text">main函数之后</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#使用启动器"><span class="nav-number">2.8.4.1.</span> <span class="nav-text">使用启动器</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#三方-SDK"><span class="nav-number">2.8.4.2.</span> <span class="nav-text">三方 SDK</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#高频次方法"><span class="nav-number">2.8.4.3.</span> <span class="nav-text">高频次方法</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#锁"><span class="nav-number">2.8.4.4.</span> <span class="nav-text">锁</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#线程数量"><span class="nav-number">2.8.4.5.</span> <span class="nav-text">线程数量</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#图片"><span class="nav-number">2.8.4.6.</span> <span class="nav-text">图片</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Fishhook"><span class="nav-number">2.9.</span> <span class="nav-text">Fishhook</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#首帧渲染"><span class="nav-number">2.9.0.1.</span> <span class="nav-text">首帧渲染</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#其他-Tips"><span class="nav-number">2.9.0.2.</span> <span class="nav-text">其他 Tips</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Page-In-耗时"><span class="nav-number">2.9.1.</span> <span class="nav-text">Page In 耗时</span></a></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">和僧</p>
+  <div class="site-description" itemprop="description">技术博客</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">9</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">和僧</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
