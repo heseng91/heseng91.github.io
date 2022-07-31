@@ -23,26 +23,26 @@
   <meta name="description" content="RunLoop 是 iOS 和 OSX 开发中非常基础的一个概念，与自动释放池、延迟回调、触摸事件、屏幕刷新等功能的实现密切相关。理解RunLoop可以帮助开发者了解很多技术的实现细节，加深理解，并在实际工作中加以灵活运用以解决特定场景的问题。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="「刨根问底」之RunLoop">
-<meta property="og:url" content="http://heseng91.github.io/2021/12/04/%E3%80%8C%E5%88%A8%E6%A0%B9%E9%97%AE%E5%BA%95%E3%80%8D%E4%B9%8BRunloop/index.html">
+<meta property="og:url" content="http://heseng91.github.io/2018/12/04/%E3%80%8C%E5%88%A8%E6%A0%B9%E9%97%AE%E5%BA%95%E3%80%8D%E4%B9%8BRunloop/index.html">
 <meta property="og:site_name" content="和僧">
 <meta property="og:description" content="RunLoop 是 iOS 和 OSX 开发中非常基础的一个概念，与自动释放池、延迟回调、触摸事件、屏幕刷新等功能的实现密切相关。理解RunLoop可以帮助开发者了解很多技术的实现细节，加深理解，并在实际工作中加以灵活运用以解决特定场景的问题。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://heseng91.github.io/2021/12/04/%E3%80%8C%E5%88%A8%E6%A0%B9%E9%97%AE%E5%BA%95%E3%80%8D%E4%B9%8BRunloop/RunLoop_0.png">
-<meta property="og:image" content="http://heseng91.github.io/2021/12/04/%E3%80%8C%E5%88%A8%E6%A0%B9%E9%97%AE%E5%BA%95%E3%80%8D%E4%B9%8BRunloop/RunLoop_1.png">
-<meta property="og:image" content="http://heseng91.github.io/2021/12/04/%E3%80%8C%E5%88%A8%E6%A0%B9%E9%97%AE%E5%BA%95%E3%80%8D%E4%B9%8BRunloop/RunLoop_3.png">
+<meta property="og:image" content="http://heseng91.github.io/2018/12/04/%E3%80%8C%E5%88%A8%E6%A0%B9%E9%97%AE%E5%BA%95%E3%80%8D%E4%B9%8BRunloop/RunLoop_0.png">
+<meta property="og:image" content="http://heseng91.github.io/2018/12/04/%E3%80%8C%E5%88%A8%E6%A0%B9%E9%97%AE%E5%BA%95%E3%80%8D%E4%B9%8BRunloop/RunLoop_1.png">
+<meta property="og:image" content="http://heseng91.github.io/2018/12/04/%E3%80%8C%E5%88%A8%E6%A0%B9%E9%97%AE%E5%BA%95%E3%80%8D%E4%B9%8BRunloop/RunLoop_3.png">
 <meta property="og:image" content="http://heseng91.github.io/Users/ethenfarben/Desktop/Blog/source/_posts/%E3%80%8C%E5%88%A8%E6%A0%B9%E9%97%AE%E5%BA%95%E3%80%8D%E4%B9%8BRunloop/RunLoop_3.png">
-<meta property="og:image" content="http://heseng91.github.io/2021/12/04/%E3%80%8C%E5%88%A8%E6%A0%B9%E9%97%AE%E5%BA%95%E3%80%8D%E4%B9%8BRunloop/RunLoop_4.png">
-<meta property="og:image" content="http://heseng91.github.io/2021/12/04/%E3%80%8C%E5%88%A8%E6%A0%B9%E9%97%AE%E5%BA%95%E3%80%8D%E4%B9%8BRunloop/RunLoop_5.png">
-<meta property="og:image" content="http://heseng91.github.io/2021/12/04/%E3%80%8C%E5%88%A8%E6%A0%B9%E9%97%AE%E5%BA%95%E3%80%8D%E4%B9%8BRunloop/responder_chain.png">
-<meta property="og:image" content="http://heseng91.github.io/2021/12/04/%E3%80%8C%E5%88%A8%E6%A0%B9%E9%97%AE%E5%BA%95%E3%80%8D%E4%B9%8BRunloop/RunLoop_network.png">
-<meta property="article:published_time" content="2021-12-04T08:30:33.000Z">
-<meta property="article:modified_time" content="2022-07-31T18:39:45.595Z">
+<meta property="og:image" content="http://heseng91.github.io/2018/12/04/%E3%80%8C%E5%88%A8%E6%A0%B9%E9%97%AE%E5%BA%95%E3%80%8D%E4%B9%8BRunloop/RunLoop_4.png">
+<meta property="og:image" content="http://heseng91.github.io/2018/12/04/%E3%80%8C%E5%88%A8%E6%A0%B9%E9%97%AE%E5%BA%95%E3%80%8D%E4%B9%8BRunloop/RunLoop_5.png">
+<meta property="og:image" content="http://heseng91.github.io/2018/12/04/%E3%80%8C%E5%88%A8%E6%A0%B9%E9%97%AE%E5%BA%95%E3%80%8D%E4%B9%8BRunloop/responder_chain.png">
+<meta property="og:image" content="http://heseng91.github.io/2018/12/04/%E3%80%8C%E5%88%A8%E6%A0%B9%E9%97%AE%E5%BA%95%E3%80%8D%E4%B9%8BRunloop/RunLoop_network.png">
+<meta property="article:published_time" content="2018-12-04T08:30:33.000Z">
+<meta property="article:modified_time" content="2022-07-31T18:42:50.784Z">
 <meta property="article:author" content="和僧">
 <meta property="article:tag" content="和僧-技术博客，技术博客">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://heseng91.github.io/2021/12/04/%E3%80%8C%E5%88%A8%E6%A0%B9%E9%97%AE%E5%BA%95%E3%80%8D%E4%B9%8BRunloop/RunLoop_0.png">
+<meta name="twitter:image" content="http://heseng91.github.io/2018/12/04/%E3%80%8C%E5%88%A8%E6%A0%B9%E9%97%AE%E5%BA%95%E3%80%8D%E4%B9%8BRunloop/RunLoop_0.png">
 
-<link rel="canonical" href="http://heseng91.github.io/2021/12/04/%E3%80%8C%E5%88%A8%E6%A0%B9%E9%97%AE%E5%BA%95%E3%80%8D%E4%B9%8BRunloop/">
+<link rel="canonical" href="http://heseng91.github.io/2018/12/04/%E3%80%8C%E5%88%A8%E6%A0%B9%E9%97%AE%E5%BA%95%E3%80%8D%E4%B9%8BRunloop/">
 
 
 <script id="page-configurations">
@@ -165,7 +165,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://heseng91.github.io/2021/12/04/%E3%80%8C%E5%88%A8%E6%A0%B9%E9%97%AE%E5%BA%95%E3%80%8D%E4%B9%8BRunloop/">
+    <link itemprop="mainEntityOfPage" href="http://heseng91.github.io/2018/12/04/%E3%80%8C%E5%88%A8%E6%A0%B9%E9%97%AE%E5%BA%95%E3%80%8D%E4%B9%8BRunloop/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -188,14 +188,14 @@
               </span>
               <span class="post-meta-item-text">发表于</span>
 
-              <time title="创建时间：2021-12-04 16:30:33" itemprop="dateCreated datePublished" datetime="2021-12-04T16:30:33+08:00">2021-12-04</time>
+              <time title="创建时间：2018-12-04 16:30:33" itemprop="dateCreated datePublished" datetime="2018-12-04T16:30:33+08:00">2018-12-04</time>
             </span>
               <span class="post-meta-item">
                 <span class="post-meta-item-icon">
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-08-01 02:39:45" itemprop="dateModified" datetime="2022-08-01T02:39:45+08:00">2022-08-01</time>
+                <time title="修改时间：2022-08-01 02:42:50" itemprop="dateModified" datetime="2022-08-01T02:42:50+08:00">2022-08-01</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -252,7 +252,7 @@
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">typedef</span> <span class="title">CF_OPTIONS</span><span class="params">(CFOptionFlags, CFRunLoopActivity)</span> </span>&#123;</span><br><span class="line">    kCFRunLoopEntry         = (<span class="number">1U</span>L &lt;&lt; <span class="number">0</span>), <span class="comment">// 即将进入Loop</span></span><br><span class="line">    kCFRunLoopBeforeTimers  = (<span class="number">1U</span>L &lt;&lt; <span class="number">1</span>), <span class="comment">// 即将处理 Timer</span></span><br><span class="line">    kCFRunLoopBeforeSources = (<span class="number">1U</span>L &lt;&lt; <span class="number">2</span>), <span class="comment">// 即将处理 Source</span></span><br><span class="line">    kCFRunLoopBeforeWaiting = (<span class="number">1U</span>L &lt;&lt; <span class="number">5</span>), <span class="comment">// 即将进入休眠</span></span><br><span class="line">    kCFRunLoopAfterWaiting  = (<span class="number">1U</span>L &lt;&lt; <span class="number">6</span>), <span class="comment">// 刚从休眠中唤醒</span></span><br><span class="line">    kCFRunLoopExit          = (<span class="number">1U</span>L &lt;&lt; <span class="number">7</span>), <span class="comment">// 即将退出Loop</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
 
 <p>这里提到的CFRunLoopModeRef、CFRunLoopSourceRef、CFRunLoopTimerRef 和 CFRunLoopObserverRef 四个类和前面说的 CFRunLoopRef 共同构成了CoreFoundation 里面关于 RunLoop 有5个类。其中 CFRunLoopModeRef 类并没有对外暴露，只是通过 CFRunLoopRef 的接口进行了封装。他们的关系如下:</p>
-<img src="/2021/12/04/%E3%80%8C%E5%88%A8%E6%A0%B9%E9%97%AE%E5%BA%95%E3%80%8D%E4%B9%8BRunloop/RunLoop_0.png" class title="RunLoop类的关系">
+<img src="/2018/12/04/%E3%80%8C%E5%88%A8%E6%A0%B9%E9%97%AE%E5%BA%95%E3%80%8D%E4%B9%8BRunloop/RunLoop_0.png" class title="RunLoop类的关系">
 
 <p>一个 RunLoop 包含若干个 Mode，每个 Mode 又包含若干个 Source/Timer/Observer。每次调用 RunLoop 的主函数时，只能指定其中一个 Mode，这个Mode被称作 CurrentMode。如果需要切换 Mode，只能退出 Loop，再重新指定一个 Mode 进入。这样做主要是为了分隔开不同组的 Source/Timer/Observer，让其互不影响。</p>
 <p>Source/Timer/Observer 被统称为 <strong>mode item</strong>，即 CFRunLoopRef 结构体中的 commonModeItems变量中存放的元素。一个 item 可以被同时加入多个 mode。但一个 item 被重复加入同一个 mode 时是不会有效果的。如果一个 mode 中一个 item 都没有，则 RunLoop 会直接退出，不进入循环。</p>
@@ -286,7 +286,7 @@
 <p>总之：</p>
 <p>如果不想退出runloop可以使用第一种方式启动runloop；<br>使用第二种方式启动runloop，可以通过设置超时时间来退出；<br>使用第三种方式启动runloop，可以通过设置超时时间或者使用CFRunLoopStop方法来退出。</p>
 <h3 id="RunLoop-的内部逻辑"><a href="#RunLoop-的内部逻辑" class="headerlink" title="RunLoop 的内部逻辑"></a>RunLoop 的内部逻辑</h3><p>根据苹果在<a href="https://developer.apple.com/library/mac/documentation/Cocoa/Conceptual/Multithreading/RunLoopManagement/RunLoopManagement.html#//apple_ref/doc/uid/10000057i-CH16-SW23" target="_blank" rel="noopener">文档</a>里的说明，RunLoop 内部的逻辑大致如下:</p>
-<img src="/2021/12/04/%E3%80%8C%E5%88%A8%E6%A0%B9%E9%97%AE%E5%BA%95%E3%80%8D%E4%B9%8BRunloop/RunLoop_1.png" class title="RunLoop的内部逻辑">
+<img src="/2018/12/04/%E3%80%8C%E5%88%A8%E6%A0%B9%E9%97%AE%E5%BA%95%E3%80%8D%E4%B9%8BRunloop/RunLoop_1.png" class title="RunLoop的内部逻辑">
 
 <blockquote>
 <p>第七步按照<a href="https://developer.apple.com/library/archive/documentation/Cocoa/Conceptual/Multithreading/RunLoopManagement/RunLoopManagement.html#//apple_ref/doc/uid/10000057i-CH16-SW23" target="_blank" rel="noopener">官方文档</a>的描述，会有4种情况唤醒RunLoop：<br>An event arrives for a port-based input source.<br>A timer fires.<br>The timeout value set for the run loop expires.<br>The run loop is explicitly woken up.</p>
@@ -296,12 +296,12 @@
 
 <p>可以看到，实际上 RunLoop 就是这样一个函数，其内部是一个 do-while 循环。当你调用 CFRunLoopRun() 时，线程就会一直停留在这个循环里；直到超时或被手动停止，该函数才会返回。</p>
 <h3 id="RunLoop-的底层实现"><a href="#RunLoop-的底层实现" class="headerlink" title="RunLoop 的底层实现"></a>RunLoop 的底层实现</h3><p>从上面代码可以看到，RunLoop 的核心是基于 mach port 的，其进入休眠时调用的函数是 mach_msg()。为了解释这个逻辑，下面稍微介绍一下 OSX/iOS 的系统架构。</p>
-<img src="/2021/12/04/%E3%80%8C%E5%88%A8%E6%A0%B9%E9%97%AE%E5%BA%95%E3%80%8D%E4%B9%8BRunloop/RunLoop_3.png" class title="OSX&#x2F;iOS 的系统架构">
+<img src="/2018/12/04/%E3%80%8C%E5%88%A8%E6%A0%B9%E9%97%AE%E5%BA%95%E3%80%8D%E4%B9%8BRunloop/RunLoop_3.png" class title="OSX&#x2F;iOS 的系统架构">
 
 <p><img src="/Users/ethenfarben/Desktop/Blog/source/_posts/%E3%80%8C%E5%88%A8%E6%A0%B9%E9%97%AE%E5%BA%95%E3%80%8D%E4%B9%8BRunloop/RunLoop_3.png" alt="RunLoop_3"></p>
 <p>苹果官方将整个系统大致划分为上述4个层次：<br>应用层包括用户能接触到的图形应用，例如 Spotlight、Aqua、SpringBoard 等。<br>应用框架层即开发人员接触到的 Cocoa 等框架。<br>核心框架层包括各种核心框架、OpenGL 等内容。<br>Darwin 即操作系统的核心，包括系统内核、驱动、Shell 等内容，这一层是开源的，其所有源码都可以在 <a href="http://opensource.apple.com/" target="_blank" rel="noopener">opensource.apple.com</a> 里找到。</p>
 <p>我们在深入看一下 Darwin 这个核心的架构：</p>
-<img src="/2021/12/04/%E3%80%8C%E5%88%A8%E6%A0%B9%E9%97%AE%E5%BA%95%E3%80%8D%E4%B9%8BRunloop/RunLoop_4.png" class title="Darwin 的架构">
+<img src="/2018/12/04/%E3%80%8C%E5%88%A8%E6%A0%B9%E9%97%AE%E5%BA%95%E3%80%8D%E4%B9%8BRunloop/RunLoop_4.png" class title="Darwin 的架构">
 
 <p>其中，在硬件层上面的三个组成部分：Mach、BSD、IOKit (还包括一些上面没标注的内容)，共同组成了 XNU 内核。<br>XNU 内核的内环被称作 Mach，其作为一个微内核，仅提供了诸如处理器调度、IPC (进程间通信)等非常少量的基础服务。<br>BSD 层可以看作围绕 Mach 层的一个外环，其提供了诸如进程管理、文件系统和网络等功能。<br>IOKit 层是为设备驱动提供了一个面向对象(C++)的一个框架。</p>
 <p>Mach 本身提供的 API 非常有限，而且苹果也不鼓励使用 Mach 的 API，但是这些API非常基础，如果没有这些API的话，其他任何工作都无法实施。在 Mach 中，所有的东西都是通过自己的对象实现的，进程、线程和虚拟内存都被称为”对象”。和其他架构不同， Mach 的对象间不能直接调用，只能通过消息传递的方式实现对象间的通信。”消息”是 Mach 中最基础的概念，消息在两个端口 (port) 之间传递，这就是 Mach 的 IPC (进程间通信) 的核心。</p>
@@ -312,7 +312,7 @@
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">mach_msg_return_t</span> <span class="title">mach_msg</span><span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">			<span class="keyword">mach_msg_header_t</span> *msg,</span></span></span><br><span class="line"><span class="function"><span class="params">			<span class="keyword">mach_msg_option_t</span> option,</span></span></span><br><span class="line"><span class="function"><span class="params">			<span class="keyword">mach_msg_size_t</span> send_size,</span></span></span><br><span class="line"><span class="function"><span class="params">			<span class="keyword">mach_msg_size_t</span> rcv_size,</span></span></span><br><span class="line"><span class="function"><span class="params">			<span class="keyword">mach_port_name_t</span> rcv_name,</span></span></span><br><span class="line"><span class="function"><span class="params">			<span class="keyword">mach_msg_timeout_t</span> timeout,</span></span></span><br><span class="line"><span class="function"><span class="params">			<span class="keyword">mach_port_name_t</span> notify)</span></span>;</span><br></pre></td></tr></table></figure>
 
 <p>为了实现消息的发送和接收，mach_msg() 函数实际上是调用了一个 Mach 陷阱 (trap)，即函数mach_msg_trap()，陷阱这个概念在 Mach 中等同于系统调用。当你在用户态调用 mach_msg_trap() 时会触发陷阱机制，切换到内核态；内核态中内核实现的 mach_msg() 函数会完成实际的工作，如下图：</p>
-<img src="/2021/12/04/%E3%80%8C%E5%88%A8%E6%A0%B9%E9%97%AE%E5%BA%95%E3%80%8D%E4%B9%8BRunloop/RunLoop_5.png" class title="mach_msg() 函数工作流程">
+<img src="/2018/12/04/%E3%80%8C%E5%88%A8%E6%A0%B9%E9%97%AE%E5%BA%95%E3%80%8D%E4%B9%8BRunloop/RunLoop_5.png" class title="mach_msg() 函数工作流程">
 
 <p>这些概念可以参考维基百科: <a href="http://en.wikipedia.org/wiki/System_call" target="_blank" rel="noopener">System_call</a>、<a href="http://en.wikipedia.org/wiki/Trap_(computing)" target="_blank" rel="noopener">Trap_(computing)</a>。</p>
 <p>RunLoop 的核心就是一个 mach_msg() (见上面代码的第7步)，RunLoop 调用这个函数去接收消息，如果没有别人发送 port 消息过来，内核会将线程置于等待状态。例如你在模拟器里跑起一个 iOS 的 App，然后在 App 静止时点击暂停，你会看到主线程调用栈是停留在 mach_msg_trap() 这个地方。</p>
@@ -339,7 +339,7 @@
 <h3 id="事件响应"><a href="#事件响应" class="headerlink" title="事件响应"></a>事件响应</h3><p>苹果注册了一个 Source1 (基于 mach port 的) 用来接收系统事件，其回调函数为 __IOHIDEventSystemClientQueueCallback()。</p>
 <p>当一个硬件事件(触摸/锁屏/摇晃等)发生后，首先由 IOKit.framework 生成一个 IOHIDEvent 事件并由 SpringBoard 接收。这个过程的详细情况可以参考<a href="http://iphonedevwiki.net/index.php/IOHIDFamily" target="_blank" rel="noopener">这里</a>。SpringBoard 只接收按键(锁屏/静音等)，触摸，加速，接近传感器等几种 Event，随后用 mach port 转发给需要的App进程。随后苹果注册的那个 Source1 就会触发回调，并调用 _UIApplicationHandleEventQueue() 进行应用内部的分发。</p>
 <p>_UIApplicationHandleEventQueue() 会把 IOHIDEvent 处理并包装成 UIEvent 进行处理或分发，其中包括识别 UIGesture/处理屏幕旋转/发送给 UIWindow 等。通常事件比如 UIButton 点击、touchesBegin/Move/End/Cancel 事件都是在这个回调中完成的。接着会在UIWindow为根节点的整颗视图树上通过hitTest:withEvent:和pointInside:withEvent:这两个方法递归查找到合适响应这个触摸事件的视图。找到合适的子节点视图后，调用touches方法，判断是否实现touches方法，没有实现默认会将事件传递给上一个响应者。如果最终找到上一个响应者则调用，否则方法作废。响应链的整体流程如下：</p>
-<img src="/2021/12/04/%E3%80%8C%E5%88%A8%E6%A0%B9%E9%97%AE%E5%BA%95%E3%80%8D%E4%B9%8BRunloop/responder_chain.png" class title="响应链">
+<img src="/2018/12/04/%E3%80%8C%E5%88%A8%E6%A0%B9%E9%97%AE%E5%BA%95%E3%80%8D%E4%B9%8BRunloop/responder_chain.png" class title="响应链">
 
 <h3 id="手势识别"><a href="#手势识别" class="headerlink" title="手势识别"></a>手势识别</h3><p>当上面的 _UIApplicationHandleEventQueue() 识别了一个手势时，其首先会调用 Cancel 将当前的 touchesBegin/Move/End 系列回调打断。随后系统将对应的 UIGestureRecognizer 标记为待处理。</p>
 <p>苹果注册了一个 Observer 监测 BeforeWaiting (Loop即将进入休眠) 事件，这个Observer的回调函数是 _UIGestureRecognizerUpdateObserver()，其内部会获取所有刚被标记为待处理的 GestureRecognizer，并执行GestureRecognizer的回调。</p>
@@ -363,7 +363,7 @@
 <p>下面主要介绍下 NSURLConnection 的工作过程。</p>
 <p>通常使用 NSURLConnection 时，你会传入一个 Delegate，当调用了 [connection start] 后，这个 Delegate 就会不停收到事件回调。实际上，start 这个函数的内部会会获取 CurrentRunLoop，然后在其中的 DefaultMode 添加了4个 Source0 (即需要手动触发的Source)。CFMultiplexerSource 是负责各种 Delegate 回调的，CFHTTPCookieStorage 是处理各种 Cookie 的。</p>
 <p>当开始网络传输时，我们可以看到 NSURLConnection 创建了两个新线程：com.apple.NSURLConnectionLoader 和 com.apple.CFSocket.private。其中 CFSocket 线程是处理底层 socket 连接的。NSURLConnectionLoader 这个线程内部会使用 RunLoop 来接收底层 socket 的事件，并通过之前添加的 Source0 通知到上层的 Delegate。</p>
-<img src="/2021/12/04/%E3%80%8C%E5%88%A8%E6%A0%B9%E9%97%AE%E5%BA%95%E3%80%8D%E4%B9%8BRunloop/RunLoop_network.png" class>
+<img src="/2018/12/04/%E3%80%8C%E5%88%A8%E6%A0%B9%E9%97%AE%E5%BA%95%E3%80%8D%E4%B9%8BRunloop/RunLoop_network.png" class>
 
 <p>NSURLConnectionLoader 中的 RunLoop 通过一些基于 mach port 的 Source 接收来自底层 CFSocket 的通知。当收到通知后，其会在合适的时机向 CFMultiplexerSource 等 Source0 发送通知，同时唤醒 Delegate 线程的 RunLoop 来让其处理这些通知。CFMultiplexerSource 会在 Delegate 线程的 RunLoop 对 Delegate 执行实际的回调。</p>
 <h2 id="RunLoop-的实际应用"><a href="#RunLoop-的实际应用" class="headerlink" title="RunLoop 的实际应用"></a>RunLoop 的实际应用</h2><h3 id="AFNetworking"><a href="#AFNetworking" class="headerlink" title="AFNetworking"></a>AFNetworking</h3><p><a href="https://github.com/AFNetworking/AFNetworking/blob/master/AFNetworking%2FAFURLConnectionOperation.m" target="_blank" rel="noopener">AFURLConnectionOperation</a> 这个类是基于 NSURLConnection 构建的，其希望能在后台线程接收 Delegate 回调。为此 AFNetworking 单独创建了一个线程，并在这个线程中启动了一个 RunLoop：</p>
@@ -422,12 +422,12 @@
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/2020/07/14/hello-world/" rel="prev" title="Hello World!">
-      <i class="fa fa-chevron-left"></i> Hello World!
+    <a href="/2018/12/04/%E3%80%8C%E5%88%A8%E6%A0%B9%E9%97%AE%E5%BA%95%E3%80%8D%E4%B9%8BRuntime%E6%B6%88%E6%81%AF%E5%8F%91%E9%80%81%E5%92%8C%E8%BD%AC%E5%8F%91/" rel="prev" title="刨根问底」之Runtime消息发送和转发">
+      <i class="fa fa-chevron-left"></i> 刨根问底」之Runtime消息发送和转发
     </a></div>
       <div class="post-nav-item">
-    <a href="/2021/12/04/%E3%80%8CApp%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E7%A8%B3%E5%AE%9A%E6%80%A7%E4%BC%98%E5%8C%96/" rel="next" title="「App优化」之稳定性优化">
-      「App优化」之稳定性优化 <i class="fa fa-chevron-right"></i>
+    <a href="/2018/12/04/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8BWebview%E9%A6%96%E5%B1%8F/" rel="next" title="「性能优化」之Webview首屏">
+      「性能优化」之Webview首屏 <i class="fa fa-chevron-right"></i>
     </a></div>
     </div>
       </footer>
