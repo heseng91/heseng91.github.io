@@ -43,7 +43,7 @@
 <meta property="og:image" content="http://heseng91.github.io/2018/12/04/%E3%80%8CApp%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E7%A8%B3%E5%AE%9A%E6%80%A7%E4%BC%98%E5%8C%96/OOM%E5%B8%B8%E8%A7%81%E8%A7%A6%E5%8F%91%E5%8E%9F%E5%9B%A0.jpeg">
 <meta property="og:image" content="http://heseng91.github.io/2018/12/04/%E3%80%8CApp%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E7%A8%B3%E5%AE%9A%E6%80%A7%E4%BC%98%E5%8C%96/%E6%80%BB%E7%BB%93%E5%9B%9E%E9%A1%BE.jpeg">
 <meta property="article:published_time" content="2018-12-04T08:32:24.000Z">
-<meta property="article:modified_time" content="2022-10-19T17:47:43.466Z">
+<meta property="article:modified_time" content="2022-10-19T17:54:58.122Z">
 <meta property="article:author" content="和僧">
 <meta property="article:tag" content="和僧-技术博客，技术博客">
 <meta name="twitter:card" content="summary">
@@ -202,7 +202,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-10-20 01:47:43" itemprop="dateModified" datetime="2022-10-20T01:47:43+08:00">2022-10-20</time>
+                <time title="修改时间：2022-10-20 01:54:58" itemprop="dateModified" datetime="2022-10-20T01:54:58+08:00">2022-10-20</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -251,7 +251,7 @@
 <p>当排查到问题的原因之后，下一步就是把这个问题修复掉，也就是<strong>问题的治理</strong>。在这里我们有一些问题治理的手段：如果是在线上阶段，我们首先可以做一些问题防护，比如网易几年前一篇文章提到的基于 OC Runtime 的线上 Crash 自动修复的方案大白，基于这种方案我们可以直接在线上做 Crash 防护；另外由于后端服务上线导致的稳定性问题爆发，我们可以通过服务的回滚来做到动态止损。除了这两种手段之外，更多的场景还是需要研发在线下修复 native 代码，再通过发版做彻底的修复。</p>
 <p>如果我们想把稳定性问题治理做好的话，需要所有研发同学关注上述每一个环节，才能达到最终的目标。可是这么多环节我们的重点究竟在哪里呢？<strong>从字节跳动的问题治理经验来看，我们认为最重要的环节是第二个——线上的问题的归因。</strong>因为通过内部的统计数据发现：线上之所以存在长期没有结论，没有办法修复的问题，主要还是因为研发并没有定位到这些问题的根本原因。所以下一章节也是本次分享的重点：疑难问题归因。</p>
 <h2 id="三、疑难问题归因"><a href="#三、疑难问题归因" class="headerlink" title="三、疑难问题归因"></a>三、疑难问题归因</h2><p>我们根据开发者对这些问题的熟悉程度做了一下排序，分别是：Crash、Watchdog、OOM 和 CPU&amp;Disk I/O。每一类疑难问题我都会分享这类问题的背景和对应的解决方案，并且会结合实战案例演示各种归因工具究竟是如何解决这些疑难问题的。</p>
-<h3 id="3-1-第一类疑难问题-——-Crash"><a href="#3-1-第一类疑难问题-——-Crash" class="headerlink" title="3.1 第一类疑难问题 —— Crash"></a>3.1 第一类疑难问题 —— Crash</h3><img src="/2018/12/04/%E3%80%8CApp%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E7%A8%B3%E5%AE%9A%E6%80%A7%E4%BC%98%E5%8C%96/%E7%96%91%E9%9A%BE%E9%97%AE%E9%A2%98crash.jpeg" class title="疑难问题crash">
+<h3 id="第一类疑难问题-——-Crash"><a href="#第一类疑难问题-——-Crash" class="headerlink" title="第一类疑难问题 —— Crash"></a>第一类疑难问题 —— Crash</h3><img src="/2018/12/04/%E3%80%8CApp%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E7%A8%B3%E5%AE%9A%E6%80%A7%E4%BC%98%E5%8C%96/%E7%96%91%E9%9A%BE%E9%97%AE%E9%A2%98crash.jpeg" class title="疑难问题crash">
 
 <p>上图中左侧这张饼状图是我们根据 Crash 不同的原因，把它细分成四大类：包括 Mach 异常、 Unix Signal 异常、OC 和 C++ 语言层面上的异常。其中比例最高的还是 Mach 异常，其次是 Signal 异常，OC 和 C++ 的异常相对比较少。</p>
 <p>为什么是这个比例呢？</p>
@@ -261,7 +261,7 @@
 <p>另外可能有一部分Crash是偶发而不是必现的问题，研发同学想在线下复现问题是非常困难的，因为无法复现，也就很难通过 IDE 调试去排查和定位这些问题；</p>
 <p>另外对于非法地址访问这类问题，崩溃的调用栈可能并不是第一现场。这里举一个很简单的例子：A业务的内存分配溢出，踩到了B业务的内存，这个时候我们认为 A 业务应该是导致这个问题的主要原因，但是有可能B业务在之后的某一个时机用到了这块内存，发生了崩溃。显然这种问题实际上是 A 业务导致的，最终却崩在了 B 业务的调用栈里，这就会给开发者排查和解决这个问题带来非常大的干扰。</p>
 <p>看到这里大家可能心里又有问题：既然这类问题如此难解，是不是就完全没有办法了呢？其实也并不是，下面我会分享字节内部两个解决这类疑难问题非常好用的归因工具。</p>
-<h4 id="3-1-1-Zombie-检测"><a href="#3-1-1-Zombie-检测" class="headerlink" title="3.1.1 Zombie 检测"></a>3.1.1 Zombie 检测</h4>
+<h4 id="Zombie-检测"><a href="#Zombie-检测" class="headerlink" title="Zombie 检测"></a>Zombie 检测</h4>
 
 <p>首先第一个是 Zombie 检测，大家如果用过 Xcode 的 Zombie 监控，应该对这个功能比较熟悉。如果我们在调试之前打开了 Zombie Objects 这个开关，在运行的时候如果遇到了 OC 对象野指针造成的崩溃，Xcode 控制台中会打印出一行日志，它会告诉开发者哪个对象在调用什么消息的时候崩溃了。</p>
 <p>这里我们再解释一下 Zombie 的定义，其实非常简单，指的是已经释放的 OC 对象。</p>
@@ -283,7 +283,7 @@
 
 <p>上图中右侧是简化之后的源码（因为涉及到代码隐私问题，所以通过一段注释代替）。历史上为了解决手势滑动返回的冲突问题，在飞书视图导航控制器的手势识别代理方法中写了一段 trick 代码，正是这个 trick 方案导致了首页视图导航控制器被意外释放。</p>
 <p>排查到这里，我们就找到了问题的根本原因，修复的方案也就非常简单了：只要下掉这个 trick 方案，并且依赖导航控制器的原生实现来决定这个手势是否触发就解决了这个问题。</p>
-<h4 id="3-1-2-Coredump"><a href="#3-1-2-Coredump" class="headerlink" title="3.1.2 Coredump"></a>3.1.2 Coredump</h4><p>刚才也提到：Zombie 监控方案是有一些局限的，它仅适用于 OC 对象的野指针问题。大家可能又会有疑问：C 和 C++ 代码同样可能会出现野指针问题，在 Mach 异常和 Signal 异常中，除了内存问题之外，还有很多其他类型的异常比如 EXC_BAD_INSTRUCTION和SIGABRT。那么其他的疑难问题我们又该怎么解决呢？这里我们给出了另外一个解决方案 —— Coredump。</p>
+<h4 id="Coredump"><a href="#Coredump" class="headerlink" title="Coredump"></a>Coredump</h4><p>刚才也提到：Zombie 监控方案是有一些局限的，它仅适用于 OC 对象的野指针问题。大家可能又会有疑问：C 和 C++ 代码同样可能会出现野指针问题，在 Mach 异常和 Signal 异常中，除了内存问题之外，还有很多其他类型的异常比如 EXC_BAD_INSTRUCTION和SIGABRT。那么其他的疑难问题我们又该怎么解决呢？这里我们给出了另外一个解决方案 —— Coredump。</p>
  <img src="/2018/12/04/%E3%80%8CApp%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E7%A8%B3%E5%AE%9A%E6%80%A7%E4%BC%98%E5%8C%96/Coredump%E4%BB%8B%E7%BB%8D.jpeg" class title="Coredump介绍">
 
 <p>这个先解释一下什么是 Coredump：Coredump 是由 lldb 定义的一种特殊的文件格式，Coredump 文件可以还原 App 在运行到某一时刻的完整运行状态（这里的运行状态主要指的是内存状态）。大家可以简单的理解为：Coredump文件相当于在崩溃的现场打了一个断点，并且获取到当时所有线程的寄存器信息，栈内存以及完整的堆内存。</p>
@@ -303,7 +303,7 @@
  
 
 <p>排查到问题之后，解决方案就比较简单了：我们只需要在这个队列创建的时候，使用 dispatch_source_create 的方式去增加队列的外部引用计数，就能解决这个问题。和维护网络库的同学沟通后，确认这个队列在整个 App 的生命周期内不应该被释放。这个问题最终解决的收益是直接让字节所有产品的 Crash 率降低了8%。</p>
-<h3 id="3-2-第二类疑难问题-——-Watchdog"><a href="#3-2-第二类疑难问题-——-Watchdog" class="headerlink" title="3.2 第二类疑难问题 —— Watchdog"></a>3.2 第二类疑难问题 —— Watchdog</h3><p>我们进入疑难问题中的第二类问题 —— Watchdog 也就是卡死。</p>
+<h3 id="第二类疑难问题-——-Watchdog"><a href="#第二类疑难问题-——-Watchdog" class="headerlink" title="第二类疑难问题 —— Watchdog"></a>第二类疑难问题 —— Watchdog</h3><p>我们进入疑难问题中的第二类问题 —— Watchdog 也就是卡死。</p>
  
 
 <p>上图中左侧是我在微博上截的两张图，是用户在遇到卡死问题之后的抱怨。可见卡死问题对用户体验的伤害还是比较大的。那么卡死问题它的危害有哪些呢？</p>
@@ -335,7 +335,7 @@
  
 
 <p>上图是通过字节内部线上的监控和归因工具，总结出最常见触发卡死问题的原因，分别是死锁、锁竞争、主线程IO、跨进程通信。</p>
-<h3 id="3-3-第三类疑难问题-——-OOM"><a href="#3-3-第三类疑难问题-——-OOM" class="headerlink" title="3.3 第三类疑难问题 —— OOM"></a>3.3 第三类疑难问题 —— OOM</h3><p>OOM 就是 Out Of Memory，指的是应用占用的内存过高，最终被系统强杀导致的崩溃。</p>
+<h3 id="第三类疑难问题-——-OOM"><a href="#第三类疑难问题-——-OOM" class="headerlink" title="第三类疑难问题 —— OOM"></a>第三类疑难问题 —— OOM</h3><p>OOM 就是 Out Of Memory，指的是应用占用的内存过高，最终被系统强杀导致的崩溃。</p>
  <img src="/2018/12/04/%E3%80%8CApp%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E7%A8%B3%E5%AE%9A%E6%80%A7%E4%BC%98%E5%8C%96/OOM%E4%BB%8B%E7%BB%8D.jpeg" class title="OOM介绍">
 
 <p>OOM 崩溃的危害有哪些呢？首先我们认为用户使用 App 的时间越长，就越容易发生 OOM 崩溃，所以说 OOM 崩溃对重度用户的体验伤害是比较大的；统计数据显示，如果 OOM 问题没有经过系统性的治理，它的量级一般是普通 Crash 的 3-5 倍。最后是内存问题不同于 Crash 和卡死，相对隐蔽，在快速迭代的过程中非常容易劣化。</p>
@@ -359,7 +359,7 @@
  <img src="/2018/12/04/%E3%80%8CApp%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E7%A8%B3%E5%AE%9A%E6%80%A7%E4%BC%98%E5%8C%96/OOM%E5%B8%B8%E8%A7%81%E8%A7%A6%E5%8F%91%E5%8E%9F%E5%9B%A0.jpeg" class title="OOM常见触发原因">
 
 <p>上图是通过字节内部的线上监控和归因工具，总结出来最常见的几类触发 OOM 问题的原因，分别是：内存泄露，这个较为常见；第二个是内存堆积，主要指的是 AutoreleasePool 没有及时清理；第三是资源异常，比如加载一张超大图或者一个超大的 PDF 文件；最后一个是内存使用不当，比如内存缓存没有设计淘汰清理的机制。</p>
-<h3 id="3-4-第四类疑难问题-——-CPU-异常和磁盘-I-O-异常"><a href="#3-4-第四类疑难问题-——-CPU-异常和磁盘-I-O-异常" class="headerlink" title="3.4 第四类疑难问题 —— CPU 异常和磁盘 I/O 异常"></a>3.4 第四类疑难问题 —— CPU 异常和磁盘 I/O 异常</h3><p>这里之所以把这两类问题合并在一起，是因为这两类问题是高度相似的：首先它们都属于资源的异常占用；另外它们也都不同于闪退，导致崩溃的原因并不是发生在一瞬间，而都是持续一段时间的资源异常占用。</p>
+<h3 id="第四类疑难问题-——-CPU-异常和磁盘-I-O-异常"><a href="#第四类疑难问题-——-CPU-异常和磁盘-I-O-异常" class="headerlink" title="第四类疑难问题 —— CPU 异常和磁盘 I/O 异常"></a>第四类疑难问题 —— CPU 异常和磁盘 I/O 异常</h3><p>这里之所以把这两类问题合并在一起，是因为这两类问题是高度相似的：首先它们都属于资源的异常占用；另外它们也都不同于闪退，导致崩溃的原因并不是发生在一瞬间，而都是持续一段时间的资源异常占用。</p>
  
 
 <p>异常 CPU 占用和磁盘 I/O 占用危害有哪些呢？首先我们认为，这两类问题即使最终没有导致 App 崩溃，也特别容易引发卡顿或者设备发烫等性能问题。其次这两类问题的量级也是不可以被忽视的。另外相比之前几类稳定性问题而言，开发者对这类问题比较陌生，重视程度不够，非常容易劣化。</p>
@@ -463,7 +463,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#一、稳定性问题分类"><span class="nav-number">1.</span> <span class="nav-text">一、稳定性问题分类</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#二、稳定性问题治理的方法论"><span class="nav-number">2.</span> <span class="nav-text">二、稳定性问题治理的方法论</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#三、疑难问题归因"><span class="nav-number">3.</span> <span class="nav-text">三、疑难问题归因</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#3-1-第一类疑难问题-——-Crash"><span class="nav-number">3.1.</span> <span class="nav-text">3.1 第一类疑难问题 —— Crash</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#3-1-1-Zombie-检测"><span class="nav-number">3.1.1.</span> <span class="nav-text">3.1.1 Zombie 检测</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-1-2-Coredump"><span class="nav-number">3.1.2.</span> <span class="nav-text">3.1.2 Coredump</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-2-第二类疑难问题-——-Watchdog"><span class="nav-number">3.2.</span> <span class="nav-text">3.2 第二类疑难问题 —— Watchdog</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-3-第三类疑难问题-——-OOM"><span class="nav-number">3.3.</span> <span class="nav-text">3.3 第三类疑难问题 —— OOM</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-4-第四类疑难问题-——-CPU-异常和磁盘-I-O-异常"><span class="nav-number">3.4.</span> <span class="nav-text">3.4 第四类疑难问题 —— CPU 异常和磁盘 I&#x2F;O 异常</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#四、总结回顾"><span class="nav-number">4.</span> <span class="nav-text">四、总结回顾</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#一、稳定性问题分类"><span class="nav-number">1.</span> <span class="nav-text">一、稳定性问题分类</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#二、稳定性问题治理的方法论"><span class="nav-number">2.</span> <span class="nav-text">二、稳定性问题治理的方法论</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#三、疑难问题归因"><span class="nav-number">3.</span> <span class="nav-text">三、疑难问题归因</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#第一类疑难问题-——-Crash"><span class="nav-number">3.1.</span> <span class="nav-text">第一类疑难问题 —— Crash</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Zombie-检测"><span class="nav-number">3.1.1.</span> <span class="nav-text">Zombie 检测</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Coredump"><span class="nav-number">3.1.2.</span> <span class="nav-text">Coredump</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#第二类疑难问题-——-Watchdog"><span class="nav-number">3.2.</span> <span class="nav-text">第二类疑难问题 —— Watchdog</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#第三类疑难问题-——-OOM"><span class="nav-number">3.3.</span> <span class="nav-text">第三类疑难问题 —— OOM</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#第四类疑难问题-——-CPU-异常和磁盘-I-O-异常"><span class="nav-number">3.4.</span> <span class="nav-text">第四类疑难问题 —— CPU 异常和磁盘 I&#x2F;O 异常</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#四、总结回顾"><span class="nav-number">4.</span> <span class="nav-text">四、总结回顾</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
