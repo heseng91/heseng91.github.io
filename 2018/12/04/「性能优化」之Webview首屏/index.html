@@ -30,12 +30,13 @@
 <meta property="og:image" content="http://heseng91.github.io/2018/12/04/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8BWebview%E9%A6%96%E5%B1%8F/WebView%E5%90%AF%E5%8A%A8.png">
 <meta property="og:image" content="https://awps-assets.meituan.net/mit-x/blog-images-bundle-2017/9a2f8beb.png">
 <meta property="og:image" content="http://heseng91.github.io/2018/12/04/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8BWebview%E9%A6%96%E5%B1%8F/%E5%88%86chunk%E5%8A%A0%E8%BD%BD.png">
+<meta property="og:image" content="http://heseng91.github.io/2018/12/04/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8BWebview%E9%A6%96%E5%B1%8F/%E7%A6%BB%E7%BA%BF%E5%8C%85%E7%BC%93%E5%AD%98%E9%A2%84%E5%8A%A0%E8%BD%BD%E5%AE%9E%E7%8E%B0%E6%96%B9%E6%A1%88.png">
 <meta property="og:image" content="http://heseng91.github.io/2018/12/04/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8BWebview%E9%A6%96%E5%B1%8F/%E8%B5%84%E6%BA%90%E4%B8%8B%E8%BD%BD%E6%B5%81%E7%A8%8B.png">
 <meta property="og:image" content="http://heseng91.github.io/2018/12/04/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8BWebview%E9%A6%96%E5%B1%8F/%E8%B5%84%E6%BA%90%E6%B8%85%E7%90%86%E6%B5%81%E7%A8%8B.png">
 <meta property="og:image" content="http://heseng91.github.io/2018/12/04/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8BWebview%E9%A6%96%E5%B1%8F/%E8%B5%84%E6%BA%90%E6%8B%A6%E6%88%AA%E6%B5%81%E7%A8%8B.png">
 <meta property="og:image" content="http://heseng91.github.io/2018/12/04/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8BWebview%E9%A6%96%E5%B1%8F/%E8%B5%84%E6%BA%90%E6%96%87%E4%BB%B6%E6%9C%AC%E8%BA%AB.png">
 <meta property="article:published_time" content="2018-12-04T08:30:33.000Z">
-<meta property="article:modified_time" content="2022-10-23T17:18:20.486Z">
+<meta property="article:modified_time" content="2022-10-23T17:34:48.598Z">
 <meta property="article:author" content="和僧">
 <meta property="article:tag" content="和僧-技术博客，技术博客">
 <meta name="twitter:card" content="summary">
@@ -194,7 +195,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-10-24 01:18:20" itemprop="dateModified" datetime="2022-10-24T01:18:20+08:00">2022-10-24</time>
+                <time title="修改时间：2022-10-24 01:34:48" itemprop="dateModified" datetime="2022-10-24T01:34:48+08:00">2022-10-24</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -354,13 +355,31 @@
 <h4 id="使用客户端接口"><a href="#使用客户端接口" class="headerlink" title="使用客户端接口"></a>使用客户端接口</h4><p>网路和存储接口如果使用 webkit 的 ajax 和 localStorage 会有不少限制，难以优化，可以在客户端提供这些接口给 JS，客户端可以在网络请求上做像 DNS 预解析/IP直连/长连接/并行请求等更细致的优化，存储也使用客户端接口也能做读写并发/用户隔离等针对性优化。</p>
 <h4 id="服务端渲染"><a href="#服务端渲染" class="headerlink" title="服务端渲染"></a>服务端渲染</h4><p>早期 web 页面里，JS 只是负责交互，所有内容都是直接在 HTML 里，到现代 H5 页面，很多内容已经依赖 JS 逻辑去决定渲染什么，例如等待 JS 请求 JSON 数据，再拼接成 HTML 生成 DOM 渲染到页面上，于是页面的渲染展现就要等待这一整个过程，这里有一个耗时，减少这里的耗时也是白屏优化的范围之内。</p>
 <p>优化方法可以是人为减少 JS 渲染逻辑，也可以是更彻底地，回归到原始，所有内容都由服务端返回的 HTML 决定，无需等待 JS 逻辑，称之为服务端渲染。是否做这种优化视业务情况而定，毕竟这种会带来开发模式变化/流量增大/服务端开销增大这些负面影响。手Q的部分页面就是使用服务端渲染的方式，称为动态直出，见<a href="https://mp.weixin.qq.com/s/evzDnTsHrAr2b9jcevwBzA" target="_blank" rel="noopener">文章</a>。</p>
-<h2 id="实战示例"><a href="#实战示例" class="headerlink" title="实战示例"></a>实战示例</h2><h3 id="实现方案"><a href="#实现方案" class="headerlink" title="实现方案"></a>实现方案</h3><p>APP启动时下载需要预载的资源，在WebView加载资源的时候进行拦截，符合条件（主要是md5值的校验）的则使用本地资源，否则交由webview自己处理。静态资源拦截的方案中，静载资源的来源有三处：</p>
+<h2 id="实战示例"><a href="#实战示例" class="headerlink" title="实战示例"></a>实战示例</h2><h3 id="实现方案"><a href="#实现方案" class="headerlink" title="实现方案"></a>实现方案</h3><p>整体实现方案如下（具体流程待下文详述）：</p>
+<img src="/2018/12/04/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8BWebview%E9%A6%96%E5%B1%8F/%E7%A6%BB%E7%BA%BF%E5%8C%85%E7%BC%93%E5%AD%98%E9%A2%84%E5%8A%A0%E8%BD%BD%E5%AE%9E%E7%8E%B0%E6%96%B9%E6%A1%88.png" class title="离线包缓存预加载实现方案">
+
+<p>APP启动时下载需要预载的资源，在WebView加载资源的时候进行拦截，符合条件（主要是md5值的校验）的则使用本地资源，否则交由webview自己处理。静态资源拦截的方案中，静载资源的来源有三处：</p>
 <ol>
 <li>服务端下发的静态资源  （Server Resource）</li>
 <li>MallConfig配置的静态资源  （MallConfig Resource）</li>
 <li>内置的静载资源  （Inner Resource）</li>
 </ol>
 <p>三者的优先级递减。</p>
+<p><strong>注意点：</strong></p>
+<ul>
+<li><p>CORS（Cross-origin resource sharing）问题，一般处理方式在headers里加一些配置，在这里处理header的时候需要小心，一般是request headers里包含“Origin”才会去做跨域处理，并且避免同样参数重复插入到header里，会报错的。各位开发同学处理的时候注意。</p>
+</li>
+<li><p>md5校验，在文件匹配的时候，一定要进行文件md5校验：</p>
+</li>
+<li><ul>
+<li>防止文件被篡改，规避安全风险；</li>
+<li>防止文件下载失败或者不完整，直接拿来用是会出问题；</li>
+<li>如果同样url的文件出现更新可以及时放弃老的缓存，用新的缓存。</li>
+</ul>
+</li>
+</ul>
+<p>这样，我们可以拿到一系列的需要预加载的文件列表，提前下载到本地，在webview加载的时候，针对url进行拦截，如果发现存在缓存文件，则匹配文件并以webview能够识别的形式传给webview。可以突破缓存的限制，并且基本不占用内存，作用于任何webview。当然这个方案是针对上一个优化方案的补充，叠加使用的，这样可以做到核心页面和其他页面加载的互补。</p>
+<p> 做了那么多优化，需要去量化效果，以便衡量方案是否真的有效果。我们从几个方面进行衡量：80/90分位渲染耗时、页面白屏率、页面drop情况。一般业界都是统计80/90分位页面耗时，这个就不多说了。关于白屏，一方面是观察页面离开的时候页面还没有加载，另一个方面也是内存的情况反应，当内存吃紧会出现内存栈内的webview被杀死的情况，在上线一个方案的时候可以观察这个指标，作为一个该方案能否在线上平稳运行的依据。页面drop情况，我们曾经做过一些数据统计，当页面超过一定时间还没有加载出来，用户会选择离开，在Android上集中在1-1.5s区间，iOS集中0.8-1.2s区间，所以优化页面速度可以以此为目标进行优化，不断尝试。</p>
 <h3 id="流程介绍"><a href="#流程介绍" class="headerlink" title="流程介绍"></a>流程介绍</h3><h4 id="资源下载"><a href="#资源下载" class="headerlink" title="资源下载"></a>资源下载</h4><p>资源下载主要流程如下：</p>
 <img src="/2018/12/04/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8BWebview%E9%A6%96%E5%B1%8F/%E8%B5%84%E6%BA%90%E4%B8%8B%E8%BD%BD%E6%B5%81%E7%A8%8B.png" class title="资源下载流程">
 
@@ -412,12 +431,12 @@
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/2018/12/04/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96/" rel="prev" title="「性能优化」之启动优化">
-      <i class="fa fa-chevron-left"></i> 「性能优化」之启动优化
+    <a href="/2018/12/04/%E3%80%8C%E5%88%A8%E6%A0%B9%E9%97%AE%E5%BA%95%E4%B9%8B-Runtime%E7%B1%BB%E5%92%8C%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%AE%9A%E4%B9%89/" rel="prev" title="「刨根问底」之Objective-C 2.0 中类与对象的定义">
+      <i class="fa fa-chevron-left"></i> 「刨根问底」之Objective-C 2.0 中类与对象的定义
     </a></div>
       <div class="post-nav-item">
-    <a href="/2018/12/04/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%8C%85%E4%BD%93%E5%A4%A7%E5%B0%8F/" rel="next" title="「性能优化」之包体大小">
-      「性能优化」之包体大小 <i class="fa fa-chevron-right"></i>
+    <a href="/2018/12/04/%E3%80%8C%E5%88%A8%E6%A0%B9%E9%97%AE%E5%BA%95%E3%80%8D%E4%B9%8BRuntime%E6%B6%88%E6%81%AF%E5%8F%91%E9%80%81%E5%92%8C%E8%BD%AC%E5%8F%91/" rel="next" title="刨根问底」之Runtime消息发送和转发">
+      刨根问底」之Runtime消息发送和转发 <i class="fa fa-chevron-right"></i>
     </a></div>
     </div>
       </footer>
