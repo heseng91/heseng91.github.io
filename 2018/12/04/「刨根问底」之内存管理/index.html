@@ -28,28 +28,20 @@
 <meta property="og:description" content="应用程序内存管理是在程序运行时分配内存，使用它并在使用完后释放它的过程。编写良好的程序将使用尽可能少的内存。在 Objective-C 中，它也可以看作是在许多数据和代码之间分配有限内存资源所有权的一种方式。掌握内存管理知识，我们就可以很好地管理对象生命周期并在不再需要它们时释放它们，从而管理应用程序的内存。本文从内存管理概念开始，介绍内存管理的思想、方式和系统实现，阅读本文后你将对内存管理有一个">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://heseng91.github.io/2018/12/04/%E3%80%8C%E5%88%A8%E6%A0%B9%E9%97%AE%E5%BA%95%E3%80%8D%E4%B9%8B%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/%E5%8A%9E%E5%85%AC%E5%AE%A4%E7%85%A7%E6%98%8E.png">
-<meta property="og:image" content="http://heseng91.github.io/Users/ethenfarben/Desktop/Blog/source/_posts/%E3%80%8C%E5%88%A8%E6%A0%B9%E9%97%AE%E5%BA%95%E3%80%8D%E4%B9%8B%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/%E5%8A%9E%E5%85%AC%E5%AE%A4%E7%85%A7%E6%98%8E.png">
 <meta property="og:image" content="http://heseng91.github.io/2018/12/04/%E3%80%8C%E5%88%A8%E6%A0%B9%E9%97%AE%E5%BA%95%E3%80%8D%E4%B9%8B%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/%E5%8A%9E%E5%85%AC%E5%AE%A4%E7%85%A7%E6%98%8E%E9%97%AE%E9%A2%98.png">
-<meta property="og:image" content="http://heseng91.github.io/Users/ethenfarben/Desktop/Blog/source/_posts/%E3%80%8C%E5%88%A8%E6%A0%B9%E9%97%AE%E5%BA%95%E3%80%8D%E4%B9%8B%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/%E5%8A%9E%E5%85%AC%E5%AE%A4%E7%85%A7%E6%98%8E%E9%97%AE%E9%A2%98.png">
 <meta property="og:image" content="http://heseng91.github.io/2018/12/04/%E3%80%8C%E5%88%A8%E6%A0%B9%E9%97%AE%E5%BA%95%E3%80%8D%E4%B9%8B%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/%E5%8A%9E%E5%85%AC%E5%AE%A4%E7%85%A7%E6%98%8E%E7%9A%84%E7%AE%A1%E7%90%86.png">
-<meta property="og:image" content="http://heseng91.github.io/Users/ethenfarben/Desktop/Blog/source/_posts/%E3%80%8C%E5%88%A8%E6%A0%B9%E9%97%AE%E5%BA%95%E3%80%8D%E4%B9%8B%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/%E5%8A%9E%E5%85%AC%E5%AE%A4%E7%85%A7%E6%98%8E%E7%9A%84%E7%AE%A1%E7%90%86.png">
 <meta property="og:image" content="http://heseng91.github.io/2018/12/04/%E3%80%8C%E5%88%A8%E6%A0%B9%E9%97%AE%E5%BA%95%E3%80%8D%E4%B9%8B%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/%E5%BC%95%E7%94%A8%E8%AE%A1%E6%95%B0%E7%9A%84%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86.png">
-<meta property="og:image" content="http://heseng91.github.io/Users/ethenfarben/Desktop/Blog/source/_posts/%E3%80%8C%E5%88%A8%E6%A0%B9%E9%97%AE%E5%BA%95%E3%80%8D%E4%B9%8B%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/%E5%BC%95%E7%94%A8%E8%AE%A1%E6%95%B0%E7%9A%84%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86.png">
 <meta property="og:image" content="http://heseng91.github.io/2018/12/04/%E3%80%8C%E5%88%A8%E6%A0%B9%E9%97%AE%E5%BA%95%E3%80%8D%E4%B9%8B%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/memory_management_2x.png">
-<meta property="og:image" content="http://heseng91.github.io/Users/ethenfarben/Desktop/Blog/source/_posts/%E3%80%8C%E5%88%A8%E6%A0%B9%E9%97%AE%E5%BA%95%E3%80%8D%E4%B9%8B%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/memory_management_2x.png">
 <meta property="og:image" content="http://heseng91.github.io/2018/12/04/%E3%80%8C%E5%88%A8%E6%A0%B9%E9%97%AE%E5%BA%95%E3%80%8D%E4%B9%8B%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/%E5%AF%B9%E8%B1%A1%E6%8C%87%E9%92%88%E4%BA%8C%E8%BF%9B%E5%88%B6%E8%A1%A8%E7%A4%BA.png">
 <meta property="og:image" content="http://heseng91.github.io/2018/12/04/%E3%80%8C%E5%88%A8%E6%A0%B9%E9%97%AE%E5%BA%95%E3%80%8D%E4%B9%8B%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/%E5%AF%B9%E8%B1%A1%E6%8C%87%E9%92%88%E4%BA%8C%E8%BF%9B%E5%88%B6%E8%A1%A8%E7%A4%BA%E9%AB%98%E5%9C%B0%E4%BD%8D%E6%80%BB%E6%98%AF0.png">
 <meta property="og:image" content="http://heseng91.github.io/2018/12/04/%E3%80%8C%E5%88%A8%E6%A0%B9%E9%97%AE%E5%BA%95%E3%80%8D%E4%B9%8B%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/%E5%AF%B9%E8%B1%A1%E6%8C%87%E9%92%88%E4%BA%8C%E8%BF%9B%E5%88%B6%E8%A1%A8%E7%A4%BA%E4%BD%8E%E4%BD%8D%E8%AE%BE%E7%BD%AE%E4%B8%BA1.png">
 <meta property="og:image" content="http://heseng91.github.io/2018/12/04/%E3%80%8C%E5%88%A8%E6%A0%B9%E9%97%AE%E5%BA%95%E3%80%8D%E4%B9%8B%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/alloc%E7%AC%AC%E4%B8%80%E6%AC%A1%E8%B0%83%E7%94%A8%E8%B0%83%E7%94%A8%E6%A0%88.png">
-<meta property="og:image" content="http://heseng91.github.io/Users/ethenfarben/Desktop/Blog/source/_posts/%E3%80%8C%E5%88%A8%E6%A0%B9%E9%97%AE%E5%BA%95%E3%80%8D%E4%B9%8B%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/alloc%E7%AC%AC%E4%B8%80%E6%AC%A1%E8%B0%83%E7%94%A8%E8%B0%83%E7%94%A8%E6%A0%88.png">
 <meta property="og:image" content="http://heseng91.github.io/2018/12/04/%E3%80%8C%E5%88%A8%E6%A0%B9%E9%97%AE%E5%BA%95%E3%80%8D%E4%B9%8B%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/autorelease%E5%92%8Crelease%E5%8C%BA%E5%88%AB.png">
-<meta property="og:image" content="http://heseng91.github.io/Users/ethenfarben/Desktop/Blog/source/_posts/%E3%80%8C%E5%88%A8%E6%A0%B9%E9%97%AE%E5%BA%95%E3%80%8D%E4%B9%8B%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/autorelease%E5%92%8Crelease%E5%8C%BA%E5%88%AB.png">
-<meta property="og:image" content="https://img.draveness.me/2016-05-16-objc-autorelease-page-in-memory.png-1000width">
-<meta property="og:image" content="https://img.draveness.me/2016-05-16-objc-autorelease-after-insert-to-page.png-1000width">
-<meta property="og:image" content="https://img.draveness.me/2016-05-16-objc-autorelease-pop-stack.png-1000width">
-<meta property="og:image" content="https://img.draveness.me/2016-05-16-objc-autorelease-AutoreleasePoolPage-linked-list.png-1000width">
+<meta property="og:image" content="http://heseng91.github.io/2018/12/04/%E3%80%8C%E5%88%A8%E6%A0%B9%E9%97%AE%E5%BA%95%E3%80%8D%E4%B9%8B%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/next%E6%8C%87%E9%92%88.png">
+<meta property="og:image" content="http://heseng91.github.io/2018/12/04/%E3%80%8C%E5%88%A8%E6%A0%B9%E9%97%AE%E5%BA%95%E3%80%8D%E4%B9%8B%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/%E5%93%A8%E5%85%B5%E5%AF%B9%E8%B1%A1.png">
+<meta property="og:image" content="http://heseng91.github.io/2018/12/04/%E3%80%8C%E5%88%A8%E6%A0%B9%E9%97%AE%E5%BA%95%E3%80%8D%E4%B9%8B%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/AutoreleasePoolPage%E5%8F%8C%E5%90%91%E9%93%BE%E8%A1%A8.png">
 <meta property="article:published_time" content="2018-12-04T08:30:33.000Z">
-<meta property="article:modified_time" content="2022-07-25T19:28:40.301Z">
+<meta property="article:modified_time" content="2022-11-01T16:09:43.335Z">
 <meta property="article:author" content="和僧">
 <meta property="article:tag" content="和僧-技术博客，技术博客">
 <meta name="twitter:card" content="summary">
@@ -208,7 +200,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-07-26 03:28:40" itemprop="dateModified" datetime="2022-07-26T03:28:40+08:00">2022-07-26</time>
+                <time title="修改时间：2022-11-02 00:09:43" itemprop="dateModified" datetime="2022-11-02T00:09:43+08:00">2022-11-02</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -239,11 +231,9 @@
 <p>引用计数机制可以用开关房间的灯为例来说明。假设办公室里的照明设备只有一个。上班进入办公室的人需要照明，所以要把灯打开。而对于下班离开办公室的人来说，已经不需要照明了，所以要把灯关掉。</p>
 <img src="/2018/12/04/%E3%80%8C%E5%88%A8%E6%A0%B9%E9%97%AE%E5%BA%95%E3%80%8D%E4%B9%8B%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/%E5%8A%9E%E5%85%AC%E5%AE%A4%E7%85%A7%E6%98%8E.png" class title="办公室照明">
 
-<p><img src="/Users/ethenfarben/Desktop/Blog/source/_posts/%E3%80%8C%E5%88%A8%E6%A0%B9%E9%97%AE%E5%BA%95%E3%80%8D%E4%B9%8B%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/%E5%8A%9E%E5%85%AC%E5%AE%A4%E7%85%A7%E6%98%8E.png" alt="办公室照明"></p>
 <p>若是很多人上下班，每个人都开灯或者关灯，那么办公室的情况又将如何呢？最早下班的人如果关了灯，那就会像下图那样，办公室里还没走的所有人都将处于一片黑暗之中。</p>
 <img src="/2018/12/04/%E3%80%8C%E5%88%A8%E6%A0%B9%E9%97%AE%E5%BA%95%E3%80%8D%E4%B9%8B%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/%E5%8A%9E%E5%85%AC%E5%AE%A4%E7%85%A7%E6%98%8E%E9%97%AE%E9%A2%98.png" class title="办公室照明问题">
 
-<p><img src="/Users/ethenfarben/Desktop/Blog/source/_posts/%E3%80%8C%E5%88%A8%E6%A0%B9%E9%97%AE%E5%BA%95%E3%80%8D%E4%B9%8B%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/%E5%8A%9E%E5%85%AC%E5%AE%A4%E7%85%A7%E6%98%8E%E9%97%AE%E9%A2%98.png" alt="办公室照明问题"></p>
 <p>解决这一问题的办法就是使办公室在还有至少一人的情况下保持开灯状态，而在无人时保持关灯状态。</p>
 <p>（1）最早进入办公室的人开灯。 </p>
 <p>（2）之后进入办公室的人，需要照明。 </p>
@@ -257,7 +247,6 @@
 <p>这样就能在不需要照明的时候保持关灯状态。办公室中仅有的照明设备得到了很好的管理，如下图所示：</p>
 <img src="/2018/12/04/%E3%80%8C%E5%88%A8%E6%A0%B9%E9%97%AE%E5%BA%95%E3%80%8D%E4%B9%8B%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/%E5%8A%9E%E5%85%AC%E5%AE%A4%E7%85%A7%E6%98%8E%E7%9A%84%E7%AE%A1%E7%90%86.png" class title="办公室照明的管理">
 
-<p><img src="/Users/ethenfarben/Desktop/Blog/source/_posts/%E3%80%8C%E5%88%A8%E6%A0%B9%E9%97%AE%E5%BA%95%E3%80%8D%E4%B9%8B%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/%E5%8A%9E%E5%85%AC%E5%AE%A4%E7%85%A7%E6%98%8E%E7%9A%84%E7%AE%A1%E7%90%86.png" alt="办公室照明的管理"></p>
 <p>在 Objective-C 中，“对象” 相当于办公室里的照明设备。在现实世界中办公室里的照明设备只有一个，但在 Objective-C 的世界里，虽然计算机的资源有限，但一台计算机可以同时处理好几个对象。</p>
 <p>此外，“对象的使用环境” 相当于上班进入办公室的人。虽然这里的 “环境” 有时也指在运行中的程序代码、变量、变量作用域、对象等，但在概念上就是使用对象的环境。上班进入办公室的人对办公室照明设备发出的动作，与 Objective-C 中的对应关系则如下表所示：</p>
 <table>
@@ -287,7 +276,6 @@
 <p>使用计数功能计算需要照明的人数，使办公室的照明得到了很好的管理。同样，使用引用计数功能，对象也就能够得到很好的管理，这就是 Objective-C 的内存管理。如下图所示：</p>
 <img src="/2018/12/04/%E3%80%8C%E5%88%A8%E6%A0%B9%E9%97%AE%E5%BA%95%E3%80%8D%E4%B9%8B%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/%E5%BC%95%E7%94%A8%E8%AE%A1%E6%95%B0%E7%9A%84%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86.png" class title="引用计数的内存管理">
 
-<p><img src="/Users/ethenfarben/Desktop/Blog/source/_posts/%E3%80%8C%E5%88%A8%E6%A0%B9%E9%97%AE%E5%BA%95%E3%80%8D%E4%B9%8B%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/%E5%BC%95%E7%94%A8%E8%AE%A1%E6%95%B0%E7%9A%84%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86.png" alt="引用计数的内存管理"></p>
 <h2 id="内存管理实现"><a href="#内存管理实现" class="headerlink" title="内存管理实现"></a>内存管理实现</h2><p>看到引用计数，我们便会不自觉地将注意力放到计数上。但这往往会适得其反，因为这样是在从实现细节而非实现目标角度来理解内存管理。其实，更加客观、正确的思考内存管理方式应该是从对象所有权和<strong>对象图</strong>的角度。</p>
 <blockquote>
 <p><strong>对象图：</strong>在面向对象编程中，一组组的对象根据彼此之间直接或者间接的持有关系形成一个网络。这样的一组组数据就称为对象图。对象图或大或小，或简单或复杂，多种多样。 例如，一个包含单一字符串对象的数组表示一个小而简单的对象图。而持有application对象的一组对象，可能表示的就是一个大的而复杂的对象图，因为application对象会持有多个windows、menus、视图以及其它其他支持对象。有时，您可能希望将对象图(通常只是应用程序中整个对象图的一部分)转换为一种可以保存到文件或传输到另一个进程或机器的形式，然后重新构建。这个过程被称为“归档”。有些对象图可能是不完整的——这些通常被称为<em>部分对象图</em>。 部分对象图包含有占位符对象，这些占位符对象表示图的边界，便于在后续阶段进行填充。例如：包含文件所有者占位符的nib文件。</p>
@@ -327,7 +315,6 @@
 <p>虽然通常在单个对象级别上考虑内存管理，但实际上我们的目标是管理<strong>对象图</strong>，要保证在内存中只保留需要用到的对象，确保没有发生内存泄漏。</p>
 <img src="/2018/12/04/%E3%80%8C%E5%88%A8%E6%A0%B9%E9%97%AE%E5%BA%95%E3%80%8D%E4%B9%8B%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/memory_management_2x.png" class title="memory_management_2x">
 
-<p><img src="/Users/ethenfarben/Desktop/Blog/source/_posts/%E3%80%8C%E5%88%A8%E6%A0%B9%E9%97%AE%E5%BA%95%E3%80%8D%E4%B9%8B%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/memory_management_2x.png" alt="memory_management_2x"></p>
 <p>Objective-C 在iOS中提供了两种内存管理方法：MRC 和 ARC。MRC时期，iOS 开发需要通过跟踪自己持有的对象来显式管理内存。这是使用一个称为 “引用计数” 的模型来实现的，由 Foundation 框架的 NSObject 类与运行时环境一起提供。为了降低程序崩溃、内存泄露等风险的同时，比较大程度减少开发程序的工作量，苹果在iOS 5时推出了ARC。ARC，全称 Automatic Reference Counting，就是让编译器进行内存管理，这样就无需再次键入retain或release代码。编译器完全清楚目标对象，并能立即释放哪些不再被使用的对象，从而提高应用程序的可预测性，保证程序能流畅运行，速度也将大幅提高。</p>
 <h2 id="内存管理源码探究"><a href="#内存管理源码探究" class="headerlink" title="内存管理源码探究"></a>内存管理源码探究</h2><p>上文提到Objective-C 中的内存管理，也就是引用计数管理。下面我们围绕引用计数源码来探究一下内存管理，本次探索基于objc4-756.2，使用Xcode 11.3.1 (11C504)。阅读之前需要对<a href="https://heseng91.github.io/2021/10/31/刨根问底之-Runtime类和对象的定义/">类和对象的结构</a>有所了解。</p>
 <h3 id="引用计数存储"><a href="#引用计数存储" class="headerlink" title="引用计数存储"></a>引用计数存储</h3><h4 id="对象引用计数存储"><a href="#对象引用计数存储" class="headerlink" title="对象引用计数存储"></a>对象引用计数存储</h4><p>上文中提到在iOS中，内存管理的相关操作是由NSObject类负责。NSObject在NSObject.h中的定义如下：</p>
@@ -495,7 +482,6 @@
 <h4 id="alloc"><a href="#alloc" class="headerlink" title="alloc"></a>alloc</h4><p>在objc4-756.2源码中，新建一个target，在对象alloc的地方下一个端点，调用栈如下图：</p>
 <img src="/2018/12/04/%E3%80%8C%E5%88%A8%E6%A0%B9%E9%97%AE%E5%BA%95%E3%80%8D%E4%B9%8B%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/alloc%E7%AC%AC%E4%B8%80%E6%AC%A1%E8%B0%83%E7%94%A8%E8%B0%83%E7%94%A8%E6%A0%88.png" class title="alloc第一次调用调用栈">
 
-<p><img src="/Users/ethenfarben/Desktop/Blog/source/_posts/%E3%80%8C%E5%88%A8%E6%A0%B9%E9%97%AE%E5%BA%95%E3%80%8D%E4%B9%8B%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/alloc%E7%AC%AC%E4%B8%80%E6%AC%A1%E8%B0%83%E7%94%A8%E8%B0%83%E7%94%A8%E6%A0%88.png" alt="alloc第一次调用调用栈"></p>
 <p>通过调用栈发现，<code>[Person alloc]</code>首先会调用<code>objc_alloc()</code>。<code>objc_alloc()</code>实现如下：</p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Calls [cls alloc].</span></span><br><span class="line">id</span><br><span class="line">objc_alloc(Class cls)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">return</span> callAlloc(cls, <span class="literal">true</span><span class="comment">/*checkNil*/</span>, <span class="literal">false</span><span class="comment">/*allocWithZone*/</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
@@ -857,7 +843,6 @@
 <h2 id="autoreleasepool"><a href="#autoreleasepool" class="headerlink" title="autoreleasepool"></a>autoreleasepool</h2><p>在前面内存管理策略部分有提到，通过<code>alloc/new/copy/mutableCopy</code> 等方法和以它们驼峰命名开头的方法会生成并持有对象。那么调用如 <code>[NSMutableArray array]</code> 等不以 <code>alloc/new/copy/mutableCopy</code> 开头的方法使取得的对象存在，但自己不持有对象，要怎么实现呢？这里就要引入另一个概念autoreleasepool。MRC 环境中，可以通过通过调用 <code>autorelease</code> 可以将对象注册到autoreleasepool中，使对象在超出指定的生存范围时能够自动并正确地释放。如下图所示加入autoreleasepool中的对象可以做到延迟释放：</p>
 <img src="/2018/12/04/%E3%80%8C%E5%88%A8%E6%A0%B9%E9%97%AE%E5%BA%95%E3%80%8D%E4%B9%8B%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/autorelease%E5%92%8Crelease%E5%8C%BA%E5%88%AB.png" class title="autorelease和release区别">
 
-<p><img src="/Users/ethenfarben/Desktop/Blog/source/_posts/%E3%80%8C%E5%88%A8%E6%A0%B9%E9%97%AE%E5%BA%95%E3%80%8D%E4%B9%8B%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/autorelease%E5%92%8Crelease%E5%8C%BA%E5%88%AB.png" alt="autorelease和release区别"></p>
 <h3 id="autoreleasepool-1"><a href="#autoreleasepool-1" class="headerlink" title="@autoreleasepool"></a>@autoreleasepool</h3><p>众所周知，iOS项目都是以main函数为入口。新建一个iOS项目，可以看到main.m文件中代码如下：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">#import &lt;UIKit&#x2F;UIKit.h&gt;</span><br><span class="line">#import &quot;AppDelegate.h&quot;</span><br><span class="line"></span><br><span class="line">int main(int argc, char * argv[]) &#123;</span><br><span class="line">    @autoreleasepool &#123;</span><br><span class="line">        return UIApplicationMain(argc, argv, nil, NSStringFromClass([AppDelegate class]));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
@@ -905,13 +890,15 @@
 <li><strong>thread：</strong>用来计算pool中最多存放的对象个数</li>
 </ul>
 <h4 id="自动释放池中的栈"><a href="#自动释放池中的栈" class="headerlink" title="自动释放池中的栈"></a>自动释放池中的栈</h4><p>如果我们的一个 <code>AutoreleasePoolPage</code> 被初始化在内存的 <code>0x100816000 ~ 0x100817000</code> 中，它在内存中的结构如下：</p>
-<p><img src="https://img.draveness.me/2016-05-16-objc-autorelease-page-in-memory.png-1000width" alt="objc-autorelease-page-in-memory"></p>
+
+
 <p>其中有 56 bit 用于存储 <code>AutoreleasePoolPage</code> 的成员变量，剩下的 <code>0x100816038 ~ 0x100817000</code> 都是用来存储<strong>加入到自动释放池中的对象</strong>。</p>
 <blockquote>
 <p><code>begin()</code> 和 <code>end()</code> 这两个类的实例方法帮助我们快速获取 <code>0x100816038 ~ 0x100817000</code> 这一范围的边界地址。</p>
 </blockquote>
 <p><code>next</code> 指向了下一个为空的内存地址，如果 <code>next</code> 指向的地址加入一个 <code>object</code>，它就会如下图所示<strong>移动到下一个为空的内存地址中</strong>：</p>
-<p><img src="https://img.draveness.me/2016-05-16-objc-autorelease-after-insert-to-page.png-1000width" alt="objc-autorelease-after-insert-to-page"></p>
+<img src="/2018/12/04/%E3%80%8C%E5%88%A8%E6%A0%B9%E9%97%AE%E5%BA%95%E3%80%8D%E4%B9%8B%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/next%E6%8C%87%E9%92%88.png" class title="next指针">
+
 <h4 id="POOL-SENTINEL（哨兵对象）"><a href="#POOL-SENTINEL（哨兵对象）" class="headerlink" title="POOL_SENTINEL（哨兵对象）"></a>POOL_SENTINEL（哨兵对象）</h4><p>细心的朋友可能会发现栈里有个陌生的东西 <code>POOL_SENTINEL</code> ， <code>POOL_SENTINEL</code> 只是 <code>nil</code> 的别名。</p>
 <figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#   <span class="meta-keyword">define</span> POOL_BOUNDARY nil</span></span><br></pre></td></tr></table></figure>
 
@@ -924,9 +911,11 @@
 <p>上面的 <code>atautoreleasepoolobj</code> 就是一个 <code>POOL_SENTINEL</code>。</p>
 </blockquote>
 <p>而当方法 <code>objc_autoreleasePoolPop</code> 调用时，就会向自动释放池中的对象发送 <code>release</code> 消息，直到第一个 <code>POOL_SENTINEL</code>：</p>
-<p><img src="https://img.draveness.me/2016-05-16-objc-autorelease-pop-stack.png-1000width" alt="objc-autorelease-pop-stack"></p>
+<img src="/2018/12/04/%E3%80%8C%E5%88%A8%E6%A0%B9%E9%97%AE%E5%BA%95%E3%80%8D%E4%B9%8B%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/%E5%93%A8%E5%85%B5%E5%AF%B9%E8%B1%A1.png" class title="哨兵对象">
+
 <h4 id="AutoreleasePoolPage双向链表"><a href="#AutoreleasePoolPage双向链表" class="headerlink" title="AutoreleasePoolPage双向链表"></a>AutoreleasePoolPage双向链表</h4><p>上面讲到的都是单个AutoreleasePoolPage。当对象比较多，一个AutoreleasePoolPage如果满了，会新建一个AutoreleasePoolPage对象，与原来页链表连接完成后，后来的autorelease对象在新的page加入。 <code>AutoreleasePoolPage</code> 是以<strong>双向链表</strong>的形式连接起来的：</p>
-<p><img src="https://img.draveness.me/2016-05-16-objc-autorelease-AutoreleasePoolPage-linked-list.png-1000width" alt="objc-autorelease-AutoreleasePoolPage-linked-list"></p>
+<img src="/2018/12/04/%E3%80%8C%E5%88%A8%E6%A0%B9%E9%97%AE%E5%BA%95%E3%80%8D%E4%B9%8B%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/AutoreleasePoolPage%E5%8F%8C%E5%90%91%E9%93%BE%E8%A1%A8.png" class title="AutoreleasePoolPage双向链表">
+
 <p>介绍完 <code>AutoreleasePoolPage</code> 之后，我们接下来来看两个关键方法。</p>
 <h3 id="objc-autoreleasePoolPush-方法"><a href="#objc-autoreleasePoolPush-方法" class="headerlink" title="objc_autoreleasePoolPush 方法"></a>objc_autoreleasePoolPush 方法</h3><p><code>objc_autoreleasePoolPush()</code> 方法前文中有提到，只是调用了 <code>AutoreleasePoolPage</code> 结构体的 <code>push()</code> 方法。该方法实现如下：</p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">inline</span> <span class="keyword">void</span> *<span class="title">push</span><span class="params">()</span> </span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    id *dest;</span><br><span class="line">    <span class="keyword">if</span> (DebugPoolAllocation) &#123;</span><br><span class="line">        <span class="comment">// Each autorelease pool starts on a new pool page.</span></span><br><span class="line">        dest = autoreleaseNewPage(POOL_BOUNDARY);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        dest = autoreleaseFast(POOL_BOUNDARY);</span><br><span class="line">    &#125;</span><br><span class="line">    assert(dest == EMPTY_POOL_PLACEHOLDER || *dest == POOL_BOUNDARY);</span><br><span class="line">    <span class="keyword">return</span> dest;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
@@ -1001,7 +990,6 @@
 <p>objc_autoreleaseReturnValue 函数会检查使用该函数的方法或函数调用方的执行命令列表，如果方法或函数的调用方在调用了方法或函数后紧接着调用 objc_retainAutoreleasedReturnValue() 函数，那么就不将返回的对象注册到 autoreleasepool中，而是直接传递到方法或函数的调用方。objc_retainAutoreleasedReturnValue 函数与 objc_retain 函数不同，它即便不注册到 autoreleasepool 而返回对象，也能够正确地获取对象。通过 objc_autoreleaseReturnValue 函数和 objc_retainAutoreleasedReturnValue 函数的协作，可以不将对象注册到 autoreleasepool 中而直接传递，这一过程达到了最优化。</p>
 
 
-<p>![autorelease 优化](/Users/ethenfarben/Desktop/Blog/source/_posts/「刨根问底」之内存管理/autorelease 优化.png)</p>
 <h3 id="Autorelease-释放时机"><a href="#Autorelease-释放时机" class="headerlink" title="Autorelease 释放时机"></a>Autorelease 释放时机</h3><p>有runloop的情况下，Autorelease对象是在当前的<code>runloop</code>迭代结束时释放的，而它能够释放的原因是系统在每个runloop迭代中都加入了自动释放池Push和Pop。</p>
 <p><code>autoreleasepool</code>在没有<code>runloop</code>的情况下何时释放呢？</p>
 <ol>

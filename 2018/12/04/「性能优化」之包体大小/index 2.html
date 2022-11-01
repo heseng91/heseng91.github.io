@@ -28,11 +28,16 @@
 <meta property="og:description" content="安装包大小是 App 重要的基础体验指标之一，与新用户转化直接相关。本文内容包括苹果的对包大小的限制等背景介绍、安装包分析和一些优化措施等。阅读本文之后，你将对安装包优化有一个整体的认知。">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://nos.netease.com/cloud-website-bucket/201809181451521907e647-871e-44e4-8b7d-1b5539d4682e.jpg">
-<meta property="og:image" content="http://heseng91.github.io/2018/12/04/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%8C%85%E4%BD%93%E5%A4%A7%E5%B0%8F/BitCode.jpg">
-<meta property="og:image" content="http://heseng91.github.io/2018/12/04/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%8C%85%E4%BD%93%E5%A4%A7%E5%B0%8F/%E8%B0%83%E8%AF%95%E7%AC%A6%E5%8F%B7.jpg">
-<meta property="og:image" content="http://heseng91.github.io/2018/12/04/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%8C%85%E4%BD%93%E5%A4%A7%E5%B0%8F/%E5%B1%9E%E6%80%A7%E5%8A%A8%E6%80%81%E5%8C%96%E4%B9%8B%E6%88%90%E5%91%98%E5%8F%98%E9%87%8F%E9%83%A8%E5%88%86.png">
+<meta property="og:image" content="https://nos.netease.com/cloud-website-bucket/20180918145314d34dd07d-f152-40a7-ac7b-a1081a441c34.jpg">
+<meta property="og:image" content="https://nos.netease.com/cloud-website-bucket/201809181452418e5bac54-bed6-4a3d-a3cb-48af54e2daf2.jpg">
+<meta property="og:image" content="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/4e5eba61ac4741be8d465a63e651ac35~tplv-k3u1fbpfcp-watermark.image">
+<meta property="og:image" content="https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/b3d3d5debbb34a81aec16861e52046ff~tplv-k3u1fbpfcp-watermark.image">
+<meta property="og:image" content="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/8832b403c76745e9bb6c2a2df354a3ed~tplv-k3u1fbpfcp-watermark.image">
+<meta property="og:image" content="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/7b748ca6fba6462287a7fae857fcd1fd~tplv-k3u1fbpfcp-watermark.image">
+<meta property="og:image" content="https://nos.netease.com/cloud-website-bucket/20180918145633f82a98cf-fc75-44a3-830d-553f837991d2.jpg">
+<meta property="og:image" content="https://nos.netease.com/cloud-website-bucket/201809181456458ffc259f-3338-4408-82c6-503bdc0e1a21.jpg">
 <meta property="article:published_time" content="2018-12-04T08:30:33.000Z">
-<meta property="article:modified_time" content="2022-11-01T16:39:52.880Z">
+<meta property="article:modified_time" content="2022-07-25T19:30:01.474Z">
 <meta property="article:author" content="和僧">
 <meta property="article:tag" content="和僧-技术博客，技术博客">
 <meta name="twitter:card" content="summary">
@@ -191,7 +196,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-11-02 00:39:52" itemprop="dateModified" datetime="2022-11-02T00:39:52+08:00">2022-11-02</time>
+                <time title="修改时间：2022-07-26 03:30:01" itemprop="dateModified" datetime="2022-07-26T03:30:01+08:00">2022-07-26</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -321,8 +326,7 @@
 <p>需要注意的是 LTO 虽然是链接期优化，但是仍然需要编译期参与，加入了 LTO 的编译出来的 .a 本质是 LLVM 的 BitCode，如果使用未开启 LTO 构建出来的的 .a 直接是机器码了。直接链接是无法完成 LTO 优化的。</p>
 <p>开启 LTO 之后跨编译单元的重复代码会被链接器单独生成以 <code>.lto.o</code>为后缀的目标文件进行链接。尤其是对于 Objc Runtime 需要的一些结构 比如方法签名的 literal string， protocol 的结构等有比较大的优化。同时开启 Oz 和 LTO 可以让外联函数都只存在一份能够最大限度的优化安装包体积。如果你的项目中大量的使用了 Protocol 建议还是开启这个选项。</p>
 <h5 id="BitCode"><a href="#BitCode" class="headerlink" title="BitCode"></a>BitCode</h5><p>BitCode 是 iOS 9 引入的新特性，官方文档解释 BitCode 是一种程序中间码，其实就是 LLVM IR 的一种编码形式 - <a href="https://llvm.org/docs/BitCodeFormat.html" target="_blank" rel="noopener">BitCodeFormart</a>。</p>
-<img src="/2018/12/04/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%8C%85%E4%BD%93%E5%A4%A7%E5%B0%8F/BitCode.jpg" class title="BitCode">
-
+<p><img src="https://nos.netease.com/cloud-website-bucket/20180918145314d34dd07d-f152-40a7-ac7b-a1081a441c34.jpg" alt="img"> </p>
 <p>上图表示了 IR 和 BitCode 在编译器架构中所在的位置，需要说明的是 BitCode 是以 section 形式保存在可执行文件中。上文中提到的可执行文件的 Slicing 技术就是基于BitCode。当我们把携带 BitCode 的 App 提交到 AppStore 后，苹果会提取出可执行文件中的 BitCode 段，然后针对不同的 CPU 架构编译和链接成不同的可执行文件变体(Variant)，不同 CPU 架构的设备会自动选择合适的架构的变体进行下载。而在 BitCode 之前，我们都是把所有需要的 CPU 架构集合打包成一个 <a href="https://en.wikipedia.org/wiki/Fat_binary" target="_blank" rel="noopener">Fat Binary</a>，结果就是用户最终下载的安装包之中有很多冗余的 CPU 架构支持代码。</p>
 <p>从以上编译器架构中我们也可以得出一个结论：开启 BitCode 之后编译器后端(Backend)的工作都由 Apple 接管了。所以假如以后苹果推出了新的 CPU 架构或者以后 LLVM 推出了一系列优化，我们也不再需要为其发布新的安装包了。</p>
 <p>需要注意的是，工程开启 BitCode 之后必须要求所有打进 Bundle 的 Binary 都需要支持 BitCode，也就是说我们依赖的静态库和动态库都是含有 BitCode 的，不然就会打包失败。</p>
@@ -340,8 +344,7 @@
 <li><a href="https://en.wikipedia.org/wiki/DWARF" target="_blank" rel="noopener">DWARF</a>：一种通用的调试文件格式，支持源码级别的调试，调试信息存在于 <a href="https://en.wikipedia.org/wiki/Object_file" target="_blank" rel="noopener">Object_file</a> 中，一般都比较大。Xcode 调试模式下一般都是使用 DWARF 来进行符号化的。</li>
 <li>dSYM：独立的符号表文件，主要用来做发布产品的崩溃符号化。dSYM 是一个压缩包，里面包含了 DWARF 文件。</li>
 </ul>
-<img src="/2018/12/04/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%8C%85%E4%BD%93%E5%A4%A7%E5%B0%8F/%E8%B0%83%E8%AF%95%E7%AC%A6%E5%8F%B7.jpg" class title="调试符号">
-
+<p><img src="https://nos.netease.com/cloud-website-bucket/201809181452418e5bac54-bed6-4a3d-a3cb-48af54e2daf2.jpg" alt="img"> </p>
 <p>使用 Xcode 编译打包的时候会先通过可执行文件的 Debug Map 获取到所有对象文件的位置，然后使用 <a href="https://llvm.org/docs/CommandGuide/dsymutil.html" target="_blank" rel="noopener">dsymutil</a> 来将对象文件中的 DWARF 提取出来生成 dSYM 文件。</p>
 <h4 id="Strip-Linked-Product"><a href="#Strip-Linked-Product" class="headerlink" title="Strip Linked Product"></a>Strip Linked Product</h4><blockquote>
 <p>If enabled, the linked product of the build will be stripped of symbols when performing deployment postprocessing.</p>
@@ -409,14 +412,11 @@
 <p>（1）成员变量部分：成员变量本质是一个大小 32B 的结构体，结构体中三个指针（Offset、Name、Type）指向的内容的大小分别为 8B、10B、10B，其中 Name、Type 指针指向的内容的大小和成员变量的类型、名字长度相关。总大小大约 60B。</p>
 <figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">presentViewController</span> ()</span></span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">nonatomic</span>,<span class="keyword">strong</span>) <span class="built_in">UIImageView</span> *imageView;</span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">nonatomic</span>,<span class="keyword">strong</span>) <span class="built_in">UIButton</span> *button;</span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">nonatomic</span>,<span class="keyword">strong</span>) <span class="built_in">NSString</span> *name;</span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
 
-<img src="/2018/12/04/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%8C%85%E4%BD%93%E5%A4%A7%E5%B0%8F/%E5%B1%9E%E6%80%A7%E5%8A%A8%E6%80%81%E5%8C%96%E4%B9%8B%E6%88%90%E5%91%98%E5%8F%98%E9%87%8F%E9%83%A8%E5%88%86.png" class title="属性动态化之成员变量部分">
-
+<p><img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/4e5eba61ac4741be8d465a63e651ac35~tplv-k3u1fbpfcp-watermark.image" alt="img"></p>
 <p>（2）自动生成的 set/get 方法部分：set/get 方法本质是一个大小 24B 的结构体，结构体包含三个指针 Name、Type、Implementation，指向的内容大小大概为 10B、10B、20B。一个方法大小大概是64B，set、get 两个方法就是 128B。</p>
-
-
+<p><img src="https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/b3d3d5debbb34a81aec16861e52046ff~tplv-k3u1fbpfcp-watermark.image" alt="img"></p>
 <p>（3）property 部分：property 的本质仍然是个结构体，大小是 16B，结构体中两个指针指向内容的大小分别大概是 10B、10B，和属性的名字和类型相关。总大小大概 36B。</p>
-
-
+<p><img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/8832b403c76745e9bb6c2a2df354a3ed~tplv-k3u1fbpfcp-watermark.image" alt="img"></p>
 <p>即一个属性占用的包大小大约为 224B。</p>
 <p>如果我们用 <code>@dynamic</code>修饰一个属性，不生成成员变量、get/set 方法，则一个属性可以由 224B 减少到 36B，即仅包含 property 部分的大小。</p>
 <p>同时，代码中存在大量通过脚本自动生成的 <code>JSONModel</code>子类，这些子类往往拥有大量属性。这里也就存在着包大小优化空间。</p>
@@ -440,8 +440,7 @@
 <h3 id="资源压缩"><a href="#资源压缩" class="headerlink" title="资源压缩"></a>资源压缩</h3><p>当我们一定要在安装包内置某个资源的话，应该在可接受的范畴之内，尽可能的小。比如我们安装包中内置的视频、音频资源可以采用降低清晰度、码率等等方式进行压缩。iOS 原生的多语言方案比较消耗空间，可以考虑自研更加紧凑的方案。</p>
 <h3 id="使用-RGB-with-palette-压缩图片"><a href="#使用-RGB-with-palette-压缩图片" class="headerlink" title="使用 RGB with palette 压缩图片"></a>使用 RGB with palette 压缩图片</h3><p>做过包体优化的话，你可能会发现，如果对 Asset Catalog 中的 png 图片做无损压缩，虽然放入 Asset Catalog 的图片大小有了明显减小，但是构建的产物的大小却几乎没有变化。这是因为，Xcode 中，构建 Asset Catalog 的工具 actool 会首先对 Asset Catalog 中的 png 图片进行解码，得到 Bitmap 数据，然后再运用 actool 的编码压缩算法进行编码压缩处理。无损压缩通过变换图片的编码压缩算法减少大小，但是不会改变 Bitmap 数据。对于 actool 来说，它接收的输入没有改变，所以无损压缩无法优化 Assets.car 的大小。所以要优化 Assets.car 的大小，做合适的有损压缩是一个思路。</p>
 <p>有损压缩可以尝试 <a href="https://manifold.net/doc/mfd9/palette_images.htm" target="_blank" rel="noopener">RGB with palette 编码方式</a>。RGB with palette 编码的得到的字节流首先维护了一个颜色数组。颜色数组每个成员用 RGBA 四个分量维护一个颜色。图像中的每个像素点则存储颜色数组的下标代表该点的颜色。颜色数组维护的颜色种类和数量由图片决定，同时可以人为的限制颜色数组维护颜色的种类的上限，默认为最大值 256 种。这种编码方式正如它的名字：palette（调色板）。</p>
-
-
+<p><img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/7b748ca6fba6462287a7fae857fcd1fd~tplv-k3u1fbpfcp-watermark.image" alt="img"></p>
 <p>App 中大部分图片虽然使用了很多种类的颜色，但这些颜色中大多数都非常接近，从视觉上很难分辨，比如大量扁平风格的 icon。这种类型的图片非常适合用 palette 编码且减少颜色数组大小的方式来进行有损压缩，既能减少颜色数量实现有损压缩，也能保证保留的颜色贴近原始图片，使得经过有损压缩后的也看起来质量无损。</p>
 <p>在具体执行中，我们使用了 ImageOptim 工具改变图片的编码方式为 RGB with palette ：</p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">imageoptim -Q <span class="comment">--no-imageoptim --imagealpha --number-of-colors 16 --quality 40-80 ./1.png</span></span><br></pre></td></tr></table></figure>
@@ -481,16 +480,11 @@
 <h3 id="Framework-中的可执行文件"><a href="#Framework-中的可执行文件" class="headerlink" title="Framework 中的可执行文件"></a>Framework 中的可执行文件</h3><p>这部分可以参考以上的可执行文件瘦身。</p>
 <h1 id="Plugins"><a href="#Plugins" class="headerlink" title="Plugins"></a>Plugins</h1><p>Plugin 内部主要存放的就是 <a href="https://developer.apple.com/library/content/documentation/General/Conceptual/ExtensibilityPG/index.html" target="_blank" rel="noopener">App Extension</a>，App Extension 是独立打包签名，然后再拷贝进 Target App Bundle 的。</p>
 <h3 id="Plugin-中的静态库"><a href="#Plugin-中的静态库" class="headerlink" title="Plugin 中的静态库"></a>Plugin 中的静态库</h3><p>静态库最终会打包进可执行文件内部，所以如果 App Extension 依赖了三方静态库，同时主工程也引用了相同的静态库的话，最终 App 包中可能会包含两份三方静态库的体积。</p>
-<h3 id="Plugin-中的动态库"><a href="#Plugin-中的动态库" class="headerlink" title="Plugin 中的动态库"></a>Plugin 中的动态库</h3><p>动态库是在运行的时候才进行加载链接的，所以 Plugin 的动态库是可以和主工程共享的，把动态库的加载路径 Runpath Search Paths 修改为跟主工程一致就可以共享主工程引入的动态库。</p>
-
-
+<h3 id="Plugin-中的动态库"><a href="#Plugin-中的动态库" class="headerlink" title="Plugin 中的动态库"></a>Plugin 中的动态库</h3><p>动态库是在运行的时候才进行加载链接的，所以 Plugin 的动态库是可以和主工程共享的，把动态库的加载路径 Runpath Search Paths 修改为跟主工程一致就可以共享主工程引入的动态库。<img src="https://nos.netease.com/cloud-website-bucket/20180918145633f82a98cf-fc75-44a3-830d-553f837991d2.jpg" alt="img"></p>
 <h3 id="Plugin-中的-Swift-Standard-Library"><a href="#Plugin-中的-Swift-Standard-Library" class="headerlink" title="Plugin 中的 Swift Standard Library"></a>Plugin 中的 Swift Standard Library</h3><p>在 Swift ABI 稳定之前，Swift 标准库会被拷贝进 App 当中。Swift 标准库是动态链接库，也是可以在主工程和其他的 App Extensions 之间共享的，前提当然是所有 Target 使用的 Swift 版本是一致的，否则就会出现意料之外的 bug。 设置共享分为两步：</p>
 <ul>
-<li><p>设置 Extension 中的 Always Embed Swift Standard Libraries 为 NO，让编译器不再为 Extension 生成 Swift 标准库</p>
-
-</li>
-<li><p>设置 Extension 中的动态库的查找路径为主工程的 Framework 文件夹</p>
-</li>
+<li>设置 Extension 中的 Always Embed Swift Standard Libraries 为 NO，让编译器不再为 Extension 生成 Swift 标准库<img src="https://nos.netease.com/cloud-website-bucket/201809181456458ffc259f-3338-4408-82c6-503bdc0e1a21.jpg" alt="img"></li>
+<li>设置 Extension 中的动态库的查找路径为主工程的 Framework 文件夹</li>
 </ul>
 <h2 id="防劣化的建设"><a href="#防劣化的建设" class="headerlink" title="防劣化的建设"></a>防劣化的建设</h2><p>在优化之后，一定要做好防劣化的建设，尤其是业务迭代迅速的团队，否则很有可能优化的速度赶不上劣化。</p>
 <h3 id="各业务线对包大小占用的展示和监控"><a href="#各业务线对包大小占用的展示和监控" class="headerlink" title="各业务线对包大小占用的展示和监控"></a>各业务线对包大小占用的展示和监控</h3><p>一般大型项目都是分多个业务线，对各业务线代码占用状况进行摸底和监控，有助于从全局的角度了解头条的代码状况，找到“性价比”较低的模块。</p>
@@ -543,8 +537,8 @@
       <i class="fa fa-chevron-left"></i> 「性能优化」之启动优化
     </a></div>
       <div class="post-nav-item">
-    <a href="/2018/12/04/%E3%80%8C%E5%88%A8%E6%A0%B9%E9%97%AE%E5%BA%95%E3%80%8D%E4%B9%8BRuntime%E6%B6%88%E6%81%AF%E5%8F%91%E9%80%81%E5%92%8C%E8%BD%AC%E5%8F%91/" rel="next" title="刨根问底」之Runtime消息发送和转发">
-      刨根问底」之Runtime消息发送和转发 <i class="fa fa-chevron-right"></i>
+    <a href="/2018/12/04/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8BWebview%E9%A6%96%E5%B1%8F/" rel="next" title="「性能优化」之Webview首屏">
+      「性能优化」之Webview首屏 <i class="fa fa-chevron-right"></i>
     </a></div>
     </div>
       </footer>
