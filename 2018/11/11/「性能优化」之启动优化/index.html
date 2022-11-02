@@ -23,36 +23,36 @@
   <meta name="description" content="启动是 App 给用户的第一印象，启动越慢用户流失的概率就越高，良好的启动速度是用户体验不可缺少的一环。本文先梳理app构建和启动流程，并结合app构建和启动流程讲述一些可优化点。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="「性能优化」之启动优化">
-<meta property="og:url" content="http://heseng91.github.io/2018/12/04/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96/index.html">
+<meta property="og:url" content="http://heseng91.github.io/2018/11/11/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96/index.html">
 <meta property="og:site_name" content="和僧">
 <meta property="og:description" content="启动是 App 给用户的第一印象，启动越慢用户流失的概率就越高，良好的启动速度是用户体验不可缺少的一环。本文先梳理app构建和启动流程，并结合app构建和启动流程讲述一些可优化点。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://heseng91.github.io/2018/12/04/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96/%E5%8D%95Target%E6%9E%84%E5%BB%BA%E6%B5%81%E7%A8%8B.png">
-<meta property="og:image" content="http://heseng91.github.io/2018/12/04/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96/%E7%BC%96%E8%AF%91%E5%99%A8%E6%9E%84%E6%88%90.png">
-<meta property="og:image" content="http://heseng91.github.io/2018/12/04/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96/%E9%93%BE%E6%8E%A5%E7%94%9F%E6%88%90mach-o.png">
-<meta property="og:image" content="http://heseng91.github.io/2018/12/04/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96/%E9%9D%99%E6%80%81%E9%93%BE%E6%8E%A5%E9%9D%99%E6%80%81%E8%A3%85%E5%85%A5%E5%86%85%E5%AD%98%E5%92%8C%E7%A1%AC%E7%9B%98%E4%BD%BF%E7%94%A8%E6%83%85%E5%86%B5.png">
-<meta property="og:image" content="http://heseng91.github.io/2018/12/04/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96/%E8%99%9A%E6%8B%9F%E5%86%85%E5%AD%98%E7%9A%84%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86.png">
-<meta property="og:image" content="http://heseng91.github.io/2018/12/04/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96/%E9%9D%99%E6%80%81%E9%93%BE%E6%8E%A5%E5%8A%A8%E6%80%81%E8%A3%85%E5%85%A5%E5%86%85%E5%AD%98%E5%92%8C%E7%A1%AC%E7%9B%98%E4%BD%BF%E7%94%A8%E6%83%85%E5%86%B5.png">
-<meta property="og:image" content="http://heseng91.github.io/2018/12/04/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96/%E5%8A%A8%E6%80%81%E9%93%BE%E6%8E%A5%E5%8A%A8%E6%80%81%E8%A3%85%E5%85%A5%E5%86%85%E5%AD%98%E5%92%8C%E7%A1%AC%E7%9B%98%E4%BD%BF%E7%94%A8%E6%83%85%E5%86%B5.png">
-<meta property="og:image" content="http://heseng91.github.io/2018/12/04/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96/dyld2%E5%B7%A5%E4%BD%9C%E6%B5%81%E7%A8%8B.png">
-<meta property="og:image" content="http://heseng91.github.io/2018/12/04/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96/runloop%E5%B7%A5%E4%BD%9C%E6%B5%81%E7%A8%8B.png">
-<meta property="og:image" content="http://heseng91.github.io/2018/12/04/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96/Runloop%E4%B8%8E%E5%90%AF%E5%8A%A8%E7%9A%84%E5%85%B3%E7%B3%BB.png">
-<meta property="og:image" content="http://heseng91.github.io/2018/12/04/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96/%E5%B1%8F%E5%B9%95%E6%89%AB%E6%8F%8F%E6%B5%81%E7%A8%8B.png">
-<meta property="og:image" content="http://heseng91.github.io/2018/12/04/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96/iOS%E6%B8%B2%E6%9F%93%E7%9A%84%E5%A4%A7%E8%87%B4%E6%B5%81%E7%A8%8B.png">
-<meta property="og:image" content="http://heseng91.github.io/2018/12/04/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96/iOS%E6%B8%B2%E6%9F%93%E6%B5%81%E6%B0%B4%E7%BA%BF.png">
-<meta property="og:image" content="http://heseng91.github.io/2018/12/04/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96/app%E5%90%AF%E5%8A%A8%E6%B5%81%E7%A8%8B.png">
-<meta property="og:image" content="http://heseng91.github.io/2018/12/04/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96/%E9%A2%84%E5%8A%A0%E8%BD%BD%E5%AD%90%E7%BA%BF%E7%A8%8B%E5%90%AF%E5%8A%A8%E4%BB%BB%E5%8A%A1.png">
-<meta property="og:image" content="http://heseng91.github.io/2018/12/04/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96/Fishhook%E4%BF%AE%E6%94%B9%E6%98%A0%E5%B0%84%E5%85%B3%E7%B3%BB%E8%BF%87%E7%A8%8B.png">
-<meta property="og:image" content="http://heseng91.github.io/2018/12/04/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96/%E4%BA%8C%E8%BF%9B%E5%88%B6%E9%87%8D%E6%8E%92.png">
-<meta property="og:image" content="http://heseng91.github.io/2018/12/04/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96/%E6%AE%B5%E9%87%8D%E5%91%BD%E5%90%8D.png">
-<meta property="article:published_time" content="2018-12-04T08:30:33.000Z">
-<meta property="article:modified_time" content="2022-07-25T19:30:09.325Z">
+<meta property="og:image" content="http://heseng91.github.io/2018/11/11/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96/%E5%8D%95Target%E6%9E%84%E5%BB%BA%E6%B5%81%E7%A8%8B.png">
+<meta property="og:image" content="http://heseng91.github.io/2018/11/11/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96/%E7%BC%96%E8%AF%91%E5%99%A8%E6%9E%84%E6%88%90.png">
+<meta property="og:image" content="http://heseng91.github.io/2018/11/11/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96/%E9%93%BE%E6%8E%A5%E7%94%9F%E6%88%90mach-o.png">
+<meta property="og:image" content="http://heseng91.github.io/2018/11/11/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96/%E9%9D%99%E6%80%81%E9%93%BE%E6%8E%A5%E9%9D%99%E6%80%81%E8%A3%85%E5%85%A5%E5%86%85%E5%AD%98%E5%92%8C%E7%A1%AC%E7%9B%98%E4%BD%BF%E7%94%A8%E6%83%85%E5%86%B5.png">
+<meta property="og:image" content="http://heseng91.github.io/2018/11/11/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96/%E8%99%9A%E6%8B%9F%E5%86%85%E5%AD%98%E7%9A%84%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86.png">
+<meta property="og:image" content="http://heseng91.github.io/2018/11/11/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96/%E9%9D%99%E6%80%81%E9%93%BE%E6%8E%A5%E5%8A%A8%E6%80%81%E8%A3%85%E5%85%A5%E5%86%85%E5%AD%98%E5%92%8C%E7%A1%AC%E7%9B%98%E4%BD%BF%E7%94%A8%E6%83%85%E5%86%B5.png">
+<meta property="og:image" content="http://heseng91.github.io/2018/11/11/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96/%E5%8A%A8%E6%80%81%E9%93%BE%E6%8E%A5%E5%8A%A8%E6%80%81%E8%A3%85%E5%85%A5%E5%86%85%E5%AD%98%E5%92%8C%E7%A1%AC%E7%9B%98%E4%BD%BF%E7%94%A8%E6%83%85%E5%86%B5.png">
+<meta property="og:image" content="http://heseng91.github.io/2018/11/11/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96/dyld2%E5%B7%A5%E4%BD%9C%E6%B5%81%E7%A8%8B.png">
+<meta property="og:image" content="http://heseng91.github.io/2018/11/11/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96/runloop%E5%B7%A5%E4%BD%9C%E6%B5%81%E7%A8%8B.png">
+<meta property="og:image" content="http://heseng91.github.io/2018/11/11/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96/Runloop%E4%B8%8E%E5%90%AF%E5%8A%A8%E7%9A%84%E5%85%B3%E7%B3%BB.png">
+<meta property="og:image" content="http://heseng91.github.io/2018/11/11/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96/%E5%B1%8F%E5%B9%95%E6%89%AB%E6%8F%8F%E6%B5%81%E7%A8%8B.png">
+<meta property="og:image" content="http://heseng91.github.io/2018/11/11/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96/iOS%E6%B8%B2%E6%9F%93%E7%9A%84%E5%A4%A7%E8%87%B4%E6%B5%81%E7%A8%8B.png">
+<meta property="og:image" content="http://heseng91.github.io/2018/11/11/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96/iOS%E6%B8%B2%E6%9F%93%E6%B5%81%E6%B0%B4%E7%BA%BF.png">
+<meta property="og:image" content="http://heseng91.github.io/2018/11/11/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96/app%E5%90%AF%E5%8A%A8%E6%B5%81%E7%A8%8B.png">
+<meta property="og:image" content="http://heseng91.github.io/2018/11/11/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96/%E9%A2%84%E5%8A%A0%E8%BD%BD%E5%AD%90%E7%BA%BF%E7%A8%8B%E5%90%AF%E5%8A%A8%E4%BB%BB%E5%8A%A1.png">
+<meta property="og:image" content="http://heseng91.github.io/2018/11/11/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96/Fishhook%E4%BF%AE%E6%94%B9%E6%98%A0%E5%B0%84%E5%85%B3%E7%B3%BB%E8%BF%87%E7%A8%8B.png">
+<meta property="og:image" content="http://heseng91.github.io/2018/11/11/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96/%E4%BA%8C%E8%BF%9B%E5%88%B6%E9%87%8D%E6%8E%92.png">
+<meta property="og:image" content="http://heseng91.github.io/2018/11/11/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96/%E6%AE%B5%E9%87%8D%E5%91%BD%E5%90%8D.png">
+<meta property="article:published_time" content="2018-11-11T03:30:33.000Z">
+<meta property="article:modified_time" content="2022-11-02T16:52:52.424Z">
 <meta property="article:author" content="和僧">
 <meta property="article:tag" content="和僧-技术博客，技术博客">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://heseng91.github.io/2018/12/04/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96/%E5%8D%95Target%E6%9E%84%E5%BB%BA%E6%B5%81%E7%A8%8B.png">
+<meta name="twitter:image" content="http://heseng91.github.io/2018/11/11/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96/%E5%8D%95Target%E6%9E%84%E5%BB%BA%E6%B5%81%E7%A8%8B.png">
 
-<link rel="canonical" href="http://heseng91.github.io/2018/12/04/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96/">
+<link rel="canonical" href="http://heseng91.github.io/2018/11/11/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96/">
 
 
 <script id="page-configurations">
@@ -175,7 +175,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://heseng91.github.io/2018/12/04/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96/">
+    <link itemprop="mainEntityOfPage" href="http://heseng91.github.io/2018/11/11/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -198,14 +198,14 @@
               </span>
               <span class="post-meta-item-text">发表于</span>
 
-              <time title="创建时间：2018-12-04 16:30:33" itemprop="dateCreated datePublished" datetime="2018-12-04T16:30:33+08:00">2018-12-04</time>
+              <time title="创建时间：2018-11-11 11:30:33" itemprop="dateCreated datePublished" datetime="2018-11-11T11:30:33+08:00">2018-11-11</time>
             </span>
               <span class="post-meta-item">
                 <span class="post-meta-item-icon">
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-07-26 03:30:09" itemprop="dateModified" datetime="2022-07-26T03:30:09+08:00">2022-07-26</time>
+                <time title="修改时间：2022-11-03 00:52:52" itemprop="dateModified" datetime="2022-11-03T00:52:52+08:00">2022-11-03</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -253,7 +253,7 @@
 
 <h3 id="pipeline"><a href="#pipeline" class="headerlink" title="pipeline"></a>pipeline</h3><p>除了代码文件之外，现代移动软件不可避免为会有一些资源文件（如 storyboard，asset ），这些资源文件也需要编译以加快加载速度，然后，同资源文件一起打包成.app。最后出乎安全考虑，还需要对.app进行签名，防篡改。</p>
 <p>以单 Target 为例，整个构建流程如下：</p>
-<img src="/2018/12/04/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96/%E5%8D%95Target%E6%9E%84%E5%BB%BA%E6%B5%81%E7%A8%8B.png" class title="单Target构建流程">
+<img src="/2018/11/11/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96/%E5%8D%95Target%E6%9E%84%E5%BB%BA%E6%B5%81%E7%A8%8B.png" class title="单Target构建流程">
 
 <ul>
 <li>源文件(.m/.c/.swift 等)是单独编译的，输出对应的目标文件(.o)</li>
@@ -265,7 +265,7 @@
 </ul>
 <p>主要可分为如下几个阶段：</p>
 <h4 id="编译"><a href="#编译" class="headerlink" title="编译"></a>编译</h4><p>编译器构成如下：</p>
-<img src="/2018/12/04/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96/%E7%BC%96%E8%AF%91%E5%99%A8%E6%9E%84%E6%88%90.png" class title="编译器构成">
+<img src="/2018/11/11/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96/%E7%BC%96%E8%AF%91%E5%99%A8%E6%9E%84%E6%88%90.png" class title="编译器构成">
 
 <p>编译的具体转化过程如下：</p>
 <p>1、预处理（preprocessor）：预处理会进行头文件引入、宏替换、注释处理、条件编译（#ifdef）等操作；</p>
@@ -275,7 +275,7 @@
 <p>5、生成汇编代码：LLVM 对 IR 进行优化后，会针对不同架构生成不同的目标代码，最后以汇编代码的格式输出；</p>
 <p>6、汇编器以汇编代码作为输入，将汇编代码转换为机器代码，最后输出目标文件（object file）。</p>
 <h4 id="链接"><a href="#链接" class="headerlink" title="链接"></a>链接</h4><p>连接器把编译产生的 .o 文件和（dylib、a、tbd）文件，生成一个 mach-o 文件。链接的过程并不产生新的代码，只会做一些移动和补丁。</p>
-<img src="/2018/12/04/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96/%E9%93%BE%E6%8E%A5%E7%94%9F%E6%88%90mach-o.png" class title="链接生成mach-o">
+<img src="/2018/11/11/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96/%E9%93%BE%E6%8E%A5%E7%94%9F%E6%88%90mach-o.png" class title="链接生成mach-o">
 
 <ul>
 <li>tbd 的全称是 text-based stub library，是因为链接的过程中只需要符号就可以了，所以 Xcode 6 开始，像 UIKit 等系统库就不提供完整的 Mach-O，而是提供一个只包含符号等信息的 tbd 文件。</li>
@@ -293,7 +293,7 @@
 <p>下面介绍一下链接和装入技术的发展史：</p>
 <h4 id="一、静态链接、静态装入"><a href="#一、静态链接、静态装入" class="headerlink" title="一、静态链接、静态装入"></a>一、静态链接、静态装入</h4><p>这种方法最早被采用，其特点是简单，不需要操作系统提供任何额外的支持。程序的不同模块可以并行开发，分别独立编译为相应的目标文件。在得到了所有的目标文件后，静态链接、静态装入的做法是将所有目标文件链接成一个可执行映象，随后在创建进程时将该可执行映象一次全部装入内存。</p>
 <p>举个简单的例子，假设我们开发了两个程序Program1和Program2，Program1由main1.c、utilities.c以及errhdl1.c三部分组成，分别对应程序的主框架、一些公用的辅助函数（其作用相当于库）以及错误处理部分，这三部分代码编译后分别得到各自对应的目标文件main1.o、utilities.o以及errhdl1.o。同样，Program2由main2.c、utilities.c以及errhdl2.c三部分组成，三部分代码编译后分别得到各自对应的目标文件main2.o、utilities.o以及errhdl2.o。值得注意的是，这里Program1和Program2使用了相同的公用辅助函数utilities.o。当我们采用静态链接、静态装入的方法，同时运行这两个程序时内存和硬盘的使用情况如下图所示：</p>
-<img src="/2018/12/04/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96/%E9%9D%99%E6%80%81%E9%93%BE%E6%8E%A5%E9%9D%99%E6%80%81%E8%A3%85%E5%85%A5%E5%86%85%E5%AD%98%E5%92%8C%E7%A1%AC%E7%9B%98%E4%BD%BF%E7%94%A8%E6%83%85%E5%86%B5.png" class title="静态链接静态装入内存和硬盘使用情况">
+<img src="/2018/11/11/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96/%E9%9D%99%E6%80%81%E9%93%BE%E6%8E%A5%E9%9D%99%E6%80%81%E8%A3%85%E5%85%A5%E5%86%85%E5%AD%98%E5%92%8C%E7%A1%AC%E7%9B%98%E4%BD%BF%E7%94%A8%E6%83%85%E5%86%B5.png" class title="静态链接静态装入内存和硬盘使用情况">
 
 <p>这种方式会带来如下问题：</p>
 <p><code>安全问题</code> ：由于在内存条中使用的都是真实物理地址，而且内存条中各个应用进程都是按顺序依次排列的。 那么在 <code>进程1</code> 中通过地址偏移就可以访问到 <code>其他进程</code> 的内存。</p>
@@ -306,13 +306,13 @@
 <p>2、通过映射表找到其对应的真实物理地址，进而找到数据。</p>
 <p>这个过程又被称为 <strong>地址翻译</strong>，是由操作系统以及 <code>cpu</code>上集成的 <a href="https://baike.baidu.com/item/MMU/4542218?fr=aladdin" target="_blank" rel="noopener"><code>硬件单元 MMU</code></a> 协同来完成的。找到数据后，mmap到内存。<strong>mmap</strong>的全称是 memory map，是一种内存映射技术，可以把文件映射到虚拟内存的地址空间里，这样就可以像直接操作内存那样来读写文件。</p>
 <p>整个虚拟内存的工作原理这里用一张图来展示：</p>
-<img src="/2018/12/04/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96/%E8%99%9A%E6%8B%9F%E5%86%85%E5%AD%98%E7%9A%84%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86.png" class title="虚拟内存的工作原理">
+<img src="/2018/11/11/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96/%E8%99%9A%E6%8B%9F%E5%86%85%E5%AD%98%E7%9A%84%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86.png" class title="虚拟内存的工作原理">
 
 <h5 id="虚拟内存解决效率问题"><a href="#虚拟内存解决效率问题" class="headerlink" title="虚拟内存解决效率问题"></a>虚拟内存解决效率问题</h5><p>刚刚提到虚拟内存空间会被分页，实际上物理内存也会被划分为大小相同的页（page）。虚拟内存空间和物理内存空间都以页作为内存空间的最小单位，而映射表同样是以页为单位的。换句话说，映射表最小只会映射到一页，并不会映射到具体每一个地址。页的大小跟硬件有关，在 arm64 架构一页是 16KB，其余为 4KB。</p>
 <p>对内存分页之后，可以对物理内存进行离散使用。由于存在映射过程，所以虚拟内存对应的物理内存可以任意存放，也不需要一一对应，这样就方便了操作系统对物理内存的管理，也能够可以最大化利用物理内存。同时，也可以采用一些页面调度（Paging）算法，利用翻译过程中也存在的局部性原理，将大概率被使用的帧地址加入到 <a href="https://baike.baidu.com/item/转译后备缓冲区/22685572?fromtitle=TLB&fromid=2339981&fr=aladdin" target="_blank" rel="noopener">TLB</a> 或者页表之中，提高翻译的效率。</p>
 <p>由于可以对物理内存进行离散使用，人们就可以采用动态装入的方式来优化内存浪费问题。其想法也非常简单，即一个函数只有当它被调用时，其所在的模块才会被装入内存。</p>
 <p>仍然以上面提到的两个程序Program1和Program2为例，假如Program1运行过程中出现了错误而Program2在运行过程中没有出现任何错误。当我们采用静态链接、动态装入的方法，同时运行这两个程序时内存和硬盘的使用情况如下图所示：</p>
-<img src="/2018/12/04/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96/%E9%9D%99%E6%80%81%E9%93%BE%E6%8E%A5%E5%8A%A8%E6%80%81%E8%A3%85%E5%85%A5%E5%86%85%E5%AD%98%E5%92%8C%E7%A1%AC%E7%9B%98%E4%BD%BF%E7%94%A8%E6%83%85%E5%86%B5.png" class title="静态链接动态装入内存和硬盘使用情况">
+<img src="/2018/11/11/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96/%E9%9D%99%E6%80%81%E9%93%BE%E6%8E%A5%E5%8A%A8%E6%80%81%E8%A3%85%E5%85%A5%E5%86%85%E5%AD%98%E5%92%8C%E7%A1%AC%E7%9B%98%E4%BD%BF%E7%94%A8%E6%83%85%E5%86%B5.png" class title="静态链接动态装入内存和硬盘使用情况">
 
 <p>（ 上图中我们也看出，实际物理内存并不是连续以及某个进程完整的）。</p>
 <p>当应用被加载到内存中时，并不会将整个应用加载到内存中 。只会放用到的那一部分。也就是动态载入的概念，换句话说就是应用使用多少，实际物理内存就实际存储多少。映射表左侧的 <code>0</code>和 <code>1</code>代表当前地址有没有在物理内存中。当应用访问到某个地址，映射表中为 <code>0</code>，也就是说并没有被加载到物理内存中时，系统就会立刻阻塞整个进程， 触发一个我们所熟知的 <a href="https://link.juejin.cn/?target=https%3A%2F%2Fbaike.baidu.com%2Fitem%2F%E7%BC%BA%E9%A1%B5%E4%B8%AD%E6%96%AD%2F5029040%3Ffr%3Daladdin"><code>缺页中断 - Page Fault</code></a>。当一个缺页中断被触发，操作系统会从磁盘中重新读取这页数据到物理内存上，然后将映射表中虚拟内存指向对应（如果当前内存已满，操作系统会通过置换页算法 <strong>找一页数据进行覆盖</strong>，这也是为什么开再多的应用也不会崩掉， 但是之前开的应用再打开时，就重新启动了的根本原因）。通过这种分页和覆盖机制，就完美的解决了内存浪费和效率问题。</p>
@@ -321,7 +321,7 @@
 <p>为了解决这个问题 , <a href="https://link.juejin.cn/?target=https%3A%2F%2Fbaike.baidu.com%2Fitem%2F%E5%9C%B0%E5%9D%80%E7%A9%BA%E9%97%B4%E9%85%8D%E7%BD%AE%E9%9A%8F%E6%9C%BA%E5%8A%A0%E8%BD%BD%3Ffromtitle%3Daslr%26fromid%3D5779647"><code>ASLR</code></a>应运而生。 其原理就是 <strong>每次</strong>虚拟地址在映射真实地址之前，增加一个随机偏移值，以此来解决我们刚刚所提到的这个问题。</p>
 <h4 id="三、动态链接、动态装入"><a href="#三、动态链接、动态装入" class="headerlink" title="三、动态链接、动态装入"></a>三、动态链接、动态装入</h4><p>采用静态链接、动态装入的方法后看似只剩下硬盘空间使用效率不高的问题了，实际上内存使用效率不高的问题仍然没有完全解决。图2中，既然两个程序用到的是相同的utilities.o，那么理想的情况是系统中只保存一份utilities.o的拷贝，无论是在内存中还是在硬盘上，于是人们想到了动态链接。</p>
 <p>下面我们就来看看上面提到的两个程序Program1和Program2在采用动态链接、动态装入的方法，同时运行这两个程序时内存和硬盘的使用情况（见下图）。仍然假设Program1运行过程中出现了错误而Program2在运行过程中没有出现任何错误。</p>
-<img src="/2018/12/04/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96/%E5%8A%A8%E6%80%81%E9%93%BE%E6%8E%A5%E5%8A%A8%E6%80%81%E8%A3%85%E5%85%A5%E5%86%85%E5%AD%98%E5%92%8C%E7%A1%AC%E7%9B%98%E4%BD%BF%E7%94%A8%E6%83%85%E5%86%B5.png" class title="动态链接动态装入内存和硬盘使用情况">
+<img src="/2018/11/11/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96/%E5%8A%A8%E6%80%81%E9%93%BE%E6%8E%A5%E5%8A%A8%E6%80%81%E8%A3%85%E5%85%A5%E5%86%85%E5%AD%98%E5%92%8C%E7%A1%AC%E7%9B%98%E4%BD%BF%E7%94%A8%E6%83%85%E5%86%B5.png" class title="动态链接动态装入内存和硬盘使用情况">
 
 <p>动态链接的这一特性对于库的升级（比如错误的修正）是至关重要的。当一个库升级到一个新版本时，所有用到这个库的程序将自动使用新的版本。如果不使用动态链接技术，那么所有这些程序都需要被重新链接才能得以访问新版的库。为了避免程序意外使用到一些不兼容的新版的库，通常在程序和库中都包含各自的版本信息。内存中可能会同时存在着一个库的几个版本，但是每个程序可以通过版本信息来决定它到底应该使用哪一个。如果对库只做了微小的改动，库的版本号将保持不变；如果改动较大，则相应递增版本号。因此，如果新版库中含有与早期不兼容的改动，只有那些使用新版库进行编译的程序才会受到影响，而在新版库安装之前进行过链接的程序将继续使用以前的库。这样的系统被称作共享库系统。</p>
 <p>相比之前的静态链接，动态链接有以下几点好处：</p>
@@ -367,7 +367,7 @@
 <p>那么dyld 3相比 dyld 2是怎么做优化的呢？要回答这个问题，需要先简要介绍分别介绍一下app的启动流程。</p>
 <p>用户点击图标之后，会发送一个系统调用 execve 到内核，内核创建进程。接着会把主二进制 mmap 进来，读取 load command 中的<code>LC_LOAD_DYLINKER</code>，找到 dyld 的的路径。然后 mmap dyld 到虚拟内存，找到 dyld 的入口函数<code>_dyld_start</code>，把 PC 寄存器设置成<code>_dyld_start</code>，接下来启动流程交给了 dyld。</p>
 <p>dyld 2的工作流程图如下：</p>
-<img src="/2018/12/04/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96/dyld2%E5%B7%A5%E4%BD%9C%E6%B5%81%E7%A8%8B.png" class title="dyld2工作流程">
+<img src="/2018/11/11/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96/dyld2%E5%B7%A5%E4%BD%9C%E6%B5%81%E7%A8%8B.png" class title="dyld2工作流程">
 
 <p>1、首先，dyld 会解析mach-o header，从中找到依赖的库。然后这些库也可能依赖其它库，所以dyld会不断递归找到所有依赖的库，并形成一张动态库的依赖图。一个iOS应用平均3 到 600 动态链接库，所以这个步骤包含了较大的工作量。</p>
 <p>2、接着dyld会把依赖的动态库映射到应用地址空间。</p>
@@ -398,14 +398,14 @@
 <h3 id="Runloop"><a href="#Runloop" class="headerlink" title="Runloop"></a>Runloop</h3><p>线程在执行完代码就会退出，很明显主线程是不能退出的，那么就需要一种机制：事件来的时候执行任务，否则让线程休眠，Runloop 就是实现这个功能的。</p>
 <p>Runloop 本质上是一个<code>While</code> 循环，在图中橙色部分的 <code>mach_msg_trap</code> 就是触发一个系统调用，让线程休眠，等待事件到来，唤醒 Runloop，继续执行这个 <code>while</code>循环。</p>
 <p>Runloop 主要处理几种任务：Source0，Source1，Timer，GCD MainQueue，Block。在循环的合适时机，会以 Observer 的方式通知外部执行到了哪里。</p>
-<img src="/2018/12/04/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96/runloop%E5%B7%A5%E4%BD%9C%E6%B5%81%E7%A8%8B.png" class title="runloop工作流程">
+<img src="/2018/11/11/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96/runloop%E5%B7%A5%E4%BD%9C%E6%B5%81%E7%A8%8B.png" class title="runloop工作流程">
 
 <p>那么，Runloop 与启动又有什么关系呢？</p>
 <ul>
 <li><strong>App 的 LifeCycle 方法是基于 Runloop 的 Source0 的</strong></li>
 <li><strong>首帧渲染是基于 Runloop Block 的</strong></li>
 </ul>
-<img src="/2018/12/04/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96/Runloop%E4%B8%8E%E5%90%AF%E5%8A%A8%E7%9A%84%E5%85%B3%E7%B3%BB.png" class title="Runloop与启动的关系">
+<img src="/2018/11/11/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96/Runloop%E4%B8%8E%E5%90%AF%E5%8A%A8%E7%9A%84%E5%85%B3%E7%B3%BB.png" class title="Runloop与启动的关系">
 
 <p>Runloop 在启动上主要有几点应用：</p>
 <ul>
@@ -425,11 +425,11 @@
 <p>要特别提一下 <code>didFinishLaunchNotification</code>，是因为大家在埋点的时候通常会忽略还有这个通知的存在，导致把这部分时间算到 UI 渲染里。</p>
 <h3 id="First-Frame-Render"><a href="#First-Frame-Render" class="headerlink" title="First Frame Render"></a>First Frame Render</h3><p>一般会用 Root Controller 的 viewDidApper 作为渲染的终点，但其实这时候首帧已经渲染完成一小段时间了，Apple 在 MetricsKit 里对启动终点定义是第一个<code>CA::Transaction::commit()</code>。</p>
 <p>什么是 CATransaction 呢？我们先来看一下渲染的大致流程。</p>
-<img src="/2018/12/04/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96/%E5%B1%8F%E5%B9%95%E6%89%AB%E6%8F%8F%E6%B5%81%E7%A8%8B.png" class title="屏幕扫描流程">
+<img src="/2018/11/11/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96/%E5%B1%8F%E5%B9%95%E6%89%AB%E6%8F%8F%E6%B5%81%E7%A8%8B.png" class title="屏幕扫描流程">
 
 <p>回到过去的 CRT 显示器时期，CRT 的电子枪按照上面方式，从上到下一行行扫描，扫描完成后显示器就呈现一帧画面，随后电子枪回到初始位置继续下一次扫描。为了把显示器的显示过程和系统的视频控制器进行同步，显示器（或者其他硬件）会用硬件时钟产生一系列的定时信号。当电子枪换到新的一行，准备进行扫描时，显示器会发出一个水平同步信号（horizonal synchronization），简称 HSync；而当一帧画面绘制完成后，电子枪回复到原位，准备画下一帧前，显示器会发出一个垂直同步信号（vertical synchronization），简称 VSync。显示器通常以固定频率进行刷新，这个刷新率就是 VSync 信号产生的频率。尽管现在的设备大都是液晶显示屏了，但原理仍然没有变。</p>
 <p>了解了显示器的显示原理之后，我们来看下渲染的大致流程。通常来说，渲染是由计算机系统中 CPU、GPU、显示器按下图方式共同协同完成的。</p>
-<img src="/2018/12/04/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96/iOS%E6%B8%B2%E6%9F%93%E7%9A%84%E5%A4%A7%E8%87%B4%E6%B5%81%E7%A8%8B.png" class title="iOS渲染的大致流程">
+<img src="/2018/11/11/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96/iOS%E6%B8%B2%E6%9F%93%E7%9A%84%E5%A4%A7%E8%87%B4%E6%B5%81%E7%A8%8B.png" class title="iOS渲染的大致流程">
 
 <p>1、首先，在VSync 信号到来后，系统图形服务会通过 CADisplayLink 等机制通知 App，App 主线程开始在 CPU 中计算显示内容，比如视图的创建、布局计算、图片解码、文本绘制等。</p>
 <p>2、app 本身并不负责渲染，渲染是在一个单独的进程 RenderServer 做的。在完成对显示内容的计算之后，app通过 IPC 将渲染任务及相关数据进行打包并发送至 Render Server。</p>
@@ -437,7 +437,7 @@
 <p>4、GPU 进行变换、合成、渲染，渲染完成后将渲染结果放入帧缓冲区。</p>
 <p>5、视频控制器会按照 VSync 信号逐行读取帧缓冲区的数据，经过可能的数模转换传递给显示器显示。</p>
 <p>如果上述步骤串联执行，它们执行所消耗的时间将远远超过 16.67 ms。为了满足对屏幕的 60 FPS 刷新率的支持，需要将这些步骤进行分解，通过流水线的方式并行执行，如下图所示。</p>
-<img src="/2018/12/04/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96/iOS%E6%B8%B2%E6%9F%93%E6%B5%81%E6%B0%B4%E7%BA%BF.png" class title="iOS渲染流水线">
+<img src="/2018/11/11/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96/iOS%E6%B8%B2%E6%9F%93%E6%B5%81%E6%B0%B4%E7%BA%BF.png" class title="iOS渲染流水线">
 
 <p>整个流水线一共有下面几个步骤：</p>
 <p><strong>Handle Events</strong>：这个过程中会先处理点击事件，这个过程中有可能会需要改变页面的布局和界面层次。</p>
@@ -467,7 +467,7 @@
 <p><strong>Commit：打包并发送</strong></p>
 <p>这一步主要是：图层打包并发送到 Render Server。</p>
 <h3 id="启动pipeline"><a href="#启动pipeline" class="headerlink" title="启动pipeline"></a>启动pipeline</h3><p>详细回顾下整个启动过程，以及各个阶段耗时的影响因素：</p>
-<img src="/2018/12/04/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96/app%E5%90%AF%E5%8A%A8%E6%B5%81%E7%A8%8B.png" class title="app启动流程">
+<img src="/2018/11/11/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96/app%E5%90%AF%E5%8A%A8%E6%B5%81%E7%A8%8B.png" class title="app启动流程">
 
 <p>1、用户点击图标之后，会发送一个系统调用 execve 到内核，内核创建进程；</p>
 <p>2、接着会把主二进制 mmap 进来，读取 load command 中的<code>LC_LOAD_DYLINKER</code>，找到 dyld 的的路径，本阶段影响启动速度的因素主要是主二进制大小，可以通过下线代码来优化；</p>
@@ -611,10 +611,10 @@
 <p><strong>用 Asset 管理图片而不是直接放在 bundle 里</strong>。Asset 会在编译期做优化，让加载的时候更快，此外在 Asset 中加载图片是要比 Bundle 快的，因为 UIImage imageNamed 要遍历 Bundle 才能找到图。<strong>加载 Asset 中图的耗时主要在在第一次张图，因为要建立索引</strong>，可以通过把启动的图放到一个小的 Asset 里来减少这部分耗时。</p>
 <p>每次创建 UIImage 都需要 IO，在首帧渲染的时候会解码。所以可以通过提前子线程预加载（创建 UIImage）来优化这部分耗时。</p>
 <p>如下图，启动只有到了比较晚的阶段“RootWindow 创建”和“首帧渲染”才会用到图片，<strong>所以可以在启动的早期开预加载的子线程启动任务</strong>。</p>
-<img src="/2018/12/04/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96/%E9%A2%84%E5%8A%A0%E8%BD%BD%E5%AD%90%E7%BA%BF%E7%A8%8B%E5%90%AF%E5%8A%A8%E4%BB%BB%E5%8A%A1.png" class title="预加载子线程启动任务">
+<img src="/2018/11/11/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96/%E9%A2%84%E5%8A%A0%E8%BD%BD%E5%AD%90%E7%BA%BF%E7%A8%8B%E5%90%AF%E5%8A%A8%E4%BB%BB%E5%8A%A1.png" class title="预加载子线程启动任务">
 
 <h3 id="Fishhook"><a href="#Fishhook" class="headerlink" title="Fishhook"></a>Fishhook</h3><p>fishhook 是一个用来 hook C 函数的库，但这个库的第一次调用耗时很高，最好<strong>不要带到线上</strong>。Fishhook 是按照下图的方式遍历 Mach-O 的多个段来找函数指针和函数符号名的映射关系，带来的<strong>副作用就是要大量的 Page In，对于大型 App 来说在 iPhone X 冷启耗时 200ms+</strong>。</p>
-<img src="/2018/12/04/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96/Fishhook%E4%BF%AE%E6%94%B9%E6%98%A0%E5%B0%84%E5%85%B3%E7%B3%BB%E8%BF%87%E7%A8%8B.png" class title="Fishhook修改映射关系过程">
+<img src="/2018/11/11/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96/Fishhook%E4%BF%AE%E6%94%B9%E6%98%A0%E5%B0%84%E5%85%B3%E7%B3%BB%E8%BF%87%E7%A8%8B.png" class title="Fishhook修改映射关系过程">
 
 <p>如果不得不用 fishhook，<strong>请在子线程调用，且不要在在<code>_dyld_register_func_for_add_image</code>直接调用 fishhook</strong>。因为这个方法会持有 dyld 的一个全局互斥锁，主线程在启动的时候系统库经常会调用 <code>dlsym</code>和 <code>dlopen</code>，其内部也需要这个锁，造成上文提到的子线程阻塞主线程。</p>
 <h5 id="首帧渲染"><a href="#首帧渲染" class="headerlink" title="首帧渲染"></a>首帧渲染</h5><p>不同 App 的业务形态不同，首帧渲染优化方式也相差的比较多，几个常见的优化点：</p>
@@ -637,7 +637,7 @@
 <p><strong>二进制重排</strong></p>
 <p>启动具有局部性特征，即只有少部分函数在启动的时候用到，这些函数在中的分布是零散的，所以 Page In 读入的数据利用率并不高。如果我们可以把启动用到的函数排列到二进制的连续区间，那么就可以减少 Page In 的次数，从而优化启动时间：</p>
 <p>以下图为例，方法 1 和方法 3 是启动的时候用到的，为了执行对应的代码，就需要两次 Page In。假如我们把方法 1 和 3 排列到一起，那么只需要一次 Page In，从而提升启动速度。</p>
-<img src="/2018/12/04/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96/%E4%BA%8C%E8%BF%9B%E5%88%B6%E9%87%8D%E6%8E%92.png" class title="二进制重排">
+<img src="/2018/11/11/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96/%E4%BA%8C%E8%BF%9B%E5%88%B6%E9%87%8D%E6%8E%92.png" class title="二进制重排">
 
 <p>链接器 ld 有个参数-order_file 支持按照符号的方式排列二进制。</p>
 <p>获取启动时候用到的符号主流有两种方式：</p>
@@ -647,7 +647,7 @@
 </ul>
 <p><strong>段重命名</strong></p>
 <p>App Store 会对上传的 App 的 TEXT 段加密，在发生 Page In 的时候会解密，解密的过程是很耗时的。既然会 TEXT 段加密，那么直接的思路就是把 TEXT 段中的内容移动到其它段，ld 也有个参数 <code>rename_section</code>支持重命名：</p>
-<img src="/2018/12/04/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96/%E6%AE%B5%E9%87%8D%E5%91%BD%E5%90%8D.png" class title="段重命名">
+<img src="/2018/11/11/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96/%E6%AE%B5%E9%87%8D%E5%91%BD%E5%90%8D.png" class title="段重命名">
 
 <p>抖音重命名方案：</p>
 <figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">"-Wl,-rename_section,__TEXT,__cstring,__RODATA,__cstring"</span>,</span><br><span class="line"><span class="string">"-Wl,-rename_section,__TEXT,__const,__RODATA,__const"</span>,</span><br><span class="line"><span class="string">"-Wl,-rename_section,__TEXT,__gcc_except_tab,__RODATA,__gcc_except_tab"</span>,</span><br><span class="line"><span class="string">"-Wl,-rename_section,__TEXT,__objc_methname,__RODATA,__objc_methname"</span>,</span><br><span class="line"><span class="string">"-Wl,-rename_section,__TEXT,__objc_classname,__RODATA,__objc_classname"</span>,</span><br><span class="line"><span class="string">"-Wl,-rename_section,__TEXT,__objc_methtype,__RODATA,__objc_methtype"</span></span><br><span class="line">复制代码</span><br></pre></td></tr></table></figure>
@@ -676,12 +676,12 @@
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/2018/12/04/%E3%80%8C%E5%88%A8%E6%A0%B9%E9%97%AE%E5%BA%95%E3%80%8D%E4%B9%8B%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/" rel="prev" title="「刨根问底」之内存管理">
-      <i class="fa fa-chevron-left"></i> 「刨根问底」之内存管理
+    <a href="/2018/10/01/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%8C%85%E4%BD%93%E5%A4%A7%E5%B0%8F/" rel="prev" title="「性能优化」之包体大小">
+      <i class="fa fa-chevron-left"></i> 「性能优化」之包体大小
     </a></div>
       <div class="post-nav-item">
-    <a href="/2018/12/04/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%8C%85%E4%BD%93%E5%A4%A7%E5%B0%8F/" rel="next" title="「性能优化」之包体大小">
-      「性能优化」之包体大小 <i class="fa fa-chevron-right"></i>
+    <a href="/2018/12/04/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8BWebview%E9%A6%96%E5%B1%8F/" rel="next" title="「性能优化」之Webview首屏">
+      「性能优化」之Webview首屏 <i class="fa fa-chevron-right"></i>
     </a></div>
     </div>
       </footer>

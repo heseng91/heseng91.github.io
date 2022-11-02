@@ -23,22 +23,22 @@
   <meta name="description" content="安装包大小是 App 重要的基础体验指标之一，与新用户转化直接相关。本文内容包括苹果的对包大小的限制等背景介绍、安装包分析和一些优化措施等。阅读本文之后，你将对安装包优化有一个整体的认知。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="「性能优化」之包体大小">
-<meta property="og:url" content="http://heseng91.github.io/2018/12/04/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%8C%85%E4%BD%93%E5%A4%A7%E5%B0%8F/index.html">
+<meta property="og:url" content="http://heseng91.github.io/2018/10/01/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%8C%85%E4%BD%93%E5%A4%A7%E5%B0%8F/index.html">
 <meta property="og:site_name" content="和僧">
 <meta property="og:description" content="安装包大小是 App 重要的基础体验指标之一，与新用户转化直接相关。本文内容包括苹果的对包大小的限制等背景介绍、安装包分析和一些优化措施等。阅读本文之后，你将对安装包优化有一个整体的认知。">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://nos.netease.com/cloud-website-bucket/201809181451521907e647-871e-44e4-8b7d-1b5539d4682e.jpg">
-<meta property="og:image" content="http://heseng91.github.io/2018/12/04/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%8C%85%E4%BD%93%E5%A4%A7%E5%B0%8F/BitCode.jpg">
-<meta property="og:image" content="http://heseng91.github.io/2018/12/04/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%8C%85%E4%BD%93%E5%A4%A7%E5%B0%8F/%E8%B0%83%E8%AF%95%E7%AC%A6%E5%8F%B7.jpg">
-<meta property="og:image" content="http://heseng91.github.io/2018/12/04/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%8C%85%E4%BD%93%E5%A4%A7%E5%B0%8F/%E5%B1%9E%E6%80%A7%E5%8A%A8%E6%80%81%E5%8C%96%E4%B9%8B%E6%88%90%E5%91%98%E5%8F%98%E9%87%8F%E9%83%A8%E5%88%86.png">
-<meta property="article:published_time" content="2018-12-04T08:30:33.000Z">
-<meta property="article:modified_time" content="2022-11-01T16:39:52.880Z">
+<meta property="og:image" content="http://heseng91.github.io/2018/10/01/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%8C%85%E4%BD%93%E5%A4%A7%E5%B0%8F/BitCode.jpg">
+<meta property="og:image" content="http://heseng91.github.io/2018/10/01/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%8C%85%E4%BD%93%E5%A4%A7%E5%B0%8F/%E8%B0%83%E8%AF%95%E7%AC%A6%E5%8F%B7.jpg">
+<meta property="og:image" content="http://heseng91.github.io/2018/10/01/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%8C%85%E4%BD%93%E5%A4%A7%E5%B0%8F/%E5%B1%9E%E6%80%A7%E5%8A%A8%E6%80%81%E5%8C%96%E4%B9%8B%E6%88%90%E5%91%98%E5%8F%98%E9%87%8F%E9%83%A8%E5%88%86.png">
+<meta property="article:published_time" content="2018-10-01T02:10:33.000Z">
+<meta property="article:modified_time" content="2022-11-02T16:52:40.134Z">
 <meta property="article:author" content="和僧">
 <meta property="article:tag" content="和僧-技术博客，技术博客">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://nos.netease.com/cloud-website-bucket/201809181451521907e647-871e-44e4-8b7d-1b5539d4682e.jpg">
 
-<link rel="canonical" href="http://heseng91.github.io/2018/12/04/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%8C%85%E4%BD%93%E5%A4%A7%E5%B0%8F/">
+<link rel="canonical" href="http://heseng91.github.io/2018/10/01/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%8C%85%E4%BD%93%E5%A4%A7%E5%B0%8F/">
 
 
 <script id="page-configurations">
@@ -161,7 +161,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://heseng91.github.io/2018/12/04/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%8C%85%E4%BD%93%E5%A4%A7%E5%B0%8F/">
+    <link itemprop="mainEntityOfPage" href="http://heseng91.github.io/2018/10/01/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%8C%85%E4%BD%93%E5%A4%A7%E5%B0%8F/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -184,14 +184,14 @@
               </span>
               <span class="post-meta-item-text">发表于</span>
 
-              <time title="创建时间：2018-12-04 16:30:33" itemprop="dateCreated datePublished" datetime="2018-12-04T16:30:33+08:00">2018-12-04</time>
+              <time title="创建时间：2018-10-01 10:10:33" itemprop="dateCreated datePublished" datetime="2018-10-01T10:10:33+08:00">2018-10-01</time>
             </span>
               <span class="post-meta-item">
                 <span class="post-meta-item-icon">
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-11-02 00:39:52" itemprop="dateModified" datetime="2022-11-02T00:39:52+08:00">2022-11-02</time>
+                <time title="修改时间：2022-11-03 00:52:40" itemprop="dateModified" datetime="2022-11-03T00:52:40+08:00">2022-11-03</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -321,7 +321,7 @@
 <p>需要注意的是 LTO 虽然是链接期优化，但是仍然需要编译期参与，加入了 LTO 的编译出来的 .a 本质是 LLVM 的 BitCode，如果使用未开启 LTO 构建出来的的 .a 直接是机器码了。直接链接是无法完成 LTO 优化的。</p>
 <p>开启 LTO 之后跨编译单元的重复代码会被链接器单独生成以 <code>.lto.o</code>为后缀的目标文件进行链接。尤其是对于 Objc Runtime 需要的一些结构 比如方法签名的 literal string， protocol 的结构等有比较大的优化。同时开启 Oz 和 LTO 可以让外联函数都只存在一份能够最大限度的优化安装包体积。如果你的项目中大量的使用了 Protocol 建议还是开启这个选项。</p>
 <h5 id="BitCode"><a href="#BitCode" class="headerlink" title="BitCode"></a>BitCode</h5><p>BitCode 是 iOS 9 引入的新特性，官方文档解释 BitCode 是一种程序中间码，其实就是 LLVM IR 的一种编码形式 - <a href="https://llvm.org/docs/BitCodeFormat.html" target="_blank" rel="noopener">BitCodeFormart</a>。</p>
-<img src="/2018/12/04/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%8C%85%E4%BD%93%E5%A4%A7%E5%B0%8F/BitCode.jpg" class title="BitCode">
+<img src="/2018/10/01/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%8C%85%E4%BD%93%E5%A4%A7%E5%B0%8F/BitCode.jpg" class title="BitCode">
 
 <p>上图表示了 IR 和 BitCode 在编译器架构中所在的位置，需要说明的是 BitCode 是以 section 形式保存在可执行文件中。上文中提到的可执行文件的 Slicing 技术就是基于BitCode。当我们把携带 BitCode 的 App 提交到 AppStore 后，苹果会提取出可执行文件中的 BitCode 段，然后针对不同的 CPU 架构编译和链接成不同的可执行文件变体(Variant)，不同 CPU 架构的设备会自动选择合适的架构的变体进行下载。而在 BitCode 之前，我们都是把所有需要的 CPU 架构集合打包成一个 <a href="https://en.wikipedia.org/wiki/Fat_binary" target="_blank" rel="noopener">Fat Binary</a>，结果就是用户最终下载的安装包之中有很多冗余的 CPU 架构支持代码。</p>
 <p>从以上编译器架构中我们也可以得出一个结论：开启 BitCode 之后编译器后端(Backend)的工作都由 Apple 接管了。所以假如以后苹果推出了新的 CPU 架构或者以后 LLVM 推出了一系列优化，我们也不再需要为其发布新的安装包了。</p>
@@ -340,7 +340,7 @@
 <li><a href="https://en.wikipedia.org/wiki/DWARF" target="_blank" rel="noopener">DWARF</a>：一种通用的调试文件格式，支持源码级别的调试，调试信息存在于 <a href="https://en.wikipedia.org/wiki/Object_file" target="_blank" rel="noopener">Object_file</a> 中，一般都比较大。Xcode 调试模式下一般都是使用 DWARF 来进行符号化的。</li>
 <li>dSYM：独立的符号表文件，主要用来做发布产品的崩溃符号化。dSYM 是一个压缩包，里面包含了 DWARF 文件。</li>
 </ul>
-<img src="/2018/12/04/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%8C%85%E4%BD%93%E5%A4%A7%E5%B0%8F/%E8%B0%83%E8%AF%95%E7%AC%A6%E5%8F%B7.jpg" class title="调试符号">
+<img src="/2018/10/01/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%8C%85%E4%BD%93%E5%A4%A7%E5%B0%8F/%E8%B0%83%E8%AF%95%E7%AC%A6%E5%8F%B7.jpg" class title="调试符号">
 
 <p>使用 Xcode 编译打包的时候会先通过可执行文件的 Debug Map 获取到所有对象文件的位置，然后使用 <a href="https://llvm.org/docs/CommandGuide/dsymutil.html" target="_blank" rel="noopener">dsymutil</a> 来将对象文件中的 DWARF 提取出来生成 dSYM 文件。</p>
 <h4 id="Strip-Linked-Product"><a href="#Strip-Linked-Product" class="headerlink" title="Strip Linked Product"></a>Strip Linked Product</h4><blockquote>
@@ -409,7 +409,7 @@
 <p>（1）成员变量部分：成员变量本质是一个大小 32B 的结构体，结构体中三个指针（Offset、Name、Type）指向的内容的大小分别为 8B、10B、10B，其中 Name、Type 指针指向的内容的大小和成员变量的类型、名字长度相关。总大小大约 60B。</p>
 <figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">presentViewController</span> ()</span></span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">nonatomic</span>,<span class="keyword">strong</span>) <span class="built_in">UIImageView</span> *imageView;</span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">nonatomic</span>,<span class="keyword">strong</span>) <span class="built_in">UIButton</span> *button;</span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">nonatomic</span>,<span class="keyword">strong</span>) <span class="built_in">NSString</span> *name;</span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
 
-<img src="/2018/12/04/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%8C%85%E4%BD%93%E5%A4%A7%E5%B0%8F/%E5%B1%9E%E6%80%A7%E5%8A%A8%E6%80%81%E5%8C%96%E4%B9%8B%E6%88%90%E5%91%98%E5%8F%98%E9%87%8F%E9%83%A8%E5%88%86.png" class title="属性动态化之成员变量部分">
+<img src="/2018/10/01/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%8C%85%E4%BD%93%E5%A4%A7%E5%B0%8F/%E5%B1%9E%E6%80%A7%E5%8A%A8%E6%80%81%E5%8C%96%E4%B9%8B%E6%88%90%E5%91%98%E5%8F%98%E9%87%8F%E9%83%A8%E5%88%86.png" class title="属性动态化之成员变量部分">
 
 <p>（2）自动生成的 set/get 方法部分：set/get 方法本质是一个大小 24B 的结构体，结构体包含三个指针 Name、Type、Implementation，指向的内容大小大概为 10B、10B、20B。一个方法大小大概是64B，set、get 两个方法就是 128B。</p>
 
@@ -539,12 +539,12 @@
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/2018/12/04/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96/" rel="prev" title="「性能优化」之启动优化">
-      <i class="fa fa-chevron-left"></i> 「性能优化」之启动优化
+    <a href="/2018/09/09/%E3%80%8C%E5%88%A8%E6%A0%B9%E9%97%AE%E5%BA%95%E4%B9%8B-Runtime%E7%B1%BB%E5%92%8C%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%AE%9A%E4%B9%89/" rel="prev" title="刨根问底」之Objective-C 2.0 中类与对象的定义">
+      <i class="fa fa-chevron-left"></i> 刨根问底」之Objective-C 2.0 中类与对象的定义
     </a></div>
       <div class="post-nav-item">
-    <a href="/2018/12/04/%E3%80%8C%E5%88%A8%E6%A0%B9%E9%97%AE%E5%BA%95%E3%80%8D%E4%B9%8BRuntime%E6%B6%88%E6%81%AF%E5%8F%91%E9%80%81%E5%92%8C%E8%BD%AC%E5%8F%91/" rel="next" title="刨根问底」之Runtime消息发送和转发">
-      刨根问底」之Runtime消息发送和转发 <i class="fa fa-chevron-right"></i>
+    <a href="/2018/11/11/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96/" rel="next" title="「性能优化」之启动优化">
+      「性能优化」之启动优化 <i class="fa fa-chevron-right"></i>
     </a></div>
     </div>
       </footer>
