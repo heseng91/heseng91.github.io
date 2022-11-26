@@ -20,18 +20,53 @@
     var CONFIG = {"hostname":"heseng91.github.io","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="技术博客">
+  <meta name="description" content="如果说计算机把我们从工业时代带到了信息时代，那么计算机网络就可以说把我们带到了网络时代。现如今，随着越来越多的终端设备接入互联网，人们尤其是程序员不可能不与网络打交道。现在我们的手机，电脑，不夸张地说，离开了网络就是一块“废铁”，它们的作用将大打折扣。了解网络知识可以扩展我们的知识面，也有助于我们更好的编程，因此本文就对程序员需要了解的网络知识做一个简要介绍。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="「精益求精」之网络">
 <meta property="og:url" content="http://heseng91.github.io/2022/11/03/%E3%80%8C%E7%B2%BE%E7%9B%8A%E6%B1%82%E7%B2%BE%E3%80%8D%E4%B9%8B%E7%BD%91%E7%BB%9C/index.html">
 <meta property="og:site_name" content="和僧">
-<meta property="og:description" content="技术博客">
+<meta property="og:description" content="如果说计算机把我们从工业时代带到了信息时代，那么计算机网络就可以说把我们带到了网络时代。现如今，随着越来越多的终端设备接入互联网，人们尤其是程序员不可能不与网络打交道。现在我们的手机，电脑，不夸张地说，离开了网络就是一块“废铁”，它们的作用将大打折扣。了解网络知识可以扩展我们的知识面，也有助于我们更好的编程，因此本文就对程序员需要了解的网络知识做一个简要介绍。">
 <meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://heseng91.github.io/2022/11/03/%E3%80%8C%E7%B2%BE%E7%9B%8A%E6%B1%82%E7%B2%BE%E3%80%8D%E4%B9%8B%E7%BD%91%E7%BB%9C/OSI%E6%A8%A1%E5%9E%8B%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E9%80%9F%E8%A7%88.png">
+<meta property="og:image" content="http://heseng91.github.io/2022/11/03/%E3%80%8C%E7%B2%BE%E7%9B%8A%E6%B1%82%E7%B2%BE%E3%80%8D%E4%B9%8B%E7%BD%91%E7%BB%9C/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84.jpg">
+<meta property="og:image" content="http://heseng91.github.io/2022/11/03/%E3%80%8C%E7%B2%BE%E7%9B%8A%E6%B1%82%E7%B2%BE%E3%80%8D%E4%B9%8B%E7%BD%91%E7%BB%9C/OSI%E5%8F%82%E8%80%83%E6%A8%A1%E5%9E%8B%E4%B8%AD%E6%95%B0%E6%8D%AE%E4%BC%A0%E8%BE%93.png">
+<meta property="og:image" content="http://heseng91.github.io/2022/11/03/%E3%80%8C%E7%B2%BE%E7%9B%8A%E6%B1%82%E7%B2%BE%E3%80%8D%E4%B9%8B%E7%BD%91%E7%BB%9C/%E6%95%B0%E6%8D%AE%E4%BC%A0%E8%BE%93.png">
+<meta property="og:image" content="http://heseng91.github.io/2022/11/03/%E3%80%8C%E7%B2%BE%E7%9B%8A%E6%B1%82%E7%B2%BE%E3%80%8D%E4%B9%8B%E7%BD%91%E7%BB%9C/%E4%BA%92%E8%81%94%E7%BD%91%E7%9A%84%E5%9F%9F%E5%90%8D%E7%BB%93%E6%9E%84.jpg">
+<meta property="og:image" content="http://heseng91.github.io/2022/11/03/%E3%80%8C%E7%B2%BE%E7%9B%8A%E6%B1%82%E7%B2%BE%E3%80%8D%E4%B9%8B%E7%BD%91%E7%BB%9C/%E6%9C%8D%E5%8A%A1%E5%99%A8%E5%88%86%E5%8C%BA.jpg">
+<meta property="og:image" content="http://heseng91.github.io/2022/11/03/%E3%80%8C%E7%B2%BE%E7%9B%8A%E6%B1%82%E7%B2%BE%E3%80%8D%E4%B9%8B%E7%BD%91%E7%BB%9C/%E5%9F%9F%E5%90%8D%E6%9C%8D%E5%8A%A1%E5%99%A8%E6%A0%91%E7%8A%B6%E7%BB%93%E6%9E%84.jpg">
+<meta property="og:image" content="http://heseng91.github.io/2022/11/03/%E3%80%8C%E7%B2%BE%E7%9B%8A%E6%B1%82%E7%B2%BE%E3%80%8D%E4%B9%8B%E7%BD%91%E7%BB%9C/%E5%9F%9F%E5%90%8D%E8%A7%A3%E6%9E%90%E8%BF%87%E7%A8%8B%E6%9F%A5%E8%AF%A2%E6%96%B9%E5%BC%8F.jpg">
+<meta property="og:image" content="http://heseng91.github.io/2022/11/03/%E3%80%8C%E7%B2%BE%E7%9B%8A%E6%B1%82%E7%B2%BE%E3%80%8D%E4%B9%8B%E7%BD%91%E7%BB%9C/TCP%E6%8A%A5%E6%96%87%E6%AE%B5%E9%A6%96%E9%83%A8%E6%A0%BC%E5%BC%8F.jpg">
+<meta property="og:image" content="http://heseng91.github.io/2022/11/03/%E3%80%8C%E7%B2%BE%E7%9B%8A%E6%B1%82%E7%B2%BE%E3%80%8D%E4%B9%8B%E7%BD%91%E7%BB%9C/%E4%B8%89%E6%AC%A1%E6%8F%A1%E6%89%8B%E7%9A%84%E8%BF%87%E7%A8%8B.png">
+<meta property="og:image" content="http://heseng91.github.io/2022/11/03/%E3%80%8C%E7%B2%BE%E7%9B%8A%E6%B1%82%E7%B2%BE%E3%80%8D%E4%B9%8B%E7%BD%91%E7%BB%9C/http%E5%8D%8F%E8%AE%AE%E7%9A%84%E6%A0%BC%E5%BC%8F.jpg">
+<meta property="og:image" content="http://heseng91.github.io/2022/11/03/%E3%80%8C%E7%B2%BE%E7%9B%8A%E6%B1%82%E7%B2%BE%E3%80%8D%E4%B9%8B%E7%BD%91%E7%BB%9C/HTTP%E8%AF%B7%E6%B1%82%E6%8A%A5%E6%96%87%E7%9A%84%E4%B8%80%E4%BA%9B%E6%96%B9%E6%B3%95.jpg">
+<meta property="og:image" content="http://heseng91.github.io/2022/11/03/%E3%80%8C%E7%B2%BE%E7%9B%8A%E6%B1%82%E7%B2%BE%E3%80%8D%E4%B9%8B%E7%BD%91%E7%BB%9C/%E8%AF%B7%E6%B1%82%E4%B8%80%E6%AC%A1%E8%80%97%E8%B4%B9%E6%97%B6%E9%97%B4.jpg">
+<meta property="og:image" content="http://heseng91.github.io/2022/11/03/%E3%80%8C%E7%B2%BE%E7%9B%8A%E6%B1%82%E7%B2%BE%E3%80%8D%E4%B9%8B%E7%BD%91%E7%BB%9C/https%E4%B8%8Ehttp%E8%BF%9E%E6%8E%A5%E8%BF%87%E7%A8%8B%E5%8C%BA%E5%88%AB.png">
+<meta property="og:image" content="http://heseng91.github.io/2022/11/03/%E3%80%8C%E7%B2%BE%E7%9B%8A%E6%B1%82%E7%B2%BE%E3%80%8D%E4%B9%8B%E7%BD%91%E7%BB%9C/https%E4%B8%8Ehttp%E6%A8%A1%E5%9E%8B%E5%8C%BA%E5%88%AB.png">
+<meta property="og:image" content="http://heseng91.github.io/2022/11/03/%E3%80%8C%E7%B2%BE%E7%9B%8A%E6%B1%82%E7%B2%BE%E3%80%8D%E4%B9%8B%E7%BD%91%E7%BB%9C/%E6%B7%B7%E5%90%88%E5%8A%A0%E5%AF%86%E6%95%B0%E6%8D%AE%E6%B5%81%E7%A8%8B.jpg">
+<meta property="og:image" content="http://heseng91.github.io/2022/11/03/%E3%80%8C%E7%B2%BE%E7%9B%8A%E6%B1%82%E7%B2%BE%E3%80%8D%E4%B9%8B%E7%BD%91%E7%BB%9C/TCP%E9%87%8A%E6%94%BE%E8%BF%9E%E6%8E%A5%E5%9B%9B%E6%AC%A1%E6%8F%A1%E6%89%8B%E8%BF%87%E7%A8%8B.png">
+<meta property="og:image" content="http://heseng91.github.io/2022/11/03/%E3%80%8C%E7%B2%BE%E7%9B%8A%E6%B1%82%E7%B2%BE%E3%80%8D%E4%B9%8B%E7%BD%91%E7%BB%9C/%E4%B8%87%E7%BB%B4%E7%BD%91%E5%B7%A5%E4%BD%9C%E6%B5%81%E7%A8%8B.jpg">
+<meta property="og:image" content="http://heseng91.github.io/2022/11/03/%E3%80%8C%E7%B2%BE%E7%9B%8A%E6%B1%82%E7%B2%BE%E3%80%8D%E4%B9%8B%E7%BD%91%E7%BB%9C/%E6%95%B0%E6%8D%AE%E4%BC%A0%E8%BE%93%E7%9A%84%E5%B0%81%E8%A3%85%E4%B8%8E%E8%A7%A3%E5%B0%81%E8%A3%85.gif">
+<meta property="og:image" content="http://heseng91.github.io/2022/11/03/%E3%80%8C%E7%B2%BE%E7%9B%8A%E6%B1%82%E7%B2%BE%E3%80%8D%E4%B9%8B%E7%BD%91%E7%BB%9C/MAC%E6%8A%A5%E6%96%87%E6%AE%B5%E7%BB%93%E6%9E%84.jpg">
+<meta property="og:image" content="http://heseng91.github.io/2022/11/03/%E3%80%8C%E7%B2%BE%E7%9B%8A%E6%B1%82%E7%B2%BE%E3%80%8D%E4%B9%8B%E7%BD%91%E7%BB%9C/IP%E6%8A%A5%E6%96%87%E6%AE%B5%E7%BB%93%E6%9E%84.jpg">
+<meta property="og:image" content="http://heseng91.github.io/2022/11/03/%E3%80%8C%E7%B2%BE%E7%9B%8A%E6%B1%82%E7%B2%BE%E3%80%8D%E4%B9%8B%E7%BD%91%E7%BB%9C/%E5%8D%8F%E8%AE%AE%E5%AF%B9%E5%BA%94%E5%80%BC.jpg">
+<meta property="og:image" content="http://heseng91.github.io/2022/11/03/%E3%80%8C%E7%B2%BE%E7%9B%8A%E6%B1%82%E7%B2%BE%E3%80%8D%E4%B9%8B%E7%BD%91%E7%BB%9C/TCP%E6%8A%A5%E6%96%87%E6%AE%B5%E7%BB%93%E6%9E%84.jpg">
+<meta property="og:image" content="http://heseng91.github.io/2022/11/03/%E3%80%8C%E7%B2%BE%E7%9B%8A%E6%B1%82%E7%B2%BE%E3%80%8D%E4%B9%8B%E7%BD%91%E7%BB%9C/UDP%E6%8A%A5%E6%96%87%E6%AE%B5%E7%BB%93%E6%9E%84.jpg">
+<meta property="og:image" content="http://heseng91.github.io/2022/11/03/%E3%80%8C%E7%B2%BE%E7%9B%8A%E6%B1%82%E7%B2%BE%E3%80%8D%E4%B9%8B%E7%BD%91%E7%BB%9C/%E5%8F%91%E9%80%81%E6%96%B9%E6%AF%8F%E6%94%B6%E5%88%B0%E4%B8%80%E4%B8%AA%E7%A1%AE%E8%AE%A4%E5%B0%B1%E6%8A%8A%E7%AA%97%E5%8F%A3cwnd%E5%8A%A01.png">
+<meta property="og:image" content="http://heseng91.github.io/2022/11/03/%E3%80%8C%E7%B2%BE%E7%9B%8A%E6%B1%82%E7%B2%BE%E3%80%8D%E4%B9%8B%E7%BD%91%E7%BB%9C/%E6%85%A2%E5%BC%80%E5%A7%8B%E5%92%8C%E6%8B%A5%E5%A1%9E%E9%81%BF%E5%85%8D%E7%AE%97%E6%B3%95%E7%9A%84%E5%AE%9E%E7%8E%B0%E4%B8%BE%E4%BE%8B.png">
+<meta property="og:image" content="http://heseng91.github.io/2022/11/03/%E3%80%8C%E7%B2%BE%E7%9B%8A%E6%B1%82%E7%B2%BE%E3%80%8D%E4%B9%8B%E7%BD%91%E7%BB%9C/%E5%BF%AB%E9%87%8D%E4%BC%A0%E7%9A%84%E7%A4%BA%E6%84%8F%E5%9B%BE.png">
+<meta property="og:image" content="http://heseng91.github.io/2022/11/03/%E3%80%8C%E7%B2%BE%E7%9B%8A%E6%B1%82%E7%B2%BE%E3%80%8D%E4%B9%8B%E7%BD%91%E7%BB%9C/%E4%BB%8E%E8%BF%9E%E7%BB%AD%E6%94%B6%E5%88%B0%E4%B8%89%E4%B8%AA%E9%87%8D%E5%A4%8D%E7%A1%AE%E8%AE%A4%E8%BD%AC%E5%85%A5%E6%8B%A5%E5%A1%9E%E9%81%BF%E5%85%8D.png">
+<meta property="og:image" content="http://heseng91.github.io/2022/11/03/%E3%80%8C%E7%B2%BE%E7%9B%8A%E6%B1%82%E7%B2%BE%E3%80%8D%E4%B9%8B%E7%BD%91%E7%BB%9C/RED%E6%8A%8A%E8%B7%AF%E7%94%B1%E5%99%A8%E7%9A%84%E5%88%B0%E8%BE%BE%E9%98%9F%E5%88%97%E5%88%92%E5%88%86%E6%88%90%E4%B8%89%E4%B8%AA%E5%8C%BA%E5%9F%9F.png">
+<meta property="og:image" content="http://heseng91.github.io/2022/11/03/%E3%80%8C%E7%B2%BE%E7%9B%8A%E6%B1%82%E7%B2%BE%E3%80%8D%E4%B9%8B%E7%BD%91%E7%BB%9C/%E5%88%86%E7%BB%84%E4%B8%A2%E5%BC%83%E6%A6%82%E7%8E%87%E4%B8%8E%E4%B8%A4%E4%B8%AA%E9%97%A8%E9%99%90%E5%80%BC%E7%9A%84%E5%85%B3%E7%B3%BB.png">
+<meta property="og:image" content="http://heseng91.github.io/2022/11/03/%E3%80%8C%E7%B2%BE%E7%9B%8A%E6%B1%82%E7%B2%BE%E3%80%8D%E4%B9%8B%E7%BD%91%E7%BB%9C/https%E4%BA%A4%E4%BA%92%E8%BF%87%E7%A8%8B.png">
+<meta property="og:image" content="http://heseng91.github.io/2022/11/03/%E3%80%8C%E7%B2%BE%E7%9B%8A%E6%B1%82%E7%B2%BE%E3%80%8D%E4%B9%8B%E7%BD%91%E7%BB%9C/%E4%B8%AD%E9%97%B4%E4%BA%BA%E6%94%BB%E5%87%BB%E8%BF%87%E7%A8%8B.jpeg">
+<meta property="og:image" content="http://heseng91.github.io/2022/11/03/%E3%80%8C%E7%B2%BE%E7%9B%8A%E6%B1%82%E7%B2%BE%E3%80%8D%E4%B9%8B%E7%BD%91%E7%BB%9C/CA%E8%AE%A4%E8%AF%81%E4%BF%9D%E8%AF%81%E6%95%B0%E6%8D%AE%E5%AE%89%E5%85%A8%E6%80%A7.jpeg">
+<meta property="og:image" content="http://heseng91.github.io/2022/11/03/%E3%80%8C%E7%B2%BE%E7%9B%8A%E6%B1%82%E7%B2%BE%E3%80%8D%E4%B9%8B%E7%BD%91%E7%BB%9C/SSL%E5%AE%89%E5%85%A8%E6%80%A7%E6%80%BB%E7%BB%93.jpeg">
 <meta property="article:published_time" content="2022-11-02T17:20:51.000Z">
-<meta property="article:modified_time" content="2022-11-02T17:36:20.098Z">
+<meta property="article:modified_time" content="2022-11-26T19:06:13.199Z">
 <meta property="article:author" content="和僧">
 <meta property="article:tag" content="和僧-技术博客，技术博客">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://heseng91.github.io/2022/11/03/%E3%80%8C%E7%B2%BE%E7%9B%8A%E6%B1%82%E7%B2%BE%E3%80%8D%E4%B9%8B%E7%BD%91%E7%BB%9C/OSI%E6%A8%A1%E5%9E%8B%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E9%80%9F%E8%A7%88.png">
 
 <link rel="canonical" href="http://heseng91.github.io/2022/11/03/%E3%80%8C%E7%B2%BE%E7%9B%8A%E6%B1%82%E7%B2%BE%E3%80%8D%E4%B9%8B%E7%BD%91%E7%BB%9C/">
 
@@ -178,10 +213,16 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
-              
 
-              <time title="创建时间：2022-11-03 01:20:51 / 修改时间：01:36:20" itemprop="dateCreated datePublished" datetime="2022-11-03T01:20:51+08:00">2022-11-03</time>
+              <time title="创建时间：2022-11-03 01:20:51" itemprop="dateCreated datePublished" datetime="2022-11-03T01:20:51+08:00">2022-11-03</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-11-27 03:06:13" itemprop="dateModified" datetime="2022-11-27T03:06:13+08:00">2022-11-27</time>
+              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="far fa-folder"></i>
@@ -203,7 +244,651 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        
+        <p>如果说计算机把我们从工业时代带到了信息时代，那么计算机网络就可以说把我们带到了网络时代。现如今，随着越来越多的终端设备接入互联网，人们尤其是程序员不可能不与网络打交道。现在我们的手机，电脑，不夸张地说，离开了网络就是一块“废铁”，它们的作用将大打折扣。了解网络知识可以扩展我们的知识面，也有助于我们更好的编程，因此本文就对程序员需要了解的网络知识做一个简要介绍。</p>
+<a id="more"></a>
+
+<h2 id="OSI七层模型"><a href="#OSI七层模型" class="headerlink" title="OSI七层模型"></a>OSI七层模型</h2><h3 id="OSI模型是什么"><a href="#OSI模型是什么" class="headerlink" title="OSI模型是什么"></a>OSI模型是什么</h3><p>OSI模型即开放式系统互联模型（<strong>Open System Interconnection Model</strong>），它是一种概念模型，由国际标准化组织提出，一个试图使各种计算机在世界范围内互联为网络的标准框架。 </p>
+<p>也就是说，因为有这个模型，所以一台计算机发送的信息才能被另一台计算机准确的解析出来，两台计算机才能互相交流。</p>
+<h3 id="OSI模型的诞生"><a href="#OSI模型的诞生" class="headerlink" title="OSI模型的诞生"></a>OSI模型的诞生</h3><p>OSI模型它是服务于计算机网络的，而计算机网络是一个非常复杂的系统。可以想像一个场景，两个连接在网络上的两台计算机需要互相传送文件。 </p>
+<p>显然，他们两之间必须要有一条链路对吧。但是只有一条链路远远不够，至少还要有以下6个功能： </p>
+<ol>
+<li>发起通信的计算机必须要把数据通信的通路进行“激活”，所谓“激活”就是发送一些信令，保证要传送的计算机数据能在这条通路上正确的发送和接收。 </li>
+<li>告诉计算机如何识别接收数据的计算机。 </li>
+<li>发起通信的计算机必须查明对方的计算机是否已开机，并且网络连接正常。 </li>
+<li>发起通信的计算机中的应用程序必须弄清楚，在对方的文件管理程序已经做好接收文件和存储文件的准备工作。 </li>
+<li>若计算机的文件格式不兼容，那么至少有一台计算机能完成格式转换。 </li>
+<li>对出现的各种差错和意外事故，如数据传送错误，重复或丢失，网络中某个节点交换机出现故障等，应当有可靠的措施保证对方计算机最终能接收到正确的文件。 </li>
+</ol>
+<p>这六个功能总结下来就是，我发送数据之前必须要知道要发给谁，必须要保证对方能接收和处理我的数据，对于可能出现错误的情况我们两能够处理。那我们就可以看出，两台互相通信的计算机必须要能够高度作协调工作。而这些“协调”相当复杂，为了设计出这样复杂的计算机网络，在APRANET设计的时候就提出了分层的方法，就是化繁为简，各层处理各层的工作，分工合作，有点我们封装函数的那个意思。 </p>
+<p>网络出现后，各大公司意识到了网络的好处，都争相推出自己公司的体系结构，每个公司都想垄断市场，因为不同的网络体系结构，同一家公司的互联网能很快的连接成网，但是对于两个不同公司的计算机没办法交流。 </p>
+<p>全球经济发展为了让每台计算机都能信息交互，国际化标准组织ISO在1997年成立专门机构解决这个问题，并提出了OSI模型。</p>
+<h3 id="OSI七层模型、TCP-IP四层模型和五层协议"><a href="#OSI七层模型、TCP-IP四层模型和五层协议" class="headerlink" title="OSI七层模型、TCP/IP四层模型和五层协议"></a>OSI七层模型、TCP/IP四层模型和五层协议</h3><h4 id="OSI七层模型-1"><a href="#OSI七层模型-1" class="headerlink" title="OSI七层模型"></a>OSI七层模型</h4><img src="/2022/11/03/%E3%80%8C%E7%B2%BE%E7%9B%8A%E6%B1%82%E7%B2%BE%E3%80%8D%E4%B9%8B%E7%BD%91%E7%BB%9C/OSI%E6%A8%A1%E5%9E%8B%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E9%80%9F%E8%A7%88.png" class title="OSI模型基础知识速览">
+
+<p>模型把网络通信的工作分为7层。1至4层被认为是低层，这些层与数据移动密切相关。5至7层是高层，包含应用程序级的数据。每一层负责一项具体的工作，然后把数据传送到下一层。由低到高具体分为：物理层、数据链路层、网络层、传输层、会话层、表示层和应用层。</p>
+<p>第7层应用层—直接对应用程序提供服务，应用程序可以变化，但要包括电子消息传输；</p>
+<p>第6层表示层—格式化数据，以便为应用程序提供通用接口。这可以包括加密服务；</p>
+<p>第5层会话层—在两个节点之间建立端连接。此服务包括建立连接是以全双工还是以半双工的方式进行设置，尽管可以在层4中处理双工方式第4层传输层—常规数据递送－面向连接或无连接。包括全双工或半双工、流控制和错误恢复服务；</p>
+<p>第3层网络层—本层通过寻址来建立两个节点之间的连接，它包括通过互连网络来路由和中继数据；</p>
+<p>第2层数据链路层—在此层将数据分帧，并处理流控制。本层指定拓扑结构并提供硬件寻址；</p>
+<p>第1层物理层—原始比特流的传输；</p>
+<p>电子信号传输和硬件接口数据发送时，从第七层传到第一层，接受方则相反。</p>
+<p>各层对应的典型设备如下：</p>
+<p>应用层……………….计算机：应用程序，如FTP，SMTP，HTTP</p>
+<p>表示层……………….计算机：编码方式，图像编解码、URL字段传输编码</p>
+<p>会话层……………….计算机：建立会话，SESSION认证、断点续传</p>
+<p>传输层……………….计算机：进程和端口</p>
+<p>网络层……………….网络：路由器，防火墙、多层交换机</p>
+<p>数据链路层………..网络：网卡，网桥，交换机</p>
+<p>物理层……………….网络：中继器，集线器、网线、HUB</p>
+<h4 id="OSI分层的优点"><a href="#OSI分层的优点" class="headerlink" title="OSI分层的优点"></a>OSI分层的优点</h4><ul>
+<li>人们可以很容易的讨论和学习协议的规范细节。</li>
+<li>层间的标准接口方便了工程模块化。</li>
+<li>创建了一个更好的互连环境。</li>
+<li>降低了复杂度，使程序更容易修改，产品开发的速度更快。</li>
+<li>每层利用紧邻的下层服务，更容易记住个层的功能。</li>
+</ul>
+<p>OSI是一个定义良好的协议规范集，并有许多可选部分完成类似的任务。</p>
+<p>它定义了开放系统的层次结构、层次之间的相互关系以及各层所包括的可能的任务。是作为一个框架来协调和组织各层所提供的服务。</p>
+<p>OSI参考模型并没有提供一个可以实现的方法，而是描述了一些概念，用来协调进程间通信标准的制定。即OSI参考模型并不是一个标准，而是一个在制定标准时所使用的概念性框架。</p>
+<h4 id="TCP-IP四层模型和五层协议"><a href="#TCP-IP四层模型和五层协议" class="headerlink" title="TCP/IP四层模型和五层协议"></a>TCP/IP四层模型和五层协议</h4><p>说到OSI七层模型，不得不提到的就是TCP/IP四层模型和五层协议了。这两个又是什么呢。大家可以看看这个对比图。</p>
+<img src="/2022/11/03/%E3%80%8C%E7%B2%BE%E7%9B%8A%E6%B1%82%E7%B2%BE%E3%80%8D%E4%B9%8B%E7%BD%91%E7%BB%9C/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84.jpg" class title="计算机网络体系结构">
+
+<p>简单介绍一下TCP/IP四层协议和五层协议 </p>
+<p>1997年，国际标准化组织花了5年推出OSI模型后，OSI模型并没有实际的成为一个国际标准。因为当时市面上已经非常流行TCP/IP四层协议了，而且，OSI模型定制的条件过于严苛试图达到一种理想境界，当时并没有一家生产商能生产出符合他们标准的商用产品。所以OSI只获取到理论成果，并没有能市场化。所以现在我们使用最广泛，规模最大，覆盖全球的反而是TCP/IP四层协议。 </p>
+<p>而五层协议就是后来方便我们理解和学习抽象出来的一个模型。</p>
+<h4 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h4><p>OSI七层模型和TCP/IP四层协议的关系： </p>
+<p>OSI先有模型，后有协议，先有标准，后进行实践；而TCP/IP则相反，先有协议和应用再提出了模型，且是参照的OSI模型。 </p>
+<p>OSI是一种理论下的模型，而TCP/IP已被广泛使用，成为网络互联事实上的标准。 </p>
+<p>OSI引入了服务、接口、协议、分层的概念，TCP/IP借鉴了OSI的这些概念建立TCP/IP模型。 </p>
+<p>五层协议是供我们学习计算机网络的模型。 </p>
+<h2 id="网络传输过程"><a href="#网络传输过程" class="headerlink" title="网络传输过程"></a>网络传输过程</h2><h3 id="OSI参考模型中数据传输过程"><a href="#OSI参考模型中数据传输过程" class="headerlink" title="OSI参考模型中数据传输过程"></a>OSI参考模型中数据传输过程</h3><p>在前面我们介绍了OSI参考模型的分层结构，以及各层在其体系结构中的主要功能等知识。下面我们来学习OSI参考模型中数据的传输过程。</p>
+<p>在OSI参考模型中交换数据，首先由发送端的发送进程将数据交给应用层，应用层在数据的前面加上该层控制和识别信息， 并将其传送到表示层。该过程一直重复到物理层，并由传输介质把数据传送到接收端，在接收进程所在计算机史，信息向上传送，各层的控制和识别信息逐层去掉，最后数据被送到接收进程。如下图所示，为OSI参考模型中数据传输过程。</p>
+<img src="/2022/11/03/%E3%80%8C%E7%B2%BE%E7%9B%8A%E6%B1%82%E7%B2%BE%E3%80%8D%E4%B9%8B%E7%BD%91%E7%BB%9C/OSI%E5%8F%82%E8%80%83%E6%A8%A1%E5%9E%8B%E4%B8%AD%E6%95%B0%E6%8D%AE%E4%BC%A0%E8%BE%93.png" class title="OSI参考模型中数据传输">
+
+<p>而数据的传输过程，如下图所示，图中，实线表示数据的实际传递，虚线表示数据的虚拟传递。</p>
+<img src="/2022/11/03/%E3%80%8C%E7%B2%BE%E7%9B%8A%E6%B1%82%E7%B2%BE%E3%80%8D%E4%B9%8B%E7%BD%91%E7%BB%9C/%E6%95%B0%E6%8D%AE%E4%BC%A0%E8%BE%93.png" class title="数据传输">
+
+<p>如果主机A需要将数据从其应用进程发送到主机B的应用进程，其数据传输过程如下：</p>
+<p>在主机A的发送进程中，首先需要将数据送到应用层，加上应用层协议要求的控制信息AH（AH表示应用层控制信息），形成应用层的协议数据单元；再将应用层的协议数据单元传到表示层，形成表示层的服务数据单元，，加上表示层的协议控制信息PH（PH表示表示层控制信息），形成表示层的协议数据单元。</p>
+<p>表示层的协议数据单元传到会话层，形成会话层的服务数据单元，加上会话层协议要求的控制信息SH（SH表示会话层控制信息），形成会话层的协议数据单元。依次类推，到达数据链路层后，数据链路层的协议控制信息分为两部分，分别为控制头部信息和尾部信息，形成赖；将传到物理层，不再加任何控制信息，转换成比特流，并通过传输介质将其传送到主机B的物理层。</p>
+<p>各层的协议控制信息，因协议和传送内容不同，分别有不同的内容和格式要求。主机 B的物理层将比特流传给数据链路层，将帧中的控制头部信息和尾部信息去掉，形成网络层的协议数据单元，然后，去掉网络层协议控制信息NH（NH表示网络层控制信息），形成网络层的服务数据单元。依次类推，直到数据传送到主机B的应用进程。</p>
+<h3 id="URL访问网站的网络传输全过程"><a href="#URL访问网站的网络传输全过程" class="headerlink" title="URL访问网站的网络传输全过程"></a>URL访问网站的网络传输全过程</h3><p>了解了数据传输过程，HTTP、TCP、DNS、IP这些耳熟能详的名词都在什么时候起着什么作用呢？下面我们结合生活中浏览器浏览操作，再来整体梳理一下URL访问网站的网络传输全过程。</p>
+<p>简单来说，从浏览器输入地址到呈现页面中间会经历如下阶段：</p>
+<ol>
+<li>浏览器（客户端）进行地址解析。</li>
+<li>将解析出的域名进行dns解析。</li>
+<li>通过ip寻址和arp，找到目标（服务器）地址。</li>
+<li>进行tcp三次握手，建立tcp连接。</li>
+<li>浏览器发送数据，等待服务器响应。</li>
+<li>服务器处理请求，并对请求做出响应。</li>
+<li>浏览器收到服务器响应，得到html代码。</li>
+<li>渲染页面。</li>
+</ol>
+<h4 id="浏览器（客户端）地址解析"><a href="#浏览器（客户端）地址解析" class="headerlink" title="浏览器（客户端）地址解析"></a>浏览器（客户端）地址解析</h4><p>当我们在浏览器中输入一个地址，按下回车后，浏览器获取到的是一个字符串。浏览器此时要对这个地址进行解析，获取协议，主机，端口，路径等信息。</p>
+<p>URL的一般格式为：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">protocol:&#x2F;&#x2F;hostname[:port]&#x2F;path&#x2F;[;parameters][?query]#fragment</span><br></pre></td></tr></table></figure>
+
+<p>例如：</p>
+<p><a href="http://www.imooc.com/article/draft/id/430" target="_blank" rel="noopener">http://www.imooc.com/article/draft/id/430</a> 这个网址缺少了一些东西，端口号，用户名，密码，query和flag都没有。这些东西都是非必须的，甚至协议、路径都可以不要，最简洁的方式为imooc.com，浏览器会对一些默认的东西进行补齐。例如：互联网url默认端口号为80，浏览器默认补齐功能会补齐协议http，有些还会直接在域名前面补上www。所以实际上，即使我们输入的是imooc.com，然而实际访问的却是<a href="http://www.imooc.com。" target="_blank" rel="noopener">http://www.imooc.com。</a></p>
+<h4 id="DNS解析"><a href="#DNS解析" class="headerlink" title="DNS解析"></a>DNS解析</h4><p>第一步地址解析中我们已经获取到服务器的域名。此时就需要将域名换成对应的ip地址，这就是DNS解析。</p>
+<p>DNS（Domain Names System），域名系统，是互联网一项服务，用来将域名转换为IP地址。为什么要转换？因为IP地址固定32位计算机能处理，但是人记不住。就有了域名，但是域名长度不固定，机器处理不了，为了同时满足机器和人的要求就有了域名系统来做转换。 </p>
+<blockquote>
+<p>IP地址： 32位二进制，能唯一标记网络上的计算机。<br>域名： 是由一串用点分隔的名字组成的 Internet 上某一台计算机或计算机组的名称，用于在数据传输时对计算机的定位标识。</p>
+</blockquote>
+<h5 id="互联网域名结构和域名服务器结构"><a href="#互联网域名结构和域名服务器结构" class="headerlink" title="互联网域名结构和域名服务器结构"></a>互联网域名结构和域名服务器结构</h5><p>域名也不是随便取的，DNS系统定义了域名必须要有的结构。早期的互联网使用了非等级的名字空间，名字随便取，优点就是名字简短。但是互联网用户数剧增，为了方便管理，就采用了层次树状结构的命名方法，就像全球的邮政系统和电话系统一样。</p>
+<img src="/2022/11/03/%E3%80%8C%E7%B2%BE%E7%9B%8A%E6%B1%82%E7%B2%BE%E3%80%8D%E4%B9%8B%E7%BD%91%E7%BB%9C/%E4%BA%92%E8%81%94%E7%BD%91%E7%9A%84%E5%9F%9F%E5%90%8D%E7%BB%93%E6%9E%84.jpg" class title="互联网的域名结构">
+
+<p>例如<a href="https://link.zhihu.com/?target=https%3A//www.igetget.com/">www.igetget.com</a>，<code>www</code>为三级域名、<code>igetget</code> 为二级域名、<code>com</code>为顶级域名，系统为用户做了兼容，域名末尾的根域名<code>.</code>一般不需要输入。 </p>
+<p>这只是我们抽象出来便于大家理解的的域名体系结构，具体要实现域名系统则是使用分布在各地的域名服务器。理论上讲每一级域名都要有一个相应的域名服务器，构成和互联网域名空间对应的一个域名服务器树的结构，但是这样会导致域名服务器数量过多，使域名系统的运行效率降低（服务器多要发送的请求就多，会很浪费时间），所以在二级域名及以下域名服务器采用了分区方式来解决这个问题，就是一个域名服务器管辖不止一个域名的方式。</p>
+<p>看一个服务器分区的例子：</p>
+<img src="/2022/11/03/%E3%80%8C%E7%B2%BE%E7%9B%8A%E6%B1%82%E7%B2%BE%E3%80%8D%E4%B9%8B%E7%BD%91%E7%BB%9C/%E6%9C%8D%E5%8A%A1%E5%99%A8%E5%88%86%E5%8C%BA.jpg" class title="服务器分区">
+
+<p>我们看下图这个例子，abc这个公司有两个分区，对应的域名服务器树状结构如下：</p>
+<img src="/2022/11/03/%E3%80%8C%E7%B2%BE%E7%9B%8A%E6%B1%82%E7%B2%BE%E3%80%8D%E4%B9%8B%E7%BD%91%E7%BB%9C/%E5%9F%9F%E5%90%8D%E6%9C%8D%E5%8A%A1%E5%99%A8%E6%A0%91%E7%8A%B6%E7%BB%93%E6%9E%84.jpg" class title="域名服务器树状结构">
+
+<p>服务器分为四大类，根域名服务器，顶级域名服务器，权限域名服务器，本地域名服务器。 </p>
+<p>域名解析过程查询方式有两种：递归查询，迭代查询。</p>
+<img src="/2022/11/03/%E3%80%8C%E7%B2%BE%E7%9B%8A%E6%B1%82%E7%B2%BE%E3%80%8D%E4%B9%8B%E7%BD%91%E7%BB%9C/%E5%9F%9F%E5%90%8D%E8%A7%A3%E6%9E%90%E8%BF%87%E7%A8%8B%E6%9F%A5%E8%AF%A2%E6%96%B9%E5%BC%8F.jpg" class title="域名解析过程查询方式">
+
+<p><strong>迭代查询</strong>：先在本地域名服务器查询，没有就在根域名服务器查询，跟域名服务器会告诉你应该在哪个顶级域名服务器查询，然后顶级域名服务器告诉你应该在哪个权限域名服务器查询，然后权限域名服务器就会讲查询姐股票返回给本地域名服务器 </p>
+<p><strong>递归查询</strong>：先在本地域名服务器查询，没有就在根域名服务器查询，然后根域名服务器会去查找顶级域名服务器，顶级域名服务器又会去查找权限域名服务器。然后再依次返回到根域名服务器，最后由根域名服务器返回给本地域名服务器。 </p>
+<p>因为每个在本地域名服务器查询不到IP地址的请求都会发给根域名服务器，所以根域名服务器接收到的请求非常多，使用递归查询的方式对根域名服务器的压力特别大，所以本地域名查询根域名一般采用迭代查询的方式。</p>
+<h5 id="域名缓存"><a href="#域名缓存" class="headerlink" title="域名缓存"></a>域名缓存</h5><p>在域名服务器解析的时候，域名服务器会使用缓存保存域名和IP地址的映射。 </p>
+<p>计算机中DNS的记录也分成了两种缓存方式： </p>
+<p>浏览器缓存：浏览器在获取网站域名的实际IP地址后会对其进行缓存，减少网络请求的损耗 </p>
+<p>操作系统缓存：操作系统的缓存其实是用户自己配置的hosts文件。</p>
+<h5 id="DNS解析过程"><a href="#DNS解析过程" class="headerlink" title="DNS解析过程"></a>DNS解析过程</h5><h6 id="dns解析分为以下几个步骤："><a href="#dns解析分为以下几个步骤：" class="headerlink" title="dns解析分为以下几个步骤："></a>dns解析分为以下几个步骤：</h6><ol>
+<li>先查看浏览器dns缓存中是否有域名对应的ip。</li>
+<li>如果没有，则产看操作系统dns缓存中是否有对应的ip（例如windows的hosts文件）。</li>
+<li>依旧没有就对本地区的dns服务器发起请求，</li>
+<li>如果还是没有，就直接到Root Server域名服务器请求解析。</li>
+</ol>
+<p>这里面有几点需要关注：</p>
+<ul>
+<li>DNS在进行区域传输的时候使用TCP协议，其它时候则使用UDP协议；</li>
+<li>全球只有十三台<strong>逻辑</strong>根服务器，为什么是十三台，请参考<a href="https://www.zhihu.com/question/22587247?answer_deleted_redirect=true。其中任何一次解析成功就返回对应的ip地址。" target="_blank" rel="noopener">https://www.zhihu.com/question/22587247?answer_deleted_redirect=true。其中任何一次解析成功就返回对应的ip地址。</a></li>
+</ul>
+<h6 id="通过ip寻址和arp，找到目标服务器地址。"><a href="#通过ip寻址和arp，找到目标服务器地址。" class="headerlink" title="通过ip寻址和arp，找到目标服务器地址。"></a>通过ip寻址和arp，找到目标服务器地址。</h6><p>第二步获取到了ip，此时直接通过ip寻址找到ip对应的服务器，然后通过arp协议找到服务器的mac地址。</p>
+<p>那么IP寻址是如何工作的呢？</p>
+<p>ip寻址主要有两种方式，一种是同一网段，一种是不同网段。要判断两个IP地址是不是在同一个网段，就将它们的IP地址分别与子网掩码做与运算，得到的结果一网络号，如果网络号相同，就在同一子网，否则，不在同一子网。</p>
+<ol>
+<li><strong>同一网段的情况：</strong>主机A和主机B，首先主机A通过本机的hosts表或者wins系统或dns系统先将主机B的计算机名转换为Ip地址，然后用自己的 Ip地址与子网掩码计算出自己所出的网段，比较目的主机B的ip地址与自己的子网掩码，发现与自己是出于相同的网段，于是在自己的ARP缓存中查找是否有主机B 的mac地址，如果能找到就直接做数据链路层封装并且通过网卡将封装好的以太网帧发送有物理线路上去：如果arp缓存中没有主机B的的mac地址，主机A将启动arp协议通过在本地网络上的arp广播来查询主机B的mac地址，获得主机B的mac地址厚写入arp缓存表，进行数据链路层的封装，发送数据。</li>
+<li><strong>不同网段的情况：</strong>不同的数据链路层网络必须分配不同网段的Ip地址并且由路由器将其连接起来。和上面一样，主机A发现和主机B不在同一个网段，于是主机A将知道应该将次数据包发送给自己的缺省网关，即路由器的本地接口。主机A在自己的ARP缓存中查找是否有缺省网关的MAC地址，如果能够找到就直接做数据链路层封装并通过网卡 将封装好的以太网数据帧发送到物理线路上去，如果arp缓存表中没有缺省网关的Mac地址，主机A将启动arp协议通过在本地网络上的arp广播来查询缺省网关的mac地址，获得缺省网关的mac地址后写入arp缓存表，进行数据链路层的封装，发送数据。数据帧到达路由器的接受接口后首先解封装，变成ip数据包，对ip 包进行处理，根据目的Ip地址查找路由表，决定转发接口后做适应转发接口数据链路层协议帧的封装，并且发送到下一跳路由器，次过程继续直至到达目的的网络与目的主机。整个过程有点像dns解析，只是dns服务器换成了下一跳路由器，udp编程了tcp，其他差别不大。</li>
+</ol>
+<p>其中提到了一个ARP的概念，ARP就是地址转化协议，类似于DNS将域名翻译成IP，ARP则是把ip地址转化为mac地址。我们知道了IP后，需要通过主机的MAC地址来更具体的找到主机。同样的也有一个ARP缓存，其中存储了一些IP与MAC地址的对应关系，如果缓存中找不到，就会进行广播来查找MAC地址，收到广播的主机会检查自己的IP是否是待查找的IP，是的话就返回自己的MAC地址。</p>
+<h4 id="TCP建立连接三次握手"><a href="#TCP建立连接三次握手" class="headerlink" title="TCP建立连接三次握手"></a>TCP建立连接三次握手</h4><p>得到域名对应的IP地址后，也就表示可以将数据送达目的主机了，就会开始我们常说的三次握手建立连接。</p>
+<h5 id="TCP报文段首部格式"><a href="#TCP报文段首部格式" class="headerlink" title="TCP报文段首部格式"></a>TCP报文段首部格式</h5><p>在谈及TCP建立连接和释放连接过程，先来简单认识一下TCP报文段首部格式的几个名词。</p>
+<img src="/2022/11/03/%E3%80%8C%E7%B2%BE%E7%9B%8A%E6%B1%82%E7%B2%BE%E3%80%8D%E4%B9%8B%E7%BD%91%E7%BB%9C/TCP%E6%8A%A5%E6%96%87%E6%AE%B5%E9%A6%96%E9%83%A8%E6%A0%BC%E5%BC%8F.jpg" class title="TCP报文段首部格式">
+
+<p><strong>序列号seq：</strong>占4个字节，用来标记数据段的顺序，TCP把连接中发送的所有数据字节都编上一个序号，第一个字节的编号由本地随机产生；给字节编上序号后，就给每一个报文段指派一个序号；序列号seq就是这个报文段中的第一个字节的数据编号。<br><strong>确认号ack：</strong>占4个字节，期待收到对方下一个报文段的第一个数据字节的序号；序列号表示报文段携带数据的第一个字节的编号；而确认号指的是期望接收到下一个字节的编号；因此当前报文段最后一个字节的编号+1即为确认号。<br><strong>确认ACK：</strong>占1位，仅当ACK=1时，确认号字段才有效。ACK=0时，确认号无效<br><strong>同步SYN：</strong>连接建立时用于同步序号。当SYN=1，ACK=0时表示：这是一个连接请求报文段。若同意连接，则在响应报文段中使得SYN=1，ACK=1。因此，SYN=1表示这是一个连接请求，或连接接受报文。SYN这个标志位只有在TCP建产连接时才会被置1，握手完成后SYN标志位被置0。<br><strong>终止FIN：</strong>用来释放一个连接。FIN=1表示：此报文段的发送方的数据已经发送完毕，并要求释放运输连接<br>PS：ACK、SYN和FIN这些大写的单词表示标志位，其值要么是1，要么是0；ack、seq小写的单词表示序号。</p>
+<h5 id="三次握手的过程"><a href="#三次握手的过程" class="headerlink" title="三次握手的过程"></a>三次握手的过程</h5><ol>
+<li>主机A向主机B发送TCP连接请求数据包，其中包含主机A的初始序列号seq(A)=x。 （其中报文中同步标志位SYN=1，ACK=0，表示这是一个TCP连接请求数据报文；序号seq=x，表明传输数据时的第一个数据字节的序号是x） ；</li>
+<li>主机B收到请求后，会发回连接确认数据包。 （其中确认报文段中，标识位SYN=1，ACK=1，表示这是一个TCP连接响应数据报文，并含主机B的初始序列号seq(B)=y，以及主机B对主机A初始序列号的确认号ack(B)=seq(A)+1=x+1）</li>
+<li>第三次，主机A收到主机B的确认报文后，还需作出确认，即发送一个序列号seq(A)=x+1；确认号为ack(A)=y+1的报文；</li>
+</ol>
+<img src="/2022/11/03/%E3%80%8C%E7%B2%BE%E7%9B%8A%E6%B1%82%E7%B2%BE%E3%80%8D%E4%B9%8B%E7%BD%91%E7%BB%9C/%E4%B8%89%E6%AC%A1%E6%8F%A1%E6%89%8B%E7%9A%84%E8%BF%87%E7%A8%8B.png" class title="三次握手的过程">
+
+<h5 id="为什么需要第三次握手"><a href="#为什么需要第三次握手" class="headerlink" title="为什么需要第三次握手"></a>为什么需要第三次握手</h5><p>还要再发送一次确认是为了，防止已失效的连接请求报文段突然又传到了B，因而产生错误。<br>     已失效的报文段：正常情况下：A发出连接请求，但因为丢失了，故而不能收到B的确认。于是A重新发出请求，然后收到确认，建立连接，数据传输完毕后，释放连接，A发了2个，一个丢掉，一个到达，没有“已失效的报文段”<br>     但是，某种情况下，A的第一个在某个节点滞留了，延误到达，本来这是一个早已失效的报文段，但是在A发送第二个，并且得到B的回应，建立了连接以后，这个报文段竟然到达了，于是B就认为，A又发送了一个新的请求，于是发送确认报文段，同意建立连接，假若没有三次的握手，那么这个连接就建立起来了（有一个请求和一个回应），此时，A收到B的确认，但A知道自己并没有发送建立连接的请求，因为不会理睬B的这个确认，于是呢，A也不会发送任何数据，而B呢却以为新的连接建立了起来，一直等待A发送数据给自己，此时B的资源就被白白浪费了。但是采用三次握手的话，A就不发送确认，那么B由于收不到确认，也就知道并没有要求建立连接。<br>     简而言之： 第三次握手，主机 A 发送一次确认是为了防止： 如果客户端迟迟没有收到服务器返回的确认报文，这时他会放弃连接，重新启动一条连接请求；但问题是：服务器不知客户端没收到，所以他会收到两个连接请求，白白浪费了一条连接开销。</p>
+<h4 id="发送与收取数据"><a href="#发送与收取数据" class="headerlink" title="发送与收取数据"></a>发送与收取数据</h4><p>链接建立之后，即可以进行数据发送与收取了。万维网中，浏览器和服务器之间的数据传输必须按照规定的格式和遵循一定的规则，这些格式和规则就是超文本传输协议。这里就要介绍一下另一个耳熟能详的概念HTTP。</p>
+<h5 id="HTTP协议"><a href="#HTTP协议" class="headerlink" title="HTTP协议"></a>HTTP协议</h5><p>HTTP协议（HyperText Transfer Protocol），就是超文本传输协议，它定义了浏览器怎么向万维网服务器请求万维网文档，以及服务器怎么将文档传输给浏览器。数据以明文传送，不提供任何方式的数据加密。</p>
+<p>HTTP本身是无连接协议，它使用了TCP作为传输协议，保障了数据的可靠传输。虽然http使用了TCP连接，但是通信双方在交换HTTP报文之前不需要先建立HTTP连接。只用在传输层建立TCP连接即可。 </p>
+<p>HTTP也是无状态协议，同一个客户端无论访问同一个浏览器的同一个页面几次返回的数据都是相同的，这样有利于服务器处理大量并发的HTTP请求。</p>
+<h5 id="http协议的格式"><a href="#http协议的格式" class="headerlink" title="http协议的格式"></a>http协议的格式</h5><img src="/2022/11/03/%E3%80%8C%E7%B2%BE%E7%9B%8A%E6%B1%82%E7%B2%BE%E3%80%8D%E4%B9%8B%E7%BD%91%E7%BB%9C/http%E5%8D%8F%E8%AE%AE%E7%9A%84%E6%A0%BC%E5%BC%8F.jpg" class title="http协议的格式">
+
+<p>请求报文就是客户端发送给服务器的报文，响应报文就是服务器发送给客户端的报文，然后请求报文有请求行、首部、空行和实体主体，响应报文有状态行、首部、空行和实体主体。</p>
+<img src="/2022/11/03/%E3%80%8C%E7%B2%BE%E7%9B%8A%E6%B1%82%E7%B2%BE%E3%80%8D%E4%B9%8B%E7%BD%91%E7%BB%9C/HTTP%E8%AF%B7%E6%B1%82%E6%8A%A5%E6%96%87%E7%9A%84%E4%B8%80%E4%BA%9B%E6%96%B9%E6%B3%95.jpg" class title="HTTP请求报文的一些方法">
+
+<h5 id="数据包的传输过程"><a href="#数据包的传输过程" class="headerlink" title="数据包的传输过程"></a>数据包的传输过程</h5><p>此阶段的数据传输过程即前面介绍的OSI参考模型中数据传输过程。以HTTP的GET方法请求为例，浏览器会对请求进行包装，包装成上面提到格式的请求报文。然后开始数据包的传输，传输过程如下：</p>
+<ol>
+<li>浏览器向域名发出GET方法报文；</li>
+<li>该GET方法报文通过TCP-&gt;IP（DNS）-&gt;MAC（ARP）-&gt;网关-&gt;目的主机；</li>
+<li>目的主机收到数据帧，通过IP-&gt;TCP-&gt;HTTP，HTTP协议单元会回应HTTP协议格式封装好的HTML形式数据；</li>
+<li>该HTML数据通过TCP-&gt;IP（DNS）-&gt;MAC（ARP）-&gt;网关-&gt;我的主机；</li>
+<li>我的主机收到数据帧，通过IP-&gt;TCP-&gt;HTTP-&gt;浏览器，浏览器以网页形式显示HTML内容。</li>
+</ol>
+<p>其他的HTTP方法在传输数据时方法都类似，只是所携带的内容不同。</p>
+<h5 id="HTTP发展史-包括版本"><a href="#HTTP发展史-包括版本" class="headerlink" title="HTTP发展史(包括版本)"></a>HTTP发展史(包括版本)</h5><ul>
+<li>HTTP/0.9：1991年发布，极其简单，只有一个get命令</li>
+<li>HTTP/1.0：1996年5月发布，增加了大量内容</li>
+<li>HTTP/1.1：1997年1月发布，进一步完善HTTP协议，是目前最流行的版本</li>
+<li>SPDY ：2009年谷歌发布SPDY协议，主要解决HTTP/1.1效率不高的问题</li>
+<li>HTTP/2 ：2015年借鉴SPDY的HTTP/2发布</li>
+</ul>
+<h5 id="HTTP1-1协议"><a href="#HTTP1-1协议" class="headerlink" title="HTTP1.1协议"></a>HTTP1.1协议</h5><p>前面说到，网络传输过程要等链接建立之后，才会开始网络传输。</p>
+<img src="/2022/11/03/%E3%80%8C%E7%B2%BE%E7%9B%8A%E6%B1%82%E7%B2%BE%E3%80%8D%E4%B9%8B%E7%BD%91%E7%BB%9C/%E8%AF%B7%E6%B1%82%E4%B8%80%E6%AC%A1%E8%80%97%E8%B4%B9%E6%97%B6%E9%97%B4.jpg" class title="请求一次耗费时间">
+
+<p>那么请求一个文档至少需要耗费文档传输时间加上两倍往返时间RTT(一个RTT用于TCP连接，另一个RTT用于请求和接受文档)。</p>
+<p>HTTP1.0，每次都要新建立TCP连接，服务端返回之后就会断开链接。因此每次请求都会导致2倍RTT的开销，新建立TCP连接服务器都需要给它分配缓存和变量，会导致服务器压力巨大。鉴于这些缺点，人们推出了HTTP1.1。HTTP1.1相比1.0有如下改进：</p>
+<ol>
+<li><p>缓存处理：HTTP/1.0 使用 Pragma:no-cache + Last-Modified/If-Modified-Since来作为缓存判断的标准；HTTP/1.1 引入了更多的缓存控制策略：Cache-Control、Etag/If-None-Match等</p>
+</li>
+<li><p>错误状态管理：HTTP/1.1新增了24个错误状态响应码，如409（Conflict）表示请求的资源与资源的当前状态发生冲突；410（Gone）表示服务器上的某个资源被永久性的删除。</p>
+</li>
+<li><p>范围请求：HTTP/1.1在请求头引入了range头域，它允许只请求资源的某个部分，即返回码是206（Partial Content），这样就方便了开发者自由的选择以便于充分利用带宽和连接，支持断点续传</p>
+</li>
+<li><p>Host头：HTTP1.0中认为每台服务器都绑定一个唯一的IP地址，因此，请求消息中的URL并没有传递主机名（hostname）。但随着<a href="https://cloud.tencent.com/product/lighthouse?from=10680" target="_blank" rel="noopener">虚拟主机</a>技术的发展，在一台<a href="https://cloud.tencent.com/product/cpm?from=10680" target="_blank" rel="noopener">物理服务器</a>上可以存在多个虚拟主机（Multi-homed Web Servers），并且它们共享一个IP地址。HTTP1.1的请求消息和响应消息都应支持Host头域，且请求消息中如果没有Host头域会报告一个错误（400 Bad Request）。有了Host字段，就可以将请求发往同一台服务器上的不同网站，为虚拟主机的兴起打下了基础</p>
+</li>
+<li><p>持久连接：HTTP/1.1 最大的变化就是引入了持久连接（persistent connection），在HTTP/1.1中默认开启 Connection: keep-alive，即TCP连接默认不关闭，可以被多个请求复用。</p>
+<p>客户端和服务器发现对方一段时间没有活动，就可以主动关闭连接。不过，规范的做法是，客户端在最后一个请求时，发送Connection: close，明确要求服务器关闭TCP连接。客户端和服务器发现对方一段时间没有活动，就可以主动关闭连接。不过，规范的做法是，客户端在最后一个请求时，发送Connection: close，明确要求服务器关闭TCP连接。</p>
+</li>
+<li><p>管道机制：HTTP/1.1中引入了管道机制（pipelining）,即在同一个TCP连接中，客户端可以<strong>同时</strong>发送多个请求。</p>
+</li>
+</ol>
+<h5 id="HTTP-1-1的缺点"><a href="#HTTP-1-1的缺点" class="headerlink" title="HTTP/1.1的缺点"></a>HTTP/1.1的缺点</h5><p>HTTP/1.1 的持久连接和管道机制允许复用TCP连接，在一个TCP连接中，也可以同时发送多个请求，但是所有的数据通信都是按次序完成的，服务器只有处理完一个回应，才会处理下一个回应。比如客户端需要A、B两个资源，管道机制允许浏览器同时发出A请求和B请求，但服务器还是按照顺序，先回应A请求，完成后再回应B请求，这样如果前面的回应特别慢，后面就会有很多请求排队等着，这称为”队头阻塞(Head-of-line blocking)”。</p>
+<h5 id="HTTP2"><a href="#HTTP2" class="headerlink" title="HTTP2"></a>HTTP2</h5><p>HTTP2以Google发布的SPDY协议为基础，于2015年发布。它不叫HTTP2.0，因为标准委员会不打算再发布子版本了，下一个新版本将是HTTP3。HTTP2协议只在HTTPS环境下才有效，升级到HTTP2，必须先启用HTTPS。HTTP2解决了HTTP1.1的性能问题，主要特点如下：</p>
+<ol>
+<li>二进制分帧：HTTP1.1的头信息是文本（ASCII编码），数据体可以是文本，也可以是二进制；HTTP2 头信息和数据体都是二进制，统称为“帧”：头信息帧和数据帧。比起像HTTP/1.x这样的文本协议，二进制协议解析起来更高效、“线上”更紧凑，更重要的是错误更少。</li>
+<li>多路复用（双工通信）：通过单一的 HTTP2 连接发起多重的请求-响应消息，即在一个连接里，客户端和浏览器都可以同时发送多个请求和响应，而不用按照顺序一一对应，这样避免了“队头堵塞”。HTTP2 把 HTTP 协议通信的基本单位缩小为一个一个的帧，这些帧对应着逻辑流中的消息。并行地在同一个 TCP 连接上双向交换消息。</li>
+<li>数据流：因为 HTTP2 的数据包是不按顺序发送的，同一个连接里面连续的数据包，可能属于不同的回应。因此，必须要对数据包做标记，指出它属于哪个回应。HTTP2 将每个请求或回应的所有数据包，称为一个数据流（stream）。每个数据流都有一个独一无二的编号。数据包发送的时候，都必须标记数据流ID，用来区分它属于哪个数据流。另外还规定，客户端发出的数据流，ID一律为奇数，服务器发出的，ID为偶数。数据流发送到一半的时候，客户端和服务器都可以发送信号（RST_STREAM帧），取消这个数据流。HTTP1.1取消数据流的唯一方法，就是关闭TCP连接。这就是说，HTTP2 可以取消某一次请求，同时保证TCP连接还打开着，可以被其他请求使用。客户端还可以指定数据流的优先级。优先级越高，服务器就会越早回应。</li>
+<li>首部压缩：HTTP 协议不带有状态，每次请求都必须附上所有信息。所以，请求的很多字段都是重复的，，一模一样的内容，每次请求都必须附带，这会浪费很多带宽，也影响速度。HTTP2 对这一点做了优化，引入了头信息压缩机制（header compression）。一方面，头信息压缩后再发送（SPDY 使用的是通用的DEFLATE 算法，而 HTTP2 则使用了专门为首部压缩而设计的 HPACK 算法）。；另一方面，客户端和服务器同时维护一张头信息表，所有字段都会存入这个表，生成一个索引号，以后就不发送同样字段了，只发送索引号，这样就提高速度了。</li>
+<li>服务端推送：HTTP2 允许服务器未经请求，主动向客户端发送资源，这叫做服务器推送（server push）。常见场景是客户端请求一个网页，这个网页里面包含很多静态资源。正常情况下，客户端必须收到网页后，解析HTML源码，发现有静态资源，再发出静态资源请求。其实，服务器可以预期到客户端请求网页后，很可能会再请求静态资源，所以就主动把这些静态资源随着网页一起发给客户端了。</li>
+</ol>
+<h5 id="HTTPS"><a href="#HTTPS" class="headerlink" title="HTTPS"></a>HTTPS</h5><p>在上述介绍HTTP中，了解到HTTP传递信息是以明文的形式发送内容，这并不安全。而HTTPS（Hypertext Transfer Protocol Secure：超文本传输安全协议））出现正是为了解决HTTP不安全的特性。</p>
+<p>为了保证这些隐私数据能加密传输，让<code>HTTP</code>运行在安全的<code>SSL/TLS</code>协议上，即 HTTPS = HTTP + SSL/TLS，通过 <code>SSL</code>证书来验证服务器的身份，并为浏览器和服务器之间的通信进行加密。 </p>
+<p><code>SSL</code> 协议位于<code>TCP/IP</code> 协议与各种应用层协议之间，浏览器和服务器在使用 <code>SSL</code> 建立连接时需要选择一组恰当的加密算法来实现安全通信，为数据通讯提供安全支持。</p>
+<img src="/2022/11/03/%E3%80%8C%E7%B2%BE%E7%9B%8A%E6%B1%82%E7%B2%BE%E3%80%8D%E4%B9%8B%E7%BD%91%E7%BB%9C/https%E4%B8%8Ehttp%E8%BF%9E%E6%8E%A5%E8%BF%87%E7%A8%8B%E5%8C%BA%E5%88%AB.png" class title="https与http连接过程区别">
+
+<img src="/2022/11/03/%E3%80%8C%E7%B2%BE%E7%9B%8A%E6%B1%82%E7%B2%BE%E3%80%8D%E4%B9%8B%E7%BD%91%E7%BB%9C/https%E4%B8%8Ehttp%E6%A8%A1%E5%9E%8B%E5%8C%BA%E5%88%AB.png" class title="https与http模型区别">
+
+<p>https大致过程如下：</p>
+<ol>
+<li>建立服务器443端口连接 </li>
+<li>SSL握手：随机数，证书，密钥，加密算法</li>
+<li>发送加密请求 </li>
+<li>发送加密响应</li>
+<li>关闭SSL</li>
+<li>关闭TCP</li>
+</ol>
+<p>其中SSL握手过程如下图所示：</p>
+<img src="/2022/11/03/%E3%80%8C%E7%B2%BE%E7%9B%8A%E6%B1%82%E7%B2%BE%E3%80%8D%E4%B9%8B%E7%BD%91%E7%BB%9C/%E6%B7%B7%E5%90%88%E5%8A%A0%E5%AF%86%E6%95%B0%E6%8D%AE%E6%B5%81%E7%A8%8B.jpg" class title="混合加密数据流程">
+
+<ol>
+<li><p>客户端发出加密通信请求ClientHello</p>
+<p>提供如下信息： </p>
+<ul>
+<li>协议版本（如TSL1.0） ；</li>
+<li>随机数1（用于生成对话密钥） ；</li>
+<li>支持的加密方法（如RSA公钥加密） ；</li>
+<li>支持的压缩方法；</li>
+</ul>
+</li>
+<li><p>服务器回应SeverHello</p>
+<p>回应内容： </p>
+<ul>
+<li>确认使用的加密通信协议版本（TSL1.0） ；</li>
+<li>随机数2（用于生成对话密钥） ；</li>
+<li>确认加密方法（RSA） ；</li>
+<li>服务器证书（包含非对称加密的公钥） ；</li>
+<li>（可选）要求客户端提供证书的请求；</li>
+</ul>
+</li>
+<li><p>客户端验证证书</p>
+<p>如果证书不是可信机构颁布，或证书域名与实际域名不符，或者证书已经过期，就会向访问者显示一个警告，是否继续通信。</p>
+</li>
+<li><p>客户端回应</p>
+<p>证书没有问题，就会取出证书中的服务器公钥，然后发送： </p>
+<ul>
+<li>随机数3（pre-master key，此随机数用服务器公钥加密，防止被窃听） ；</li>
+<li>编码改变通知（表示随后的信息都将用双方商定的方法和密钥发送） ；</li>
+<li>客户端握手结束通知；</li>
+</ul>
+</li>
+<li><p>双方生成会话密钥</p>
+<p>双方同时有了三个随机数，接着就用事先商定的加密方法，各自生成同一把“会话密钥”<br>服务器端用自己的私钥（非对称加密的）获取第三个随机数，会计算生成本次所用的会话密钥（对称加密的密钥），如果前一步要求客户端证书，会在这一步验证。</p>
+</li>
+<li><p>服务器最后响应</p>
+<p>服务器生成会话密钥后，向客户端发送： </p>
+<ul>
+<li>编码改变通知（后面的信息都用双方的加密方法和密钥来发送） ；</li>
+<li>服务器握手结束通知；</li>
+</ul>
+</li>
+</ol>
+<p>至此，握手阶段全部结束，接下来客户端与服务器进入加密通信，用会话密钥加密内容。</p>
+<h4 id="浏览器收到服务器响应，得到html代码"><a href="#浏览器收到服务器响应，得到html代码" class="headerlink" title="浏览器收到服务器响应，得到html代码"></a>浏览器收到服务器响应，得到html代码</h4><p>浏览器发出请求时，请求报文的报文头包含一个accept字段。accept代表发送端（客户端）希望接受的数据类型，这是浏览器自动封装的请求头。如果服务器返回的content-type是accept中的任何一个，浏览器都能解析，并直接展示在网页上。如果服务器返回的content-type是其他类型，此时浏览器有三种处理状态：</p>
+<ol>
+<li>正常显示。例如返回类型为text/javascript，浏览器能直接处理并展示。</li>
+<li>下载。例如返回类型为application/octet-stream（二进制流，不知道下载文件类型），这种浏览器不能直接处理的，会被下载。</li>
+<li>报错。当我们返回一个字符串hello world，却使用text/xml，格式时，浏览器不能正确解析，就会报错，并把报错信息呈现在网页中。</li>
+</ol>
+<p>浏览器能直接处理很多种格式，并直接呈现在网页中，并不限于accept中规定的字段。</p>
+<h4 id="渲染页面"><a href="#渲染页面" class="headerlink" title="渲染页面"></a>渲染页面</h4><p>获取到服务器相应之后，浏览器会根据相应的content-type字段对响应字符串进行解析。能够解析并成功解析就显示，能够解析但解析错误就报错，不能解析就下载。由于浏览器采用至上而下的方式解析，所以会先解析html，直到遇到外部样式和外部脚本。这时会阻塞浏览器的解析，外部样式和外部脚本（在没有async、defer属性下）会并行加载，但是外部样式会阻塞外部脚本的执行，dom加载完毕，js脚本执行成功后dom树构建完成（DOMContentLoaded），之后就加载dom中引用的图片等静态资源。即：html解析-&gt;外部样式、脚本加载-&gt;外部样式执行-&gt;外部脚本执行-&gt;html继续解析-&gt;dom树构建完成-&gt;加载图片-&gt;页面加载完成。</p>
+<ul>
+<li>如果是动态脚本（即内联脚本）则不受样式影响，在解析到它时会执行。</li>
+<li>外部样式后续外部脚本含有async属性（IE下为defer），外部样式不会阻塞该脚本的加载与执行。</li>
+</ul>
+<p>在外部样式执行完毕后，css附着于DOM，创建了一个渲染树（渲染树是一些被渲染对象的集）。每个渲染对象都包含了与之对应的计算过样式的DOM对象，对于每个渲染元素来说，位置都经过计算，所以这里被叫做“布局”。然后将“布局”显示在浏览器窗口，称之为“绘制”。</p>
+<p>最后页面加载完成，页面load。</p>
+<h4 id="TCP释放连接四次握手"><a href="#TCP释放连接四次握手" class="headerlink" title="TCP释放连接四次握手"></a>TCP释放连接四次握手</h4><p>当数据传输完成，需要释放TCP链接，TCP释放连接需要四次握手。</p>
+<h5 id="四次握手过程"><a href="#四次握手过程" class="headerlink" title="四次握手过程"></a>四次握手过程</h5><p>假设主机A为客户端，主机B为服务器，其释放TCP连接的过程如下：</p>
+<ol>
+<li>关闭客户端到服务器的连接：首先客户端A发送一个FIN，用来关闭客户到服务器的数据传送，然后等待服务器的确认。其中终止标志位FIN=1，序列号seq=u</li>
+<li>服务器收到这个FIN，它发回一个ACK，确认号ack为收到的序号加1。</li>
+<li>关闭服务器到客户端的连接：也是发送一个FIN给客户端。</li>
+<li>客户段收到FIN后，并发回一个ACK报文确认，并将确认序号seq设置为收到序号加1。</li>
+</ol>
+<p>首先进行关闭的一方将执行主动关闭，而另一方执行被动关闭。</p>
+<img src="/2022/11/03/%E3%80%8C%E7%B2%BE%E7%9B%8A%E6%B1%82%E7%B2%BE%E3%80%8D%E4%B9%8B%E7%BD%91%E7%BB%9C/TCP%E9%87%8A%E6%94%BE%E8%BF%9E%E6%8E%A5%E5%9B%9B%E6%AC%A1%E6%8F%A1%E6%89%8B%E8%BF%87%E7%A8%8B.png" class title="TCP释放连接四次握手过程">
+
+<p>主机A发送FIN后，进入终止等待状态， 服务器B收到主机A连接释放报文段后，就立即给主机A发送确认，然后服务器B就进入close-wait状态，此时TCP服务器进程就通知高层应用进程，因而从A到B的连接就释放了。此时是“半关闭”状态。即A不可以发送给B，但是B可以发送给A。<br>　　此时，若B没有数据报要发送给A了，其应用进程就通知TCP释放连接，然后发送给A连接释放报文段，并等待确认。A发送确认后，进入time-wait，注意，此时TCP连接还没有释放掉，然后经过时间等待计时器设置的2MSL后，A才进入到close状态。</p>
+<h5 id="为什么要等待2MSL"><a href="#为什么要等待2MSL" class="headerlink" title="为什么要等待2MSL"></a>为什么要等待2MSL</h5><p> MSL即Maximum Segment Lifetime，也就是最大报文生存时间，他是任何报文在网络上存在的最长时间，超过这个时间报文将被丢弃。引用《TCP/IP详解》中的话：“它(MSL)是任何报文段被丢弃前在网络内的最长时间”。RFC 793中规定MSL为2分钟，实际应用中常用的是30秒，1分钟和2分钟等。<br>    TCP的TIME_WAIT状态需要等待2MSL，当TCP的一端发起主动关闭，在发出最后一个ACK包后，即第3次握手完成后发送了第四次握手的ACK包后就进入了TIME_WAIT状态，必须在此状态上停留两倍的MSL时间，等待2MSL时间主要目的是怕最后一个ACK包对方没收到，那么对方在超时后将重发第三次握手的FIN包，主动关闭端接到重发的FIN包后可以再发一个ACK应答包。在TIME_WAIT状态时两端的端口不能使用，要等到2MSL时间结束才可继续使用。当连接处于2MSL等待阶段时任何迟到的报文段都将被丢弃。不过在实际应用中可以通过设置SO_REUSEADDR选项达到不必等待2MSL时间结束再使用此端口。<br>概括原因如下：</p>
+<ol>
+<li>为了保证A发送的最后一个ACK报文段能够到达B。即最后这个确认报文段很有可能丢失，那么B会超时重传，然后A再一次确认，同时启动2MSL计时器，如此下去。如果没有等待时间，发送完确认报文段就立即释放连接的话，B就无法重传了（连接已被释放，任何数据都不能出传了），因而也就收不到确认，就无法按照步骤进入CLOSE状态，即必须收到确认才能close。</li>
+<li>防止“已失效的连接请求报文段”出现在连接中。经过2MSL，那些在这个连接持续的时间内，产生的所有报文段就可以都从网络中消失。即在这个连接释放的过程中会有一些无效的报文段滞留在楼阁结点，但是呢，经过2MSL这些无效报文段就肯定可以发送到目的地，不会滞留在网络中。这样的话，在下一个连接中就不会出现上一个连接遗留下来的请求报文段了。</li>
+</ol>
+<p>可以看出：B结束TCP连接的时间比A早一点，因为B收到确认就断开连接了，而A还得等待2MSL。</p>
+<h5 id="为什么TCP释放连接需要四次"><a href="#为什么TCP释放连接需要四次" class="headerlink" title="为什么TCP释放连接需要四次"></a>为什么TCP释放连接需要四次</h5><p>TCP建立连接要进行三次握手，而断开连接要进行四次。这是由于TCP的半关闭造成的。因为TCP连接是全双工的(即数据可在两个方向上同时传递)所以进行关闭时每个方向上都要单独进行关闭。这个单方向的关闭就叫半关闭。当一方完成它的数据发送任务，就发送一个FIN来向另一方通告将要终止这个方向的连接。<br><strong>注意：</strong></p>
+<ol>
+<li>发送了FIN只是表示这端不能继续发送数据(应用层不能再调用send发送)，但是还可以接收数据。收到一个 FIN只意味着这一方向上没有数据流动，一个TCP连接在收到一个FIN后仍能发送数据，比如：如主机A收到主机B的FIN断开TCP连接请求，只是表示主机B已经发送完数据，主机A收到FIN后作出应答，并终止这个方向的数据传输，此时处于半关闭状态。但是主机A仍然可以发送数据的，只有当主机A发送完数据并发送FIN给主机B时，主机B才停止这个方向的数据传输，并关闭TCP连接。</li>
+<li>在很多时候，TCP连接的断开都会由TCP层自动进行，例如你CTRL+C终止你的程序，TCP连接依然会正常关闭，你可以写代码试试。</li>
+</ol>
+<h3 id="总结-1"><a href="#总结-1" class="headerlink" title="总结"></a>总结</h3><p>综上，在浏览器地址栏输入域名后，首先浏览器会对输入的地址进行地址解析，接着对解析出的域名进行DNS解析。DNS解析会首先搜索浏览器的DNS缓存，没有命中就在操作系统hosts文件中查找，还没命中就在本地服务器中查找，本地服务器也没有相关缓存就在根域名服务器查找，然后在相应的顶级域名服务器查找，然后在权限域名服务器中查找。本地域名服务器缓存IP地址，并返回给操作系统，操作系统缓存IP地址并返回给浏览器，然后浏览器缓存这个IP地址。</p>
+<p>在查询到目标服务器之后，就会建立TCP连接，开始发送与收取数据，待数据传输完成后再释放TCP链接。</p>
+<img src="/2022/11/03/%E3%80%8C%E7%B2%BE%E7%9B%8A%E6%B1%82%E7%B2%BE%E3%80%8D%E4%B9%8B%E7%BD%91%E7%BB%9C/%E4%B8%87%E7%BB%B4%E7%BD%91%E5%B7%A5%E4%BD%9C%E6%B5%81%E7%A8%8B.jpg" class title="万维网工作流程">
+
+<p>每一个服务器都有一个进程不断监听TCP的端口80，以便发现是否有浏览器向它发出连接建立请求，一旦监听到链接建立请求并建立TCP链接之后，浏览器就向服务器发出浏览某个页面的请求，服务器接着返回所请求的页面作为响应，浏览器收到html页面后渲染页面，待数据传输完成TCP链接被释放。</p>
+<h2 id="补充"><a href="#补充" class="headerlink" title="补充"></a>补充</h2><h3 id="IP头、TCP头、UDP头详解以及定义"><a href="#IP头、TCP头、UDP头详解以及定义" class="headerlink" title="IP头、TCP头、UDP头详解以及定义"></a>IP头、TCP头、UDP头详解以及定义</h3><h4 id="MAC地址、IP地址和端口号"><a href="#MAC地址、IP地址和端口号" class="headerlink" title="MAC地址、IP地址和端口号"></a>MAC地址、IP地址和端口号</h4><p>在利用TCP/IP协议族进行通信的时候，有三个比较关键的确认身份的信息：MAC地址、IP地址和端口号。一个主机会有一个 MAC 地址，而每个网络会有一个专属于它的 IP 地址。</p>
+<h5 id="MAC地址"><a href="#MAC地址" class="headerlink" title="MAC地址"></a>MAC地址</h5><p>MAC地址即网卡号，每块网卡出厂的时候，都有一个全世界独一无二的 MAC 地址，长度是 48 个二进制位，通常用 12 个十六进制数表示，如：00-16-EA-AE-3C-40就是一个MAC地址，其中前6位16进制数00-16-EA代表网络硬件制造商的编号，它由IEEE(电气与电子工程师协会)分配，而后6位16进制数AE-3C-40代表该制造商所制造的某个网络产品(如网卡)的系列号。</p>
+<p>MAC地址工作在OSI模型中的数据链路层，在数据链路层包裹在以太网头部中的，它主要用来识别同一个链路中的不同计算机。</p>
+<h5 id="IP地址"><a href="#IP地址" class="headerlink" title="IP地址"></a>IP地址</h5><p>IP地址是由<strong>网络号</strong>和<strong>主机号</strong>组成。在OSI 模型中，IP地址是工作在OSI模型中的网络层，IP地址为32位，IP地址是IP协议提供的一种统一的地址格式，它为互联网上的每一个网络和每一台主机分配一个逻辑地址，以此来屏蔽物理地址的差异。IP地址分为A、B、C、D、E五大类：</p>
+<ul>
+<li>A类地址：一个字节（8位）的网络地址和三个字节的主机地址。地址范围为：1.0.0.0~126.255.255.255。</li>
+<li>B类地址：二个字节的网络地址和二个字节的主机地址。地址范围为：128.0.0.0~191.255.255.255。</li>
+<li>C类地址：三个字节的网络地址和一个字节的主机地址。地址范围为：192.0.0.0~223.255.255.255。</li>
+<li>D类地址：D类地址用于多点广播（Multicast），D类IP地址第一个字节以“lll0”开始，它是一个专门保留的地址。地址范围为：224.0.0.0~239.255.255.255。</li>
+<li>E类地址：E类IP地址 以“llll0”开始，为将来使用保留。地址范围为：240.0.0.0~255.255.255.254。，255.255.255.255用于广播地址。</li>
+</ul>
+<p>其中缺失了两部分，一个是0开头的，“0”表示该地址是本地主机，不能传送。一个是127开头的，127开头的是网卡自身，常用于测试。这里为什么是十进制的数字，为什么中间有‘.’，其实这都是为了方便人类而人为加上去的。转化为计算机语言就是二进制的，每一个字节八位，八位二进制能表示的最大数字就是255，这样ip地址就齐全了。可能有些人还发现ip地址为 10.170.8.61/23 ，这里涉及到局域网、保留地址和子网掩码。这里的意思是，前23位表示为该台主机的网络地址，该网络有 2^(32-23) = 512台主机。具体就不展开讲了，感兴趣的可以参考<a href="https://www.zhihu.com/question/56895036。" target="_blank" rel="noopener">https://www.zhihu.com/question/56895036。</a></p>
+<h5 id="端口号"><a href="#端口号" class="headerlink" title="端口号"></a>端口号</h5><p>在传输层包含在TCP/UDP头部中的，用于识别应用程序。</p>
+<p>一台主机上能运行多个程序，那么接收到的消息到底是哪个程序的呢？就需要端口号来确认。</p>
+<p>端口号有两种：</p>
+<p>固定的端口号：是形如http，telnet，ftp等广为使用的应用协议所使用的端口号是固定的；<br>动态分配的端口号：这个时候服务端要确定监听端口号，接受服务的客户端没必要确定端口号；<br>端口号由传输层协议决定，因此不同传输协议可以使用相同的端口号，所以TCP和UDP可以使用同一个端口号。</p>
+<h5 id="为什么有了ip地址，还要mac地址？"><a href="#为什么有了ip地址，还要mac地址？" class="headerlink" title="为什么有了ip地址，还要mac地址？"></a>为什么有了ip地址，还要mac地址？</h5><p>这个问题很关键，就像是我有驾驶证了你非要让我提供身份证。这个涉及一些历史问题，因为一开始没有互联网的时候就只有mac地址，还不存在ip地址。后来互联网越来越大之后，发现mac地址找起来太麻烦，并且耗时也越来越久，就发明了ip地址。并且mac地址在一个局域网中还是很有用的，所以就两个一起存在了。详细的信息，大家可以参考<a href="https://www.zhihu.com/question/21546408。" target="_blank" rel="noopener">https://www.zhihu.com/question/21546408。</a></p>
+<h4 id="IP头、TCP头、UDP头详解以及定义-1"><a href="#IP头、TCP头、UDP头详解以及定义-1" class="headerlink" title="IP头、TCP头、UDP头详解以及定义"></a>IP头、TCP头、UDP头详解以及定义</h4><h5 id="数据传输的封装与解封装"><a href="#数据传输的封装与解封装" class="headerlink" title="数据传输的封装与解封装"></a>数据传输的封装与解封装</h5><p>前文中提到，数据在发送阶段，每层都要加上协议要求的控制信息，而在接收阶段，每层都会去掉该层的控制信息，该过程就是数据的封装与解封装，详细过程见下图。</p>
+<img src="/2022/11/03/%E3%80%8C%E7%B2%BE%E7%9B%8A%E6%B1%82%E7%B2%BE%E3%80%8D%E4%B9%8B%E7%BD%91%E7%BB%9C/%E6%95%B0%E6%8D%AE%E4%BC%A0%E8%BE%93%E7%9A%84%E5%B0%81%E8%A3%85%E4%B8%8E%E8%A7%A3%E5%B0%81%E8%A3%85.gif" class title="数据传输的封装与解封装">
+
+<p>图中提到了几种报头，我们接下来逐个介绍。</p>
+<h5 id="MAC报文段结构"><a href="#MAC报文段结构" class="headerlink" title="MAC报文段结构"></a>MAC报文段结构</h5><img src="/2022/11/03/%E3%80%8C%E7%B2%BE%E7%9B%8A%E6%B1%82%E7%B2%BE%E3%80%8D%E4%B9%8B%E7%BD%91%E7%BB%9C/MAC%E6%8A%A5%E6%96%87%E6%AE%B5%E7%BB%93%E6%9E%84.jpg" class title="MAC报文段结构">
+
+<ul>
+<li>目的地址：接收帧的网络适配器的物理地址（MAC 地址），为 6 个字节（48 比特）。作用是当网卡接收到一个数据帧时，首先会检查该帧的目的地址，是否与当前适配器的物理地址相同，如果相同，就会进一步处理；如果不同，则直接丢弃。</li>
+<li>源地址：发送帧的网络适配器的物理地址（MAC 地址），为 6 个字节（48 比特）。</li>
+<li>类型：上层协议的类型](<a href="https://link.zhihu.com/?target=https%3A//blog.csdn.net/weixin_38387929/article/details/116558181)，由于上层协议众多，所以在处理数据的时候必须设置该字段，标识数据交付哪个协议处理。例如，字段为">https://link.zhihu.com/?target=https%3A//blog.csdn.net/weixin_38387929/article/details/116558181)，由于上层协议众多，所以在处理数据的时候必须设置该字段，标识数据交付哪个协议处理。例如，字段为</a> 0x0800 时，表示将数据交付给 IP 协议。</li>
+<li>数据：也称为效载荷，表示交付给上层的数据。以太网帧数据长度最小为 46 字节，最大为 1500 字节。如果不足 46 字节时，会填充到最小长度。最大值也叫最大传输单元（MTU）。 在 Linux 中，使用 ifconfig 命令可以查看该值，通常为 1500。</li>
+<li>帧检验序列 FCS：检测该帧是否出现差错，占 4 个字节（32 比特）。发送方计算帧的循环冗余码校验（CRC）值，把这个值写到帧里。接收方计算机重新计算 CRC，与 FCS 字段的值进行比较。如果两个值不相同，则表示传输过程中发生了数据丢失或改变。这时，就需要重新传输这一帧。</li>
+</ul>
+<h5 id="IP报文段结构"><a href="#IP报文段结构" class="headerlink" title="IP报文段结构"></a>IP报文段结构</h5><img src="/2022/11/03/%E3%80%8C%E7%B2%BE%E7%9B%8A%E6%B1%82%E7%B2%BE%E3%80%8D%E4%B9%8B%E7%BD%91%E7%BB%9C/IP%E6%8A%A5%E6%96%87%E6%AE%B5%E7%BB%93%E6%9E%84.jpg" class title="IP报文段结构">
+
+<ul>
+<li><p>4位版本： IP协议的版本号｡</p>
+</li>
+<li><p>4位首部长度：由于IPv4的包头可能包含可变数量的可选项，用来确定IPv4数据报中数据部分的偏移位置｡</p>
+</li>
+<li><p>8位服务类型 ：定义IP封包在传送过程中要求的服务类型，类型如下</p>
+</li>
+<li><ul>
+<li>000….. (Routine): 过程字段,占3位｡设置了数据包的重要性,取值越大数据越重要,取值范围为:0(正常)~ 7(网络控制)</li>
+<li>…0….(Delay):延迟字段 ,占1位,取值:0(正常)､1(期特低的延迟) </li>
+<li>….0…(Throughput):流量字段,占1位｡取值:0(正常)､1(期特高的流量) </li>
+<li>…..0..(Reliability) :可靠性字段,占1位｡取值:0(正常)､1(期特高的可靠性)</li>
+<li>…..0.(ECN-Capable Transport):显式拥塞指示传输字段,占1位｡由源端设置,以显示源端节点的传输协议是支持ECN(Explicit Cogestion Notifica tion,显式拥塞指示)的｡取值:0(不支持ECN)､1(支持ECN)</li>
+<li>…….0(Congestion Experienced):拥塞预警字段,占1位｡取值:0(正常,不拥塞)､1(拥塞)</li>
+</ul>
+</li>
+<li><p>16位总长度：指定IP包的总长</p>
+</li>
+<li><ul>
+<li>利用首部长度字段和总长度字段,就可以知道IP数据报中数据内容的起始位置和长度｡</li>
+<li>因为一些数据链路(如以太网)需要填充一些数据以达到最小长度｡以太网的最小帧长为46个字节，但IP数据可能会更短｡所以通过总长度字段，在IP层中确定46字节中有多少是IP数据报的内容｡</li>
+</ul>
+</li>
+<li><p>16位标识：发送方发送的数据会被拆散成封包形式通过网络传送，接收方收到封包后要进行重组的时候通过这个ID确定是否为同一条数据｡</p>
+</li>
+<li><p>3位标志：当封包在传输过程中进行最佳组合时使用的识别记号。</p>
+</li>
+<li><ul>
+<li>000(Reserved Fragment):保留分段｡当此值为0的时候表示目前未被使用｡</li>
+<li>.0.(Don’t Fragment):不分段｡当此值为0的时候表示封包可以被分段,如果为1则不能被分割｡ </li>
+<li>..0( More Fragment):更多分段｡当上一个值为0时,此值为0就示该封包是最後一个封包,如果为1则表示其後还有被分割的封包｡</li>
+</ul>
+</li>
+<li><p>13位分段偏移：封包片段定位标记，解决封包抵达顺序和切割顺序不一致时，重组不能对号入座问题｡如果封包并没有被分段，则FO值为“0”｡ </p>
+</li>
+<li><p>8位生存时间：每经过一个路由设备-1，当该字段的值为0时,数据报就被丢弃，防止进入死循环｡</p>
+</li>
+<li><p>8位协议：封包所使用的网络协议类型,如ICMP､DNS等｡各协议对应的值如图：</p>
+<img src="/2022/11/03/%E3%80%8C%E7%B2%BE%E7%9B%8A%E6%B1%82%E7%B2%BE%E3%80%8D%E4%B9%8B%E7%BD%91%E7%BB%9C/%E5%8D%8F%E8%AE%AE%E5%AF%B9%E5%BA%94%E5%80%BC.jpg" class title="协议对应值">
+</li>
+<li><p>16位首部检验和：用来校验错误，确保封包被正确无误的接收到｡一旦校验出差错消息，由上层去发现丢失的数据报并进行重传｡首部检验和字段是根据IP首部计算的检验和码,不对首部后面的数据进行计算｡</p>
+</li>
+<li><p>32位源IP地址：发送IP数据包的IP地址｡</p>
+</li>
+<li><p>32位目的IP地址：接收IP数据包的IP地址｡</p>
+</li>
+<li><p>32位选项：这两个选项较少使用，只有某些特殊的封包需要特定的控制才会利用到｡这些选项通常包括:</p>
+</li>
+<li><ul>
+<li>安全和处理限制:用于军事领域</li>
+<li>记录路径:让每个路由器都记下它的IP地址</li>
+<li>时间戳:让每个路由器都记下它的IP地址和时间</li>
+<li>宽松的源站选路:为数据报指定一系列必须经过的IP地址</li>
+<li>严格的源站选路:与宽松的源站选路类似,但是要求只能经过指定的这些地址,不能经过其他的地址｡</li>
+</ul>
+<p>以上这些选项很少被使用，而且并非所有的主机和路由器都支持这些选项｡选项字段一直都是以32位作为界限,在必要的时候插入值为0的填充字节｡这样就保证IP首部始终是32位的整数倍(这是首部长度字段所要求的)｡</p>
+</li>
+<li><p>数据：用户发送数据。</p>
+</li>
+</ul>
+<h5 id="TCP报文段结构"><a href="#TCP报文段结构" class="headerlink" title="TCP报文段结构"></a>TCP报文段结构</h5><img src="/2022/11/03/%E3%80%8C%E7%B2%BE%E7%9B%8A%E6%B1%82%E7%B2%BE%E3%80%8D%E4%B9%8B%E7%BD%91%E7%BB%9C/TCP%E6%8A%A5%E6%96%87%E6%AE%B5%E7%BB%93%E6%9E%84.jpg" class title="TCP报文段结构">
+
+<ul>
+<li>源端口号：发送方的端口号，范围(0~65535)</li>
+<li>目的端口号： 接收者的端口号，范围(0~65535)</li>
+<li>序号：如果 TCP 数据太大时(大于 IP 封包的容许程度)， 就得要进行分段。这个序号就是记录每个封包的序号，可以让接收端重新将 TCP 的数据组合起来，序号字段的值则指的是本报文段所发送的数据的第一个字节的序号。简称为<strong>seq</strong></li>
+<li>确认号：为了确认接收端确实有收到发送端所送出的封包数据，当发送端收到这个确认码时，就能够确定之前传递的封包已经被正确的收下了，这个确认号是期望收到对方的下一个报文段的数据的第一个字节的序号。简称<strong>ack</strong></li>
+<li>首部长度：表示TCP首部的长度，范围(0~15)，单位32bit，例如值为5时，表示首部长度是20Byte(160bit)，如果选项字段为空，则TCP首部长度为<strong>20Byte</strong>，即值为5</li>
+<li>URG：URG=1时表示存在着紧急数据，紧急是数据的最后一个字节由紧急数据指针指出，一般较少使用</li>
+<li>ACK：ACK=1表示确认号字段中的值是有效的，为0表示无效</li>
+<li>PSH：当URG＝1时，表明紧急指针字段有效,代表该封包为紧急封包。它告诉系统此报文段中有紧急数据，应尽快传送(相当于高优先级的数据)</li>
+<li>RST：RSP=1时重建连接，如果接收到RST位时候，通常发生了某些错误</li>
+<li>SYN：SYN=1时，就表示这是一个连接请求或连接接受报文，一般用于握手阶段</li>
+<li>FIN：用来释放一个连接，当FIN＝1时，表明此报文段的发送端的数据已发送完毕，并要求释放运输连接。</li>
+<li>接收窗口：用于流量控制，指示接收方愿意接收的字节数量，范围0~65535字节。</li>
+<li>因特网校验和：检验和覆盖了整个的TCP报文段即TCP首部和TCP数据，这是一个强制性的字段，一定是由发送端计算和存储，并由接收端进行验证。</li>
+<li>紧急数据指针：当URG=1时有效，是一个正的偏移量，和序号中的值相加表示表示紧急数据最后一个字节的序号。</li>
+<li>选项：用于发送方和接收方协商最大报文长度(MSS)时(只存在于SYN报文)或在高速网络环境下用作窗口调节因子时使用，还可存放时间戳数据</li>
+<li>数据：报文实体数据</li>
+</ul>
+<h5 id="UDP报文段结构"><a href="#UDP报文段结构" class="headerlink" title="UDP报文段结构"></a>UDP报文段结构</h5><img src="/2022/11/03/%E3%80%8C%E7%B2%BE%E7%9B%8A%E6%B1%82%E7%B2%BE%E3%80%8D%E4%B9%8B%E7%BD%91%E7%BB%9C/UDP%E6%8A%A5%E6%96%87%E6%AE%B5%E7%BB%93%E6%9E%84.jpg" class title="UDP报文段结构">
+
+<ul>
+<li>源端口号：发送方的端口号，范围(0~65535)</li>
+<li>目的端口号： 接收者的端口号，范围(0~65535)</li>
+<li>长度：表示UDP报文段的长度(包括首部和数据)</li>
+<li>校验和：接收方用于校验该报文段中是否存在了差错</li>
+<li>应用数据：报文实体数据。</li>
+</ul>
+<h3 id="TCP和UDP的区别"><a href="#TCP和UDP的区别" class="headerlink" title="TCP和UDP的区别"></a>TCP和UDP的区别</h3><p>TCP和UDP是OSI模型中的运输层中的协议。TCP提供可靠的通信传输，而UDP则常被用于让广播和细节控制交给应用的通信传输。</p>
+<h4 id="UDP"><a href="#UDP" class="headerlink" title="UDP"></a>UDP</h4><p>UDP不提供复杂的控制机制，利用IP提供面向无连接的通信服务。并且它是将应用程序发来的数据在收到的那一刻，立刻按照原样发送到网络上的一种机制。即使是出现网络拥堵的情况下，UDP也无法进行流量控制等避免网络拥塞的行为。此外，传输途中如果出现了丢包，UDO也不负责重发。甚至当出现包的到达顺序乱掉时也没有纠正的功能。如果需要这些细节控制，那么不得不交给由采用UDO的应用程序去处理。换句话说，UDP将部分控制转移到应用程序去处理，自己却只提供作为传输层协议的最基本功能。UDP有点类似于用户说什么听什么的机制，但是需要用户充分考虑好上层协议类型并制作相应的应用程序。</p>
+<h4 id="TCP补充"><a href="#TCP补充" class="headerlink" title="TCP补充"></a>TCP补充</h4><p>TCP充分实现了数据传输时各种控制功能，可以进行丢包的重发控制，还可以对次序乱掉的分包进行顺序控制。而这些在UDP中都没有。此外，TCP作为一种面向有连接的协议，只有在确认通信对端存在时才会发送数据，从而可以控制通信流量的浪费。TCP通过检验和、序列号、确认应答、重发控制、连接管理以及窗口控制等机制实现可靠性传输。</p>
+<h4 id="TCP与UDP区别总结"><a href="#TCP与UDP区别总结" class="headerlink" title="TCP与UDP区别总结"></a>TCP与UDP区别总结</h4><ul>
+<li>TCP面向连接（如打电话要先拨号建立连接）;UDP是无连接的，即发送数据之前不需要建立连接</li>
+<li>TCP提供可靠的服务。也就是说，通过TCP连接传送的数据，无差错，不丢失，不重复，且按序到达;UDP尽最大努力交付，即不保   证可靠交付</li>
+<li>TCP面向字节流，实际上是TCP把数据看成一连串无结构的字节流;UDP是面向报文的</li>
+<li>UDP没有拥塞控制，因此网络出现拥塞不会使源主机的发送速率降低（对实时应用很有用，如IP电话，实时视频会议等）</li>
+<li>每一条TCP连接只能是点到点的;UDP支持一对一，一对多，多对一和多对多的交互通信</li>
+<li>TCP首部开销20字节;UDP的首部开销小，只有8个字节</li>
+<li>TCP的逻辑通信信道是全双工的可靠信道，UDP则是不可靠信道</li>
+</ul>
+<h3 id="TCP的拥塞控制"><a href="#TCP的拥塞控制" class="headerlink" title="TCP的拥塞控制"></a>TCP的拥塞控制</h3><p>不知读者有无注意，前文中多次提到拥塞一词，那么什么是拥塞呢？</p>
+<p>计算机网络中的带宽、交换结点中的缓存和处理机等，都是网络的资源。在某段时间，若对网络中某一资源的需求超过了该资源所能提供的可用部分，网络的性能就会变坏。这种情况就叫做拥塞。</p>
+<p>拥塞控制就是防止过多的数据注入网络中，这样可以使网络中的路由器或链路不致过载。拥塞控制是一个全局性的过程，和流量控制不同，流量控制指点对点通信量的控制。</p>
+<p>为了防止网络的拥塞现象，TCP提出了一系列的拥塞控制机制。最初由V. Jacobson在1988年的论文中提出的TCP的拥塞控制由慢启动(Slow Start)和拥塞避免(Congestion Avoidance)组成，后来TCP Reno版本中又针对性的加入了快速重传(Fast Retransmit)、快速恢复(Fast Recovery)算法，再后来在TCP NewReno中又对快速恢复算法进行了改进，近些年又出现了选择性应答(Selective Acknowledgement, SACK)算法，还有其他方面的大大小小的改进，成为网络研究的一个热点。</p>
+<p>TCP的拥塞控制主要原理依赖于一个拥塞窗口cwnd（Congestion Window）来控制，TCP还有一个对端通告的接收窗口(Receive Window，rwnd)用于流量控制。窗口值的大小就代表能够发送出去的但还没有收到ACK的最大数据报文段，显然窗口越大那么数据发送的速度也就越快，但是也有越可能使得网络出现拥塞，如果窗口值为1，那么就简化为一个停等协议，每发送一个数据，都要等到对方的确认才能发送第二个数据包，显然数据传输效率低下。TCP的拥塞控制算法就是要在这两者之间权衡，选取最好的cwnd值，从而使得网络吞吐量最大化且不产生拥塞。</p>
+<p>由于需要考虑拥塞控制和流量控制两个方面的内容，因此TCP的真正的发送窗口=min(rwnd, cwnd)，接收窗口太小也会成为cwnd的天花板。但是rwnd是由对端确定的，网络环境对其没有影响，所以在考虑拥塞的时候我们一般不考虑rwnd的值，我们暂时只讨论如何确定cwnd值的大小。关于cwnd的单位，在TCP中是以字节来做单位的，我们假设TCP每次传输都是按照MSS大小来发送数据的，因此你可以认为cwnd按照数据包个数来做单位也可以理解，所以有时我们说cwnd增加1也就是相当于字节数增加1个MSS大小。</p>
+<h4 id="慢启动与拥塞避免"><a href="#慢启动与拥塞避免" class="headerlink" title="慢启动与拥塞避免"></a>慢启动与拥塞避免</h4><p>发送方维持一个叫做拥塞窗口cwnd的状态变量。拥塞窗口的大小取决于网络的拥塞程度，并且动态地在变化。发送方让自己的发送窗口等于拥塞窗口，另外考虑到接受方的接收能力，发送窗口可能小于拥塞窗口。</p>
+<p>慢启动Slow Start算法的思路就是，不要一开始就发送大量的数据，先探测一下网络的拥塞程度，也就是说由小到大逐渐增加拥塞窗口的大小。</p>
+<p>这里用报文段的个数的拥塞窗口大小举例说明慢开始算法，实时拥塞窗口大小是以字节为单位的。如下图：</p>
+<img src="/2022/11/03/%E3%80%8C%E7%B2%BE%E7%9B%8A%E6%B1%82%E7%B2%BE%E3%80%8D%E4%B9%8B%E7%BD%91%E7%BB%9C/%E5%8F%91%E9%80%81%E6%96%B9%E6%AF%8F%E6%94%B6%E5%88%B0%E4%B8%80%E4%B8%AA%E7%A1%AE%E8%AE%A4%E5%B0%B1%E6%8A%8A%E7%AA%97%E5%8F%A3cwnd%E5%8A%A01.png" class title="发送方每收到一个确认就把窗口cwnd加1">
+
+<p>当然收到单个确认但此确认多个数据报的时候就加相应的数值。所以一次传输轮次之后拥塞窗口就加倍。这就是乘法增长，和后面的拥塞避免算法的加法增长比较。</p>
+<p>为了防止cwnd增长过大引起网络拥塞，还需设置一个慢开始门限ssthresh状态变量。ssthresh的用法如下：</p>
+<ul>
+<li>当cwnd &lt; ssthresh时，使用慢开始算法。</li>
+<li>当cwnd &gt; ssthresh时，改用拥塞避免算法。</li>
+<li>当cwnd = ssthresh时，慢开始与拥塞避免算法任意。</li>
+</ul>
+<p><strong>为什么要使用慢启动：</strong>最初的TCP在连接建立成功后会向网络中发送大量的数据包，这样很容易导致网络中路由器缓存空间耗尽，从而发生拥塞。因此新建立的连接不能够一开始就大量发送数据包，而只能根据网络情况逐步增加每次发送的数据量，以避免上述现象的发生。</p>
+<p><strong>慢启动的过程：</strong>当新建连接时，cwnd初始化为1个最大报文段(MSS)大小，发送端开始按照拥塞窗口大小发送数据，每当有一个报文段被确认，cwnd就增加1个MSS大小。这样cwnd的值就随着网络往返时间(Round Trip Time, RTT)呈指数级增长，事实上，慢启动的速度一点也不慢，只是它的起点比较低一点而已。我们可以简单计算下：</p>
+<ul>
+<li>开始 -&gt; cwnd = 1</li>
+<li>经过1个RTT后 -&gt; cwnd = 2*1 = 2</li>
+<li>经过2个RTT后 -&gt; cwnd = 2*2 = 4</li>
+<li>类推，如果带宽为W，那么经过RTT*log2W时间就可以占满带宽。</li>
+</ul>
+<p>拥塞避免Congestion Avoidance算法让拥塞窗口缓慢增长，即每经过一个往返时间RTT就把发送方的拥塞窗口cwnd加1，而不是加倍。这样拥塞窗口按线性规律缓慢增长。</p>
+<p>无论是在慢开始阶段还是在拥塞避免阶段，只要发送方判断网络出现拥塞（其根据就是没有收到确认，虽然没有收到确认可能是其他原因的分组丢失，但是因为无法判定，所以都当做拥塞来处理），就把慢开始门限设置为出现拥塞时的发送窗口大小的一半。然后把拥塞窗口设置为1，执行慢开始算法。如下图：</p>
+<img src="/2022/11/03/%E3%80%8C%E7%B2%BE%E7%9B%8A%E6%B1%82%E7%B2%BE%E3%80%8D%E4%B9%8B%E7%BD%91%E7%BB%9C/%E6%85%A2%E5%BC%80%E5%A7%8B%E5%92%8C%E6%8B%A5%E5%A1%9E%E9%81%BF%E5%85%8D%E7%AE%97%E6%B3%95%E7%9A%84%E5%AE%9E%E7%8E%B0%E4%B8%BE%E4%BE%8B.png" class title="慢开始和拥塞避免算法的实现举例">
+
+<p>再次提醒这里只是为了讨论方便而将拥塞窗口大小的单位改为数据报的个数，实际上应当是字节。</p>
+<p><strong>为什么要使用拥塞避免：</strong>从慢启动可以看到，cwnd可以很快的增长上来，从而最大程度利用网络带宽资源，但是cwnd不能一直这样无限增长下去，一定需要某个限制。</p>
+<p>拥塞避免的主要步骤： TCP使用了一个叫慢启动门限(ssthresh)的变量，当慢启动的cwnd超过该值，慢启动过程结束，进入拥塞避免阶段。对于大多数TCP实现来说，ssthresh的值是65536(同样以字节计算)。拥塞避免的主要思想是加法增大，也就是cwnd的值不再指数级往上升，开始加法增加。此时当窗口中所有的报文段都被确认时，cwnd的大小加1，cwnd的值就随着RTT开始线性增加，这样就可以避免增长过快导致网络拥塞，慢慢的增加调整到网络的最佳值。</p>
+<p>上面讨论的两个机制都是没有检测到拥塞的情况下的行为，那么当发现拥塞了cwnd又该怎样去调整呢？</p>
+<h4 id="快重传和快恢复"><a href="#快重传和快恢复" class="headerlink" title="快重传和快恢复"></a>快重传和快恢复</h4><p>从整体上来讲，TCP拥塞控制窗口变化的原则是AIMD原则，即加法增大、乘法减小。可以看出TCP的该原则可以较好地保证流之间的公平性，因为一旦出现丢包，那么立即减半退避，可以给其他新建的流留有足够的空间，从而保证整个的公平性。</p>
+<p>首先来看TCP是如何确定网络进入了拥塞状态的，TCP认为网络拥塞的一种依据是它重传了一个报文段。上面提到过，TCP对每一个报文段都有一个定时器，称为重传定时器(RTO)，当RTO超时且还没有得到数据确认，那么TCP就会对该报文段进行重传，当发生超时时，那么出现拥塞的可能性就很大，某个报文段可能在网络中某处丢失，并且后续的报文段也没有了消息，在这种RTO超时重传的情况下，TCP反应比较“强烈”（TCP认为发生了严重拥塞）：</p>
+<ol>
+<li><p>把ssthresh降低为cwnd值的一半</p>
+</li>
+<li><p>把cwnd重新设置为1</p>
+</li>
+<li><p>重新进入慢启动过程。</p>
+</li>
+</ol>
+<p>TCP确定网络拥塞的另一种依据是发生快速重传：收到3个相同的ACK进入快速重传状态。TCP在收到乱序到达包时就会立即发送ACK，TCP利用3个相同的ACK来判定数据包的丢失，此时进行快速重传，在发生快速重传的情况下，TCP反应比较“温和”（TCP认为还能收到ACK，应该是局部拥塞）：</p>
+<ol>
+<li><p>把ssthresh设置为cwnd的一半</p>
+</li>
+<li><p>把cwnd再设置为ssthresh的值(具体实现有些为ssthresh+3)</p>
+</li>
+<li><p>重新进入拥塞避免阶段。</p>
+</li>
+</ol>
+<p>快速重传算法首次出现在4.3BSD的Tahoe版本，快速恢复首次出现在4.3BSD的Reno版本，也称之为Reno版的TCP拥塞控制算法。</p>
+<p>可以看出Reno的快速重传算法是针对一个包的重传情况的，然而在实际中，一个重传超时可能导致许多的数据包的重传，因此当多个数据包从一个数据窗口中丢失时并且触发快速重传和快速恢复算法时，问题就产生了。因此NewReno出现了，它在Reno快速恢复的基础上稍加了修改，可以恢复一个窗口内多个包丢失的情况。具体来讲就是：Reno在收到一个新的数据的ACK时就退出了快速恢复状态了，而NewReno需要收到该窗口内所有数据包的确认后才会退出快速恢复状态，从而更一步提高吞吐量。</p>
+<p>快速重传要求接收方在收到一个失序的报文段后就立即发出重复确认（为的是使发送方及早知道有报文段没有到达对方）而不要等到自己发送数据时捎带确认。快重传算法规定，发送方只要一连收到3个重复确认就应当立即重传对方尚未收到的报文段，而不必继续等待设置的重传计时器时间到期（超时等待的效率是最低的）。如下图：</p>
+<img src="/2022/11/03/%E3%80%8C%E7%B2%BE%E7%9B%8A%E6%B1%82%E7%B2%BE%E3%80%8D%E4%B9%8B%E7%BD%91%E7%BB%9C/%E5%BF%AB%E9%87%8D%E4%BC%A0%E7%9A%84%E7%A4%BA%E6%84%8F%E5%9B%BE.png" class title="快重传的示意图">
+
+<p>快重传配合使用的还有快恢复（快速恢复Fast Recovery）算法，有以下两个要点:</p>
+<ul>
+<li><p>当发送方连续收到三个重复确认时，就执行“乘法减小”算法，把ssthresh门限减半。但是接下去并不执行慢开始算法。</p>
+</li>
+<li><p>考虑到如果网络出现拥塞的话就不会收到好几个重复的确认，所以发送方现在认为网络可能没有出现拥塞。所以此时不执行慢开始算法，而是将cwnd设置为ssthresh的大小，然后执行拥塞避免算法。如下图：</p>
+<img src="/2022/11/03/%E3%80%8C%E7%B2%BE%E7%9B%8A%E6%B1%82%E7%B2%BE%E3%80%8D%E4%B9%8B%E7%BD%91%E7%BB%9C/%E4%BB%8E%E8%BF%9E%E7%BB%AD%E6%94%B6%E5%88%B0%E4%B8%89%E4%B8%AA%E9%87%8D%E5%A4%8D%E7%A1%AE%E8%AE%A4%E8%BD%AC%E5%85%A5%E6%8B%A5%E5%A1%9E%E9%81%BF%E5%85%8D.png" class title="从连续收到三个重复确认转入拥塞避免">
+
+<p>后来的“快速恢复”算法是在上述的“快速重传”算法后添加的，当收到3个重复ACK时，TCP最后进入的不是拥塞避免阶段，而是快速恢复阶段。快速重传和快速恢复算法一般同时使用。快速恢复的思想是“数据包守恒”原则，即同一个时刻在网络中的数据包数量是恒定的，只有当“老”数据包离开了网络后，才能向网络中发送一个“新”的数据包，如果发送方收到一个重复的ACK，那么根据TCP的ACK机制就表明有一个数据包离开了网络，于是cwnd加1。如果能够严格按照该原则那么网络中很少会发生拥塞，事实上拥塞控制的目的也就在修正违反该原则的地方。具体来说快速恢复的主要步骤是：</p>
+<ol>
+<li>当收到3个重复ACK时，把ssthresh设置为cwnd的一半，把cwnd设置为ssthresh+3，然后重传丢失的报文段，加3的原因是因为收到3个重复的ACK，表明有3个“老”的数据包离开了网络。</li>
+<li>再收到重复的ACK时，拥塞窗口增加1。</li>
+<li>当收到新的数据包的ACK时，把cwnd设置为第一步中的ssthresh的值。原因是因为该ACK确认了新的数据，说明从重复ACK时的数据都已收到，该恢复过程已经结束，可以回到恢复之前的状态了，也即再次进入拥塞避免状态。</li>
+</ol>
+</li>
+</ul>
+<h4 id="随机早期检测RED"><a href="#随机早期检测RED" class="headerlink" title="随机早期检测RED"></a>随机早期检测RED</h4><p>以上的拥塞避免算法并没有和网络层联系起来，实际上网络层的策略对拥塞避免算法影响最大的就是路由器的丢弃策略。在简单的情况下路由器通常按照先进先出的策略处理到来的分组。当路由器的缓存装不下分组的时候就丢弃到来的分组，这叫做尾部丢弃策略。这样就会导致分组丢失，发送方认为网络产生拥塞。更为严重的是网络中存在很多的TCP连接，这些连接中的报文段通常是复用路由路径。若发生路由器的尾部丢弃，可能影响到很多条TCP连接，结果就是这许多的TCP连接在同一时间进入慢开始状态，这在术语中称为全局同步。全局同步会使得网络的通信量突然下降很多，而在网络恢复正常之后，其通信量又突然增大很多。<br>为避免发生网路中的全局同步现象，路由器采用随机早期检测(RED，Random Early Detection)。该算法要点如下：</p>
+<ul>
+<li>使路由器的队列维持两个参数，即队列长队最小门限min和最大门限max，每当一个分组到达的时候，RED就计算平均队列长度。然后分情况对待到来的分组：</li>
+</ul>
+<ol>
+<li>平均队列长度小于最小门限——把新到达的分组放入队列排队。</li>
+<li>平均队列长度在最小门限与最大门限之间——则按照某一概率将分组丢弃。</li>
+<li>平均队列长度大于最大门限——丢弃新到达的分组。</li>
+</ol>
+<img src="/2022/11/03/%E3%80%8C%E7%B2%BE%E7%9B%8A%E6%B1%82%E7%B2%BE%E3%80%8D%E4%B9%8B%E7%BD%91%E7%BB%9C/RED%E6%8A%8A%E8%B7%AF%E7%94%B1%E5%99%A8%E7%9A%84%E5%88%B0%E8%BE%BE%E9%98%9F%E5%88%97%E5%88%92%E5%88%86%E6%88%90%E4%B8%89%E4%B8%AA%E5%8C%BA%E5%9F%9F.png" class title="RED把路由器的到达队列划分成三个区域">
+
+<p>RED以概率p随机丢弃分组，让拥塞控制只在个别的TCP连接上执行，因而避免全局性的拥塞控制。</p>
+<p>RED的关键就是选择三个参数最小门限、最大门限、丢弃概率和计算平均队列长度。平均队列长度采用加权平均的方法计算平均队列长度，这和往返时间（RTT）的计算策略是一样的。</p>
+<img src="/2022/11/03/%E3%80%8C%E7%B2%BE%E7%9B%8A%E6%B1%82%E7%B2%BE%E3%80%8D%E4%B9%8B%E7%BD%91%E7%BB%9C/%E5%88%86%E7%BB%84%E4%B8%A2%E5%BC%83%E6%A6%82%E7%8E%87%E4%B8%8E%E4%B8%A4%E4%B8%AA%E9%97%A8%E9%99%90%E5%80%BC%E7%9A%84%E5%85%B3%E7%B3%BB.png" class title="分组丢弃概率与两个门限值的关系">
+
+<h3 id="HTTP中GET与POST的区别"><a href="#HTTP中GET与POST的区别" class="headerlink" title="HTTP中GET与POST的区别"></a>HTTP中GET与POST的区别</h3><h4 id="标准答案"><a href="#标准答案" class="headerlink" title="标准答案"></a>标准答案</h4><p>GET和POST是HTTP请求的两种基本方法，你可能自己写过无数个GET和POST请求，所以如果被问到两者之间的区别，相信你能轻轻松松的给出了一个“标准答案”：</p>
+<ul>
+<li>GET在浏览器回退时是无害的，而POST会再次提交请求。</li>
+<li>GET产生的URL地址可以被Bookmark，而POST不可以。</li>
+<li>GET请求会被浏览器主动cache，而POST不会，除非手动设置。</li>
+<li>GET请求只能进行url编码，而POST支持多种编码方式。</li>
+<li>GET请求参数会被完整保留在浏览器历史记录里，而POST中的参数不会被保留。</li>
+<li>GET请求在URL中传送的参数是有长度限制的，而POST么有。</li>
+<li>对参数的数据类型，GET只接受ASCII字符，而POST没有限制。</li>
+<li>GET比POST更不安全，因为参数直接暴露在URL上，所以不能用来传递敏感信息。</li>
+<li>GET参数通过URL传递，POST放在Request body中。</li>
+</ul>
+<h4 id="本质区别"><a href="#本质区别" class="headerlink" title="本质区别"></a>本质区别</h4><p>然而这些其实都是应用上表现出的区别，GET和POST其实本质上没有区别。</p>
+<p>那么GET和POST是什么？HTTP协议中的两种发送请求的方法。</p>
+<p>HTTP是什么？HTTP是基于TCP/IP的关于数据如何在万维网中如何通信的协议。</p>
+<p>HTTP的底层是TCP/IP。所以GET和POST的底层也是TCP/IP，也就是说，GET/POST都是TCP链接。GET和POST能做的事情是一样一样的。你要给GET加上request body，给POST带上url参数，技术上是完全行的通的。 </p>
+<p>那么，“标准答案”里的那些区别是怎么回事？</p>
+<p>在我大万维网世界中，TCP就像汽车，我们用TCP来运输数据，它很可靠，从来不会发生丢件少件的现象。但是如果路上跑的全是看起来一模一样的汽车，那这个世界看起来是一团混乱，送急件的汽车可能被前面满载货物的汽车拦堵在路上，整个交通系统一定会瘫痪。为了避免这种情况发生，交通规则HTTP诞生了。HTTP给汽车运输设定了好几个服务类别，有GET, POST, PUT, DELETE等等，HTTP规定，当执行GET请求的时候，要给汽车贴上GET的标签（设置method为GET），而且要求把传送的数据放在车顶上（url中）以方便记录。如果是POST请求，就要在车上贴上POST的标签，并把货物放在车厢里。当然，你也可以在GET的时候往车厢内偷偷藏点货物，但是这是很不光彩；也可以在POST的时候在车顶上也放一些数据，让人觉得傻乎乎的。HTTP只是个行为准则，而TCP才是GET和POST怎么实现的基本。</p>
+<p>但是，我们只看到HTTP对GET和POST参数的传送渠道（url还是requrest body）提出了要求。“标准答案”里关于参数大小的限制又是从哪来的呢？</p>
+<p>在我大万维网世界中，还有另一个重要的角色：运输公司。不同的浏览器（发起http请求）和服务器（接受http请求）就是不同的运输公司。 虽然理论上，你可以在车顶上无限的堆货物（url中无限加参数）。但是运输公司可不傻，装货和卸货也是有很大成本的，他们会限制单次运输量来控制风险，数据量太大对浏览器和服务器都是很大负担。业界不成文的规定是，（大多数）浏览器通常都会限制url长度在2K个字节，而（大多数）服务器最多处理64K大小的url。超过的部分，恕不处理。如果你用GET服务，在request body偷偷藏了数据，不同服务器的处理方式也是不同的，有些服务器会帮你卸货，读出数据，有些服务器直接忽略，所以，虽然GET可以带request body，也不能保证一定能被接收到哦。</p>
+<p>总结一下，GET和POST本质上就是TCP链接，并无差别。但是由于HTTP的规定和浏览器/服务器的限制，导致他们在应用过程中体现出一些不同。</p>
+<h4 id="GET和POST区别补充"><a href="#GET和POST区别补充" class="headerlink" title="GET和POST区别补充"></a>GET和POST区别补充</h4><p>GET和POST还有一个重大区别，GET产生一个TCP数据包；POST产生两个TCP数据包。</p>
+<p>对于GET方式的请求，浏览器会把http header和data一并发送出去，服务器响应200（返回数据）；而对于POST，浏览器先发送header，服务器响应100 continue，浏览器再发送data，服务器响应200 ok（返回数据）。</p>
+<p>也就是说，GET只需要汽车跑一趟就把货送到了，而POST得跑两趟，第一趟，先去和服务器打个招呼“嗨，我等下要送一批货来，你们打开门迎接我”，然后再回头把货送过去。</p>
+<p>因为POST需要两步，时间上消耗的要多一点，看起来GET比POST更有效。因此Yahoo团队有推荐用GET替换POST来优化网站性能。但这是一个坑！跳入需谨慎。为什么？</p>
+<ol>
+<li>GET与POST都有自己的语义，不能随便混用。</li>
+<li>据研究，在网络环境好的情况下，发一次包的时间和发两次包的时间差别基本可以无视。而在网络环境差的情况下，两次包的TCP在验证数据包完整性上，有非常大的优点。</li>
+<li>并不是所有浏览器都会在POST中发送两次包，Firefox就只发送一次。</li>
+</ol>
+<h3 id="https为什么安全"><a href="#https为什么安全" class="headerlink" title="https为什么安全"></a>https为什么安全</h3><p>前文中提到，HTTP协议（HyperText Transfer Protocol），数据以明文传送，不提供任何方式的数据加密，通信双方也没有进行任何认证，通信过程非常容易遭遇劫持、监听、篡改，严重情况下，会造成恶意的流量劫持等问题，甚至造成个人隐私泄露（比如银行卡卡号和密码泄露）等严重的安全问题。</p>
+<p>如果把http通信比喻成寄送信件一样，A给B寄信，信件在寄送过程中，会经过很多的邮递员之手，他们可以拆开信读取里面的内容（因为http是明文传输的）。A的信件里面的任何内容（包括各类账号和密码）都会被轻易窃取。除此之外，邮递员们还可以伪造或者修改信件的内容，导致B接收到的信件内容是假的。</p>
+<h4 id="https如何保证安全"><a href="#https如何保证安全" class="headerlink" title="https如何保证安全"></a>https如何保证安全</h4><p>要解决http带来的问题，就要引入加密以及身份验证机制。</p>
+<p>如果Server（以后简称服务器）给Client（以后简称 客户端）的消息是密文的，只有服务器和客户端才能读懂，就可以保证数据的保密性。同时，在交换数据之前，验证一下对方的合法身份，就可以保证通信双方的安全。那么，问题来了，服务器把数据加密后，客户端如何读懂这些数据呢？这时服务器必须要把加密的密钥（对称密钥，后面会详细说明）告诉客户端，客户端才能利用对称密钥解开密文的内容。但是，服务器如果将这个对称密钥以明文的方式给客户端，还是会被中间人截获，中间人也会知道对称密钥，依然无法保证通信的保密性。但是，如果服务器以密文的方式将对称密钥发给客户端，客户端又如何解开这个密文，得到其中的对称密钥呢？</p>
+<p>说到这里，大家是不是有点儿糊涂了？一会儿密钥，一会儿对称密钥，都有点儿被搞晕的节奏。在这里提到的密钥，指的是非对称加解密的密钥，是用于TLS握手阶段的； 对称密钥，指的是对称加解密的密钥，是用于后续传输数据加解密的。下面将详细说明。</p>
+<p>这时，我们引入了非对称加解密的概念。在非对称加解密算法里，公钥加密的数据，有且只有唯一的私钥才能够解密，所以服务器只要把公钥发给客户端，客户端就可以用这个公钥来加密进行数据传输的对称密钥。客户端利用公钥将对称密钥发给服务器时，即使中间人截取了信息，也无法解密，因为私钥只部署在服务器，其他任何人都没有私钥，因此，只有服务器才能够解密。服务器拿到客户端的信息并用私钥解密之后，就可以拿到加解密数据用的对称密钥，通过这个对称密钥来进行后续通信的数据加解密。除此之外，非对称加密可以很好的管理对称密钥，保证每次数据加密的对称密钥都是不相同的，这样子的话，即使客户端病毒拉取到通信缓存信息，也无法窃取正常通信内容。</p>
+<p>上述通信过程，可以画成以下交互图：</p>
+<img src="/2022/11/03/%E3%80%8C%E7%B2%BE%E7%9B%8A%E6%B1%82%E7%B2%BE%E3%80%8D%E4%B9%8B%E7%BD%91%E7%BB%9C/https%E4%BA%A4%E4%BA%92%E8%BF%87%E7%A8%8B.png" class title="https交互过程">
+
+<p>但是这样似乎还不够，如果通信过程中，在三次握手或者客户端发起HTTP请求过程中，客户端的请求被中间人劫持，那么中间人就可以伪装成“假冒客户端”和服务器通信；中间人又可以伪装成“假冒服务器”和客户端通信。接下来，我们详细阐述中间人获取对称密钥的过程：</p>
+<p>中间人在收到服务器发送给客户端的公钥（这里是“正确的公钥”）后，并没有发给客户端，而是中间人将自己的公钥（这里中间人也会有一对公钥和私钥，这里称呼为“伪造公钥”）发给客户端。之后，客户端把对称密钥用这个“伪造公钥”加密后，发送过程中经过了中间人，中间人就可以用自己的私钥解密数据并拿到对称密钥，此时中间人再把对称密钥用“正确的公钥”加密发回给服务器。此时，客户端、中间人、服务器都拥有了一样的对称密钥，后续客户端和服务器的所有加密数据，中间人都可以通过对称密钥解密出来。</p>
+<p>中间人获取对称密钥的过程如下：</p>
+<img src="/2022/11/03/%E3%80%8C%E7%B2%BE%E7%9B%8A%E6%B1%82%E7%B2%BE%E3%80%8D%E4%B9%8B%E7%BD%91%E7%BB%9C/%E4%B8%AD%E9%97%B4%E4%BA%BA%E6%94%BB%E5%87%BB%E8%BF%87%E7%A8%8B.jpeg" class title="中间人攻击过程">
+
+<p>为了解决此问题，人们引入了数字证书的概念。服务器首先生成公私钥，将公钥提供给相关机构（CA），CA将公钥放入数字证书并将数字证书颁布给服务器，此时服务器就不是简单的把公钥给客户端，而是给客户端一个数字证书，数字证书中加入了一些数字签名的机制，保证了数字证书一定是服务器给客户端的。中间人发送的伪造证书，不能够获得CA的认证，此时，客户端和服务器就知道通信被劫持了。加入了CA数字签名认证的SSL会话过程如下所示：</p>
+<img src="/2022/11/03/%E3%80%8C%E7%B2%BE%E7%9B%8A%E6%B1%82%E7%B2%BE%E3%80%8D%E4%B9%8B%E7%BD%91%E7%BB%9C/CA%E8%AE%A4%E8%AF%81%E4%BF%9D%E8%AF%81%E6%95%B0%E6%8D%AE%E5%AE%89%E5%85%A8%E6%80%A7.jpeg" class title="CA认证保证数据安全性">
+
+<p>所以综合以上三点：非对称加密算法（公钥和私钥）交换对称密钥+数字证书验证身份（验证公钥是否是伪造的）+利用对称密钥加解密后续传输的数据=安全</p>
+<img src="/2022/11/03/%E3%80%8C%E7%B2%BE%E7%9B%8A%E6%B1%82%E7%B2%BE%E3%80%8D%E4%B9%8B%E7%BD%91%E7%BB%9C/SSL%E5%AE%89%E5%85%A8%E6%80%A7%E6%80%BB%E7%BB%93.jpeg" class title="SSL安全性总结">
+
+<h4 id="对称和非对称加密算法"><a href="#对称和非对称加密算法" class="headerlink" title="对称和非对称加密算法"></a>对称和非对称加密算法</h4><p>前文提到了对称密钥和非对称密钥的概念，这里做一个详细介绍。</p>
+<h5 id="对称加密算法"><a href="#对称加密算法" class="headerlink" title="对称加密算法"></a>对称加密算法</h5><p>对称加密是指：加密和解密使用相同密钥的算法。它要求发送方和接收方在安全通信之前，商定一个对称密钥。对称算法的安全性完全依赖于密钥，密钥泄漏就意味着任何人都可以对他们发送或接收的消息解密，所以密钥的保密性对通信至关重要。</p>
+<p>对称加密又分为两种模式：</p>
+<ul>
+<li><strong>流加密：</strong>流加密是将消息作为字节流对待，并且使用数学函数分别作用在每一个字节位上。使用流加密时，每加密一次，相同的明文位会转换成不同的密文位。流加密使用了密钥流生成器，它生成的字节流与明文字节流进行异或，从而生成密文。</li>
+<li><strong>分组加密：</strong>分组加密是将消息划分为若干个分组，这些分组随后会通过数学函数进行处理，每次一个分组。假设使用64位的分组密码，此时如果消息长度为640位，就会被划分成10个64位的分组（如果最后一个分组长度不到64，则用0补齐之后加到64位），每个分组都用一系列数学公式进行处理，最后得到10个加密文本分组。然后，将这条密文消息发送给对端。对端必须拥有相同的分组密码，以相反的顺序对10个密文分组使用前面的算法解密，最终得到明文消息。比较常用的分组加密算法有DES、3DES、AES。其中DES是比较老的加密算法，现在已经被证明不安全。而3DES是一个过渡的加密算法，相当于在DES基础上进行三重运算来提高安全性，但其本质上还是和DES算法一致。而AES是DES算法的替代算法，是现在最安全的对称加密算法之一。</li>
+</ul>
+<p>对称加密算法的优缺点：</p>
+<ul>
+<li><p>优点：计算量小、加密速度快、加密效率高。</p>
+</li>
+<li><p>缺点：</p>
+<ul>
+<li><p>交易双方都使用同样密钥，安全性得不到保证；</p>
+</li>
+<li><p>每次使用对称加密算法时，都需要使用其他人不知道的惟一密钥，这会使得发收信息双方所拥有的钥匙数量呈几何级数增长，密钥管理成为负担。</p>
+</li>
+</ul>
+</li>
+</ul>
+<h5 id="非对称加密算法"><a href="#非对称加密算法" class="headerlink" title="非对称加密算法"></a>非对称加密算法</h5><p>在非对称密钥交换算法出现以前，对称加密的最主要缺陷就是不知道如何在通信双方之间传输对称密钥，而又不让中间人窃取。非对称密钥交换算法诞生之后，专门针对对称密钥传输做加解密，使得对称密钥的交互传输变得非常安全了。</p>
+<p>非对称密钥交换算法本身非常复杂，密钥交换过程涉及到随机数生成，模指数运算，空白补齐，加密，签名等等一系列极其复杂的过程，作者本人也没有研究完全透彻。常见的密钥交换算法有RSA，ECDHE，DH，DHE等算法。涉及到比较复杂的数学问题。其中，最经典也是最常用的是RSA算法。关于RSA算法的原理的介绍，可以参考 <a href="http://www.ruanyifeng.com/blog/2013/06/rsa_algorithm_part_one.html" target="_blank" rel="noopener">RSA算法原理</a>。</p>
+<p>RSA：诞生于1977年，经过了长时间的破解测试，算法安全性很高，最重要的是，算法实现非常简单。缺点就是需要比较大的质数（目前常用的是2048位）来保证安全强度，极其消耗CPU运算资源。RSA是目前唯一一个既能用于密钥交换又能用于证书签名的算法，RSA 是最经典，同时也是最常用的是非对称加解密算法。</p>
+<p>非对称加密相比对称加密更加安全，但也存在两个致命的缺点：</p>
+<ul>
+<li>CPU计算资源消耗非常大。一次完全TLS握手，密钥交换时的非对称解密计算量占整个握手过程的90%以上。而对称加密的计算量只相当于非对称加密的0.1%。如果后续的应用层数据传输过程也使用非对称加解密，那么CPU性能开销太庞大，服务器是根本无法承受的。赛门特克给出的实验数据显示，加解密同等数量的文件，非对称算法消耗的CPU资源是对称算法的1000倍以上。</li>
+<li>非对称加密算法对加密内容的长度有限制，不能超过公钥长度。比如现在常用的公钥长度是2048位，意味着待加密内容不能超过256个字节。</li>
+</ul>
+<p>所以非对称加解密（极端消耗CPU资源）目前只能用来作对称密钥交换或者CA签名，不适合用来做应用层内容传输的加解密。</p>
+<h4 id="身份认证"><a href="#身份认证" class="headerlink" title="身份认证"></a>身份认证</h4><p>https协议中身份认证的部分是由CA数字证书完成的，因此可以说数字证书是网络上的身份证明。</p>
+<h5 id="数字证书作用："><a href="#数字证书作用：" class="headerlink" title="数字证书作用："></a>数字证书作用：</h5><p>数字证书有三个作用：</p>
+<ul>
+<li>身份授权：确保浏览器访问的网站是经过CA验证的可信任的网站。</li>
+<li>分发公钥：每个数字证书都包含了注册者生成的公钥（验证确保是合法的，非伪造的公钥）。在SSL握手时会通过certificate消息传输给客户端。</li>
+<li>验证证书合法性：客户端接收到数字证书后，会对证书合法性进行验证。只有验证通过后的证书，才能够进行后续通信过程。</li>
+</ul>
+<h5 id="数字证书验证流程"><a href="#数字证书验证流程" class="headerlink" title="数字证书验证流程"></a>数字证书验证流程</h5><p>CA下发给网站的证书都是一个证书链，也就是一层一层的证书，从根证书开始，到下级CA，一层一层，最后一层就是网站证书。</p>
+<p>SSL握手过程中，客户端收到服务器发送的证书后，需要对其签名进行验证，来确认证书是否可信。校验数字签名是使用CA的公钥解密签名，然后使用相同的签名函数对签名证书内容进行签名，并和服务端数字签名里的签名内容进行比较，如果相同就认为校验成功。证书的签名是通过签名算法和上级CA的私钥生成的。而上级CA的公钥来自于证书链该层的上级CA的证书明文内。单个X509v3证书由以下部分组成：</p>
+<p>X.509v3证书由三部分组成：</p>
+<ul>
+<li>tbsCertificate (to be signed certificate)，待签名证书。</li>
+<li>SignatureAlgorithm，签名算法。</li>
+<li>SignatureValue，签名值。</li>
+</ul>
+<p>tbsCertificate又包含10项内容，在HTTPS握手过程中以明文方式传输：</p>
+<ul>
+<li>Version Number，版本号。</li>
+<li>Serial Number，序列号。</li>
+<li>Signature Algorithm ID，签名算法ID。</li>
+<li>Issuer Name，发行者。</li>
+<li>Validity period，有效时间。</li>
+<li>Subject name ，证书主体名称。</li>
+<li>Subject Public Key Info ，证书主体公钥信息，包含公钥算法和公钥值。</li>
+<li>Issuer Unique Identifier (optional)，发行商唯一ID。</li>
+<li>Subject Unique Identifier (optional)，主体唯一ID。</li>
+<li>Extensions (optional)，扩展。</li>
+</ul>
+<p>证书链由多个证书一层一层组成的，除了最底层的网站证书的公钥是给用户加密报文外，其他层证书中的公钥均用于解密底层的证书指纹签名。最高层的根证书是自签名的，也就是自己颁发给自己，所以它的公钥不仅用来解密下层的签名，也用来给自己的签名解密。只要根证书可靠，整个证书链就可靠，而根证书是否可靠要看这个根证书是否在操作系统或浏览器内置的可信根证书内，在的话就可信。</p>
+<p>参考：</p>
+<p><a href="https://www.sodocs.net/doc/3e14110979.html" target="_blank" rel="noopener">OSI七层模型基础知识及各层常见应用</a></p>
+<p><a href="https://zhuanlan.zhihu.com/p/421827148" target="_blank" rel="noopener">OSI七层模型</a></p>
+<p><a href="https://blog.csdn.net/cloudox_/article/details/69669035" target="_blank" rel="noopener">URL访问网站的网络传输全过程</a></p>
+<p><a href="https://cloud.tencent.com/developer/article/1464938" target="_blank" rel="noopener">详解HTTP/1.0、HTTP/1.1、HTTP/2、HTTPS</a></p>
+<p><a href="https://blog.csdn.net/guyuealian/article/details/52535294" target="_blank" rel="noopener">TCP建立连接三次握手和释放连接四次握手</a></p>
+<p><a href="https://blog.csdn.net/li_ning_/article/details/52117463" target="_blank" rel="noopener">TCP和UDP的最完整的区别</a></p>
+<p><a href="https://blog.csdn.net/mrwangwang/article/details/8537775" target="_blank" rel="noopener">IP头、TCP头、UDP头详解以及定义</a></p>
+<p><a href="https://zhuanlan.zhihu.com/p/532166995" target="_blank" rel="noopener">数据包结构与传输详解</a></p>
+<p><a href="https://mp.weixin.qq.com/s?__biz=MzI3NzIzMzg3Mw==&mid=100000054&idx=1&sn=71f6c214f3833d9ca20b9f7dcd9d33e4#rd" target="_blank" rel="noopener">99%的人都理解错了HTTP中GET与POST的区别</a></p>
+<p><a href="https://blog.csdn.net/tonychan129/article/details/126318673" target="_blank" rel="noopener">TCP的拥塞控制 (Tahoe Reno NewReno SACK)</a></p>
+<p><a href="https://blog.csdn.net/chroming/article/details/50995384" target="_blank" rel="noopener">HTTPS中的对称密钥加密，公开密钥加密，数字证书</a></p>
+
     </div>
 
     
@@ -283,6 +968,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#OSI七层模型"><span class="nav-number">1.</span> <span class="nav-text">OSI七层模型</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#OSI模型是什么"><span class="nav-number">1.1.</span> <span class="nav-text">OSI模型是什么</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#OSI模型的诞生"><span class="nav-number">1.2.</span> <span class="nav-text">OSI模型的诞生</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#OSI七层模型、TCP-IP四层模型和五层协议"><span class="nav-number">1.3.</span> <span class="nav-text">OSI七层模型、TCP&#x2F;IP四层模型和五层协议</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#OSI七层模型-1"><span class="nav-number">1.3.1.</span> <span class="nav-text">OSI七层模型</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#OSI分层的优点"><span class="nav-number">1.3.2.</span> <span class="nav-text">OSI分层的优点</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#TCP-IP四层模型和五层协议"><span class="nav-number">1.3.3.</span> <span class="nav-text">TCP&#x2F;IP四层模型和五层协议</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#总结"><span class="nav-number">1.3.4.</span> <span class="nav-text">总结</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#网络传输过程"><span class="nav-number">2.</span> <span class="nav-text">网络传输过程</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#OSI参考模型中数据传输过程"><span class="nav-number">2.1.</span> <span class="nav-text">OSI参考模型中数据传输过程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#URL访问网站的网络传输全过程"><span class="nav-number">2.2.</span> <span class="nav-text">URL访问网站的网络传输全过程</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#浏览器（客户端）地址解析"><span class="nav-number">2.2.1.</span> <span class="nav-text">浏览器（客户端）地址解析</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#DNS解析"><span class="nav-number">2.2.2.</span> <span class="nav-text">DNS解析</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#互联网域名结构和域名服务器结构"><span class="nav-number">2.2.2.1.</span> <span class="nav-text">互联网域名结构和域名服务器结构</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#域名缓存"><span class="nav-number">2.2.2.2.</span> <span class="nav-text">域名缓存</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#DNS解析过程"><span class="nav-number">2.2.2.3.</span> <span class="nav-text">DNS解析过程</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#dns解析分为以下几个步骤："><span class="nav-number">2.2.2.3.1.</span> <span class="nav-text">dns解析分为以下几个步骤：</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#通过ip寻址和arp，找到目标服务器地址。"><span class="nav-number">2.2.2.3.2.</span> <span class="nav-text">通过ip寻址和arp，找到目标服务器地址。</span></a></li></ol></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#TCP建立连接三次握手"><span class="nav-number">2.2.3.</span> <span class="nav-text">TCP建立连接三次握手</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#TCP报文段首部格式"><span class="nav-number">2.2.3.1.</span> <span class="nav-text">TCP报文段首部格式</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#三次握手的过程"><span class="nav-number">2.2.3.2.</span> <span class="nav-text">三次握手的过程</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#为什么需要第三次握手"><span class="nav-number">2.2.3.3.</span> <span class="nav-text">为什么需要第三次握手</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#发送与收取数据"><span class="nav-number">2.2.4.</span> <span class="nav-text">发送与收取数据</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#HTTP协议"><span class="nav-number">2.2.4.1.</span> <span class="nav-text">HTTP协议</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#http协议的格式"><span class="nav-number">2.2.4.2.</span> <span class="nav-text">http协议的格式</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#数据包的传输过程"><span class="nav-number">2.2.4.3.</span> <span class="nav-text">数据包的传输过程</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#HTTP发展史-包括版本"><span class="nav-number">2.2.4.4.</span> <span class="nav-text">HTTP发展史(包括版本)</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#HTTP1-1协议"><span class="nav-number">2.2.4.5.</span> <span class="nav-text">HTTP1.1协议</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#HTTP-1-1的缺点"><span class="nav-number">2.2.4.6.</span> <span class="nav-text">HTTP&#x2F;1.1的缺点</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#HTTP2"><span class="nav-number">2.2.4.7.</span> <span class="nav-text">HTTP2</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#HTTPS"><span class="nav-number">2.2.4.8.</span> <span class="nav-text">HTTPS</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#浏览器收到服务器响应，得到html代码"><span class="nav-number">2.2.5.</span> <span class="nav-text">浏览器收到服务器响应，得到html代码</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#渲染页面"><span class="nav-number">2.2.6.</span> <span class="nav-text">渲染页面</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#TCP释放连接四次握手"><span class="nav-number">2.2.7.</span> <span class="nav-text">TCP释放连接四次握手</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#四次握手过程"><span class="nav-number">2.2.7.1.</span> <span class="nav-text">四次握手过程</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#为什么要等待2MSL"><span class="nav-number">2.2.7.2.</span> <span class="nav-text">为什么要等待2MSL</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#为什么TCP释放连接需要四次"><span class="nav-number">2.2.7.3.</span> <span class="nav-text">为什么TCP释放连接需要四次</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#总结-1"><span class="nav-number">2.3.</span> <span class="nav-text">总结</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#补充"><span class="nav-number">3.</span> <span class="nav-text">补充</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#IP头、TCP头、UDP头详解以及定义"><span class="nav-number">3.1.</span> <span class="nav-text">IP头、TCP头、UDP头详解以及定义</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#MAC地址、IP地址和端口号"><span class="nav-number">3.1.1.</span> <span class="nav-text">MAC地址、IP地址和端口号</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#MAC地址"><span class="nav-number">3.1.1.1.</span> <span class="nav-text">MAC地址</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#IP地址"><span class="nav-number">3.1.1.2.</span> <span class="nav-text">IP地址</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#端口号"><span class="nav-number">3.1.1.3.</span> <span class="nav-text">端口号</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#为什么有了ip地址，还要mac地址？"><span class="nav-number">3.1.1.4.</span> <span class="nav-text">为什么有了ip地址，还要mac地址？</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#IP头、TCP头、UDP头详解以及定义-1"><span class="nav-number">3.1.2.</span> <span class="nav-text">IP头、TCP头、UDP头详解以及定义</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#数据传输的封装与解封装"><span class="nav-number">3.1.2.1.</span> <span class="nav-text">数据传输的封装与解封装</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#MAC报文段结构"><span class="nav-number">3.1.2.2.</span> <span class="nav-text">MAC报文段结构</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#IP报文段结构"><span class="nav-number">3.1.2.3.</span> <span class="nav-text">IP报文段结构</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#TCP报文段结构"><span class="nav-number">3.1.2.4.</span> <span class="nav-text">TCP报文段结构</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#UDP报文段结构"><span class="nav-number">3.1.2.5.</span> <span class="nav-text">UDP报文段结构</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#TCP和UDP的区别"><span class="nav-number">3.2.</span> <span class="nav-text">TCP和UDP的区别</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#UDP"><span class="nav-number">3.2.1.</span> <span class="nav-text">UDP</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#TCP补充"><span class="nav-number">3.2.2.</span> <span class="nav-text">TCP补充</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#TCP与UDP区别总结"><span class="nav-number">3.2.3.</span> <span class="nav-text">TCP与UDP区别总结</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#TCP的拥塞控制"><span class="nav-number">3.3.</span> <span class="nav-text">TCP的拥塞控制</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#慢启动与拥塞避免"><span class="nav-number">3.3.1.</span> <span class="nav-text">慢启动与拥塞避免</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#快重传和快恢复"><span class="nav-number">3.3.2.</span> <span class="nav-text">快重传和快恢复</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#随机早期检测RED"><span class="nav-number">3.3.3.</span> <span class="nav-text">随机早期检测RED</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#HTTP中GET与POST的区别"><span class="nav-number">3.4.</span> <span class="nav-text">HTTP中GET与POST的区别</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#标准答案"><span class="nav-number">3.4.1.</span> <span class="nav-text">标准答案</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#本质区别"><span class="nav-number">3.4.2.</span> <span class="nav-text">本质区别</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#GET和POST区别补充"><span class="nav-number">3.4.3.</span> <span class="nav-text">GET和POST区别补充</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#https为什么安全"><span class="nav-number">3.5.</span> <span class="nav-text">https为什么安全</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#https如何保证安全"><span class="nav-number">3.5.1.</span> <span class="nav-text">https如何保证安全</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#对称和非对称加密算法"><span class="nav-number">3.5.2.</span> <span class="nav-text">对称和非对称加密算法</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#对称加密算法"><span class="nav-number">3.5.2.1.</span> <span class="nav-text">对称加密算法</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#非对称加密算法"><span class="nav-number">3.5.2.2.</span> <span class="nav-text">非对称加密算法</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#身份认证"><span class="nav-number">3.5.3.</span> <span class="nav-text">身份认证</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#数字证书作用："><span class="nav-number">3.5.3.1.</span> <span class="nav-text">数字证书作用：</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#数字证书验证流程"><span class="nav-number">3.5.3.2.</span> <span class="nav-text">数字证书验证流程</span></a></li></ol></li></ol></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
