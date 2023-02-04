@@ -22,32 +22,32 @@
 
   <meta name="description" content="runtime简介依照苹果文档的说法，runtime是： 12The Objective-C language defers as many decisions as it can from compile time and link time to runtime. （尽量将决定放到运行的时候，而不是在编译和链接过程）  如何理解这段话呢，我们首先要知道，一段代码从写完到最终执行的过程中发生了什">
 <meta property="og:type" content="article">
-<meta property="og:title" content="刨根问底」之Objective-C 2.0 中类与对象的定义">
-<meta property="og:url" content="http://heseng91.github.io/2018/09/09/%E3%80%8C%E5%88%A8%E6%A0%B9%E9%97%AE%E5%BA%95%E3%80%8D%E4%B9%8BRuntime%E7%B1%BB%E5%92%8C%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%AE%9A%E4%B9%89/index.html">
+<meta property="og:title" content="「刨根问底」之Objective-C 2.0 中类与对象的定义">
+<meta property="og:url" content="http://heseng91.github.io/2018/08/18/%E3%80%8C%E5%88%A8%E6%A0%B9%E9%97%AE%E5%BA%95%E3%80%8D%E4%B9%8BRuntime%E7%B1%BB%E5%92%8C%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%AE%9A%E4%B9%89/index.html">
 <meta property="og:site_name" content="和僧">
 <meta property="og:description" content="runtime简介依照苹果文档的说法，runtime是： 12The Objective-C language defers as many decisions as it can from compile time and link time to runtime. （尽量将决定放到运行的时候，而不是在编译和链接过程）  如何理解这段话呢，我们首先要知道，一段代码从写完到最终执行的过程中发生了什">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://heseng91.github.io/2018/09/09/%E3%80%8C%E5%88%A8%E6%A0%B9%E9%97%AE%E5%BA%95%E3%80%8D%E4%B9%8BRuntime%E7%B1%BB%E5%92%8C%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%AE%9A%E4%B9%89/iOS%E4%BB%8E%E4%BB%A3%E7%A0%81%E5%88%B0%E5%8F%AF%E6%89%A7%E8%A1%8C%E6%96%87%E4%BB%B6.png">
-<meta property="og:image" content="http://heseng91.github.io/2018/09/09/%E3%80%8C%E5%88%A8%E6%A0%B9%E9%97%AE%E5%BA%95%E3%80%8D%E4%B9%8BRuntime%E7%B1%BB%E5%92%8C%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%AE%9A%E4%B9%89/class-diagram.jpg">
-<meta property="og:image" content="http://heseng91.github.io/2018/09/09/%E3%80%8C%E5%88%A8%E6%A0%B9%E9%97%AE%E5%BA%95%E3%80%8D%E4%B9%8BRuntime%E7%B1%BB%E5%92%8C%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%AE%9A%E4%B9%89/Runtime%E4%B9%8B%E7%B1%BB%E5%92%8C%E5%AF%B9%E8%B1%A1%E7%9A%84%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84.png">
-<meta property="og:image" content="http://heseng91.github.io/2018/09/09/%E3%80%8C%E5%88%A8%E6%A0%B9%E9%97%AE%E5%BA%95%E3%80%8D%E4%B9%8BRuntime%E7%B1%BB%E5%92%8C%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%AE%9A%E4%B9%89/%E5%AF%B9%E8%B1%A1%E6%8C%87%E9%92%88%E4%BA%8C%E8%BF%9B%E5%88%B6%E8%A1%A8%E7%A4%BA.png">
-<meta property="og:image" content="http://heseng91.github.io/2018/09/09/%E3%80%8C%E5%88%A8%E6%A0%B9%E9%97%AE%E5%BA%95%E3%80%8D%E4%B9%8BRuntime%E7%B1%BB%E5%92%8C%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%AE%9A%E4%B9%89/%E5%AF%B9%E8%B1%A1%E6%8C%87%E9%92%88%E4%BA%8C%E8%BF%9B%E5%88%B6%E8%A1%A8%E7%A4%BA%E9%AB%98%E5%9C%B0%E4%BD%8D%E6%80%BB%E6%98%AF0.png">
-<meta property="og:image" content="http://heseng91.github.io/2018/09/09/%E3%80%8C%E5%88%A8%E6%A0%B9%E9%97%AE%E5%BA%95%E3%80%8D%E4%B9%8BRuntime%E7%B1%BB%E5%92%8C%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%AE%9A%E4%B9%89/%E5%AF%B9%E8%B1%A1%E6%8C%87%E9%92%88%E4%BA%8C%E8%BF%9B%E5%88%B6%E8%A1%A8%E7%A4%BA%E4%BD%8E%E4%BD%8D%E8%AE%BE%E7%BD%AE%E4%B8%BA1.png">
-<meta property="og:image" content="http://heseng91.github.io/2018/09/09/%E3%80%8C%E5%88%A8%E6%A0%B9%E9%97%AE%E5%BA%95%E3%80%8D%E4%B9%8BRuntime%E7%B1%BB%E5%92%8C%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%AE%9A%E4%B9%89/NSNumber%E5%AF%B9%E8%B1%A1%E6%8C%87%E9%92%88%E4%BA%8C%E8%BF%9B%E5%88%B6%E8%A1%A8%E7%A4%BA.png">
-<meta property="og:image" content="http://heseng91.github.io/2018/09/09/%E3%80%8C%E5%88%A8%E6%A0%B9%E9%97%AE%E5%BA%95%E3%80%8D%E4%B9%8BRuntime%E7%B1%BB%E5%92%8C%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%AE%9A%E4%B9%89/%E5%AF%B9%E8%B1%A1%E5%AE%9E%E9%99%85%E5%8D%A0%E7%94%A8%E5%92%8C%E5%88%86%E9%85%8D%E5%88%B0%E5%86%85%E5%AD%98%E5%A4%A7%E5%B0%8F.png">
-<meta property="og:image" content="http://heseng91.github.io/2018/09/09/%E3%80%8C%E5%88%A8%E6%A0%B9%E9%97%AE%E5%BA%95%E3%80%8D%E4%B9%8BRuntime%E7%B1%BB%E5%92%8C%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%AE%9A%E4%B9%89/%E5%AF%B9%E8%B1%A1%E5%86%85%E5%AD%98%E6%83%85%E5%86%B5.png">
-<meta property="og:image" content="http://heseng91.github.io/2018/09/09/%E3%80%8C%E5%88%A8%E6%A0%B9%E9%97%AE%E5%BA%95%E3%80%8D%E4%B9%8BRuntime%E7%B1%BB%E5%92%8C%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%AE%9A%E4%B9%89/%E5%AF%B9%E8%B1%A1%E5%AE%9E%E9%99%85%E5%8D%A0%E7%94%A8%E5%86%85%E5%AD%98%E5%A4%A7%E5%B0%8F.png">
-<meta property="og:image" content="http://heseng91.github.io/2018/09/09/%E3%80%8C%E5%88%A8%E6%A0%B9%E9%97%AE%E5%BA%95%E3%80%8D%E4%B9%8BRuntime%E7%B1%BB%E5%92%8C%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%AE%9A%E4%B9%89/%E4%BA%8C%E8%BF%9B%E5%88%B6%E7%B1%BB%E5%9C%A8%E7%A3%81%E7%9B%98%E4%B8%AD%E7%9A%84%E8%A1%A8%E7%A4%BA.png">
-<meta property="og:image" content="http://heseng91.github.io/2018/09/09/%E3%80%8C%E5%88%A8%E6%A0%B9%E9%97%AE%E5%BA%95%E3%80%8D%E4%B9%8BRuntime%E7%B1%BB%E5%92%8C%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%AE%9A%E4%B9%89/%E7%B1%BB%E5%8A%A0%E8%BD%BD%E4%B9%8B%E5%90%8E%E7%9A%84%E7%BB%93%E6%9E%84.png">
-<meta property="og:image" content="http://heseng91.github.io/2018/09/09/%E3%80%8C%E5%88%A8%E6%A0%B9%E9%97%AE%E5%BA%95%E3%80%8D%E4%B9%8BRuntime%E7%B1%BB%E5%92%8C%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%AE%9A%E4%B9%89/%E5%8A%A8%E6%80%81%E7%9A%84%E9%83%A8%E5%88%86%E6%8F%90%E5%8F%96%E4%B8%BAclass_rw_ext_t%E5%90%8E%E7%B1%BB%E7%9A%84%E7%BB%93%E6%9E%84.png">
-<meta property="article:published_time" content="2018-09-08T18:10:09.000Z">
-<meta property="article:modified_time" content="2022-11-02T16:51:31.778Z">
+<meta property="og:image" content="http://heseng91.github.io/2018/08/18/%E3%80%8C%E5%88%A8%E6%A0%B9%E9%97%AE%E5%BA%95%E3%80%8D%E4%B9%8BRuntime%E7%B1%BB%E5%92%8C%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%AE%9A%E4%B9%89/iOS%E4%BB%8E%E4%BB%A3%E7%A0%81%E5%88%B0%E5%8F%AF%E6%89%A7%E8%A1%8C%E6%96%87%E4%BB%B6.png">
+<meta property="og:image" content="http://heseng91.github.io/2018/08/18/%E3%80%8C%E5%88%A8%E6%A0%B9%E9%97%AE%E5%BA%95%E3%80%8D%E4%B9%8BRuntime%E7%B1%BB%E5%92%8C%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%AE%9A%E4%B9%89/class-diagram.jpg">
+<meta property="og:image" content="http://heseng91.github.io/2018/08/18/%E3%80%8C%E5%88%A8%E6%A0%B9%E9%97%AE%E5%BA%95%E3%80%8D%E4%B9%8BRuntime%E7%B1%BB%E5%92%8C%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%AE%9A%E4%B9%89/Runtime%E4%B9%8B%E7%B1%BB%E5%92%8C%E5%AF%B9%E8%B1%A1%E7%9A%84%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84.png">
+<meta property="og:image" content="http://heseng91.github.io/2018/08/18/%E3%80%8C%E5%88%A8%E6%A0%B9%E9%97%AE%E5%BA%95%E3%80%8D%E4%B9%8BRuntime%E7%B1%BB%E5%92%8C%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%AE%9A%E4%B9%89/%E5%AF%B9%E8%B1%A1%E6%8C%87%E9%92%88%E4%BA%8C%E8%BF%9B%E5%88%B6%E8%A1%A8%E7%A4%BA.png">
+<meta property="og:image" content="http://heseng91.github.io/2018/08/18/%E3%80%8C%E5%88%A8%E6%A0%B9%E9%97%AE%E5%BA%95%E3%80%8D%E4%B9%8BRuntime%E7%B1%BB%E5%92%8C%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%AE%9A%E4%B9%89/%E5%AF%B9%E8%B1%A1%E6%8C%87%E9%92%88%E4%BA%8C%E8%BF%9B%E5%88%B6%E8%A1%A8%E7%A4%BA%E9%AB%98%E5%9C%B0%E4%BD%8D%E6%80%BB%E6%98%AF0.png">
+<meta property="og:image" content="http://heseng91.github.io/2018/08/18/%E3%80%8C%E5%88%A8%E6%A0%B9%E9%97%AE%E5%BA%95%E3%80%8D%E4%B9%8BRuntime%E7%B1%BB%E5%92%8C%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%AE%9A%E4%B9%89/%E5%AF%B9%E8%B1%A1%E6%8C%87%E9%92%88%E4%BA%8C%E8%BF%9B%E5%88%B6%E8%A1%A8%E7%A4%BA%E4%BD%8E%E4%BD%8D%E8%AE%BE%E7%BD%AE%E4%B8%BA1.png">
+<meta property="og:image" content="http://heseng91.github.io/2018/08/18/%E3%80%8C%E5%88%A8%E6%A0%B9%E9%97%AE%E5%BA%95%E3%80%8D%E4%B9%8BRuntime%E7%B1%BB%E5%92%8C%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%AE%9A%E4%B9%89/NSNumber%E5%AF%B9%E8%B1%A1%E6%8C%87%E9%92%88%E4%BA%8C%E8%BF%9B%E5%88%B6%E8%A1%A8%E7%A4%BA.png">
+<meta property="og:image" content="http://heseng91.github.io/2018/08/18/%E3%80%8C%E5%88%A8%E6%A0%B9%E9%97%AE%E5%BA%95%E3%80%8D%E4%B9%8BRuntime%E7%B1%BB%E5%92%8C%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%AE%9A%E4%B9%89/%E5%AF%B9%E8%B1%A1%E5%AE%9E%E9%99%85%E5%8D%A0%E7%94%A8%E5%92%8C%E5%88%86%E9%85%8D%E5%88%B0%E5%86%85%E5%AD%98%E5%A4%A7%E5%B0%8F.png">
+<meta property="og:image" content="http://heseng91.github.io/2018/08/18/%E3%80%8C%E5%88%A8%E6%A0%B9%E9%97%AE%E5%BA%95%E3%80%8D%E4%B9%8BRuntime%E7%B1%BB%E5%92%8C%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%AE%9A%E4%B9%89/%E5%AF%B9%E8%B1%A1%E5%86%85%E5%AD%98%E6%83%85%E5%86%B5.png">
+<meta property="og:image" content="http://heseng91.github.io/2018/08/18/%E3%80%8C%E5%88%A8%E6%A0%B9%E9%97%AE%E5%BA%95%E3%80%8D%E4%B9%8BRuntime%E7%B1%BB%E5%92%8C%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%AE%9A%E4%B9%89/%E5%AF%B9%E8%B1%A1%E5%AE%9E%E9%99%85%E5%8D%A0%E7%94%A8%E5%86%85%E5%AD%98%E5%A4%A7%E5%B0%8F.png">
+<meta property="og:image" content="http://heseng91.github.io/2018/08/18/%E3%80%8C%E5%88%A8%E6%A0%B9%E9%97%AE%E5%BA%95%E3%80%8D%E4%B9%8BRuntime%E7%B1%BB%E5%92%8C%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%AE%9A%E4%B9%89/%E4%BA%8C%E8%BF%9B%E5%88%B6%E7%B1%BB%E5%9C%A8%E7%A3%81%E7%9B%98%E4%B8%AD%E7%9A%84%E8%A1%A8%E7%A4%BA.png">
+<meta property="og:image" content="http://heseng91.github.io/2018/08/18/%E3%80%8C%E5%88%A8%E6%A0%B9%E9%97%AE%E5%BA%95%E3%80%8D%E4%B9%8BRuntime%E7%B1%BB%E5%92%8C%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%AE%9A%E4%B9%89/%E7%B1%BB%E5%8A%A0%E8%BD%BD%E4%B9%8B%E5%90%8E%E7%9A%84%E7%BB%93%E6%9E%84.png">
+<meta property="og:image" content="http://heseng91.github.io/2018/08/18/%E3%80%8C%E5%88%A8%E6%A0%B9%E9%97%AE%E5%BA%95%E3%80%8D%E4%B9%8BRuntime%E7%B1%BB%E5%92%8C%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%AE%9A%E4%B9%89/%E5%8A%A8%E6%80%81%E7%9A%84%E9%83%A8%E5%88%86%E6%8F%90%E5%8F%96%E4%B8%BAclass_rw_ext_t%E5%90%8E%E7%B1%BB%E7%9A%84%E7%BB%93%E6%9E%84.png">
+<meta property="article:published_time" content="2018-08-18T00:18:38.000Z">
+<meta property="article:modified_time" content="2023-02-04T19:49:07.639Z">
 <meta property="article:author" content="和僧">
 <meta property="article:tag" content="和僧-技术博客，技术博客">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://heseng91.github.io/2018/09/09/%E3%80%8C%E5%88%A8%E6%A0%B9%E9%97%AE%E5%BA%95%E3%80%8D%E4%B9%8BRuntime%E7%B1%BB%E5%92%8C%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%AE%9A%E4%B9%89/iOS%E4%BB%8E%E4%BB%A3%E7%A0%81%E5%88%B0%E5%8F%AF%E6%89%A7%E8%A1%8C%E6%96%87%E4%BB%B6.png">
+<meta name="twitter:image" content="http://heseng91.github.io/2018/08/18/%E3%80%8C%E5%88%A8%E6%A0%B9%E9%97%AE%E5%BA%95%E3%80%8D%E4%B9%8BRuntime%E7%B1%BB%E5%92%8C%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%AE%9A%E4%B9%89/iOS%E4%BB%8E%E4%BB%A3%E7%A0%81%E5%88%B0%E5%8F%AF%E6%89%A7%E8%A1%8C%E6%96%87%E4%BB%B6.png">
 
-<link rel="canonical" href="http://heseng91.github.io/2018/09/09/%E3%80%8C%E5%88%A8%E6%A0%B9%E9%97%AE%E5%BA%95%E3%80%8D%E4%B9%8BRuntime%E7%B1%BB%E5%92%8C%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%AE%9A%E4%B9%89/">
+<link rel="canonical" href="http://heseng91.github.io/2018/08/18/%E3%80%8C%E5%88%A8%E6%A0%B9%E9%97%AE%E5%BA%95%E3%80%8D%E4%B9%8BRuntime%E7%B1%BB%E5%92%8C%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%AE%9A%E4%B9%89/">
 
 
 <script id="page-configurations">
@@ -60,7 +60,7 @@
   };
 </script>
 
-  <title>刨根问底」之Objective-C 2.0 中类与对象的定义 | 和僧</title>
+  <title>「刨根问底」之Objective-C 2.0 中类与对象的定义 | 和僧</title>
   
 
 
@@ -170,7 +170,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://heseng91.github.io/2018/09/09/%E3%80%8C%E5%88%A8%E6%A0%B9%E9%97%AE%E5%BA%95%E3%80%8D%E4%B9%8BRuntime%E7%B1%BB%E5%92%8C%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%AE%9A%E4%B9%89/">
+    <link itemprop="mainEntityOfPage" href="http://heseng91.github.io/2018/08/18/%E3%80%8C%E5%88%A8%E6%A0%B9%E9%97%AE%E5%BA%95%E3%80%8D%E4%B9%8BRuntime%E7%B1%BB%E5%92%8C%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%AE%9A%E4%B9%89/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -183,7 +183,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          刨根问底」之Objective-C 2.0 中类与对象的定义
+          「刨根问底」之Objective-C 2.0 中类与对象的定义
         </h1>
 
         <div class="post-meta">
@@ -193,14 +193,14 @@
               </span>
               <span class="post-meta-item-text">发表于</span>
 
-              <time title="创建时间：2018-09-09 02:10:09" itemprop="dateCreated datePublished" datetime="2018-09-09T02:10:09+08:00">2018-09-09</time>
+              <time title="创建时间：2018-08-18 08:18:38" itemprop="dateCreated datePublished" datetime="2018-08-18T08:18:38+08:00">2018-08-18</time>
             </span>
               <span class="post-meta-item">
                 <span class="post-meta-item-icon">
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-11-03 00:51:31" itemprop="dateModified" datetime="2022-11-03T00:51:31+08:00">2022-11-03</time>
+                <time title="修改时间：2023-02-05 03:49:07" itemprop="dateModified" datetime="2023-02-05T03:49:07+08:00">2023-02-05</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -230,7 +230,7 @@
 <a id="more"></a>
 
 <h3 id="从代码到可执行文件的过程"><a href="#从代码到可执行文件的过程" class="headerlink" title="从代码到可执行文件的过程"></a>从代码到可执行文件的过程</h3><p>具体过程见下图：</p>
-<img src="/2018/09/09/%E3%80%8C%E5%88%A8%E6%A0%B9%E9%97%AE%E5%BA%95%E3%80%8D%E4%B9%8BRuntime%E7%B1%BB%E5%92%8C%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%AE%9A%E4%B9%89/iOS%E4%BB%8E%E4%BB%A3%E7%A0%81%E5%88%B0%E5%8F%AF%E6%89%A7%E8%A1%8C%E6%96%87%E4%BB%B6.png" class title="iOS从代码到可执行文件">
+<img src="/2018/08/18/%E3%80%8C%E5%88%A8%E6%A0%B9%E9%97%AE%E5%BA%95%E3%80%8D%E4%B9%8BRuntime%E7%B1%BB%E5%92%8C%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%AE%9A%E4%B9%89/iOS%E4%BB%8E%E4%BB%A3%E7%A0%81%E5%88%B0%E5%8F%AF%E6%89%A7%E8%A1%8C%E6%96%87%E4%BB%B6.png" class title="iOS从代码到可执行文件">
 
 <p>主要过程可以简化成三个：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">- 编译</span><br><span class="line">- 链接</span><br><span class="line">- 运行</span><br></pre></td></tr></table></figure>
@@ -327,7 +327,7 @@
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">objc_class</span> :</span> objc_object &#123;</span><br><span class="line">    <span class="comment">// Class ISA;</span></span><br><span class="line">    Class superclass;</span><br><span class="line">    <span class="keyword">cache_t</span> cache;             <span class="comment">// formerly cache pointer and vtable</span></span><br><span class="line">    <span class="keyword">class_data_bits_t</span> bits;    <span class="comment">// class_rw_t * plus custom rr/alloc flags</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">class_rw_t</span> *<span class="title">data</span><span class="params">()</span> </span>&#123; </span><br><span class="line">        <span class="keyword">return</span> bits.data();</span><br><span class="line">    &#125;</span><br><span class="line"> ...</span><br><span class="line"><span class="comment">// 省略其他方法</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p><code>objc_class</code> 继承于 <code>objc_object</code>，也就是说一个 ObjC 类本身同时也是一个对象，为了处理类和对象的关系，runtime 库创建了一种叫做元类 (Meta Class) 的东西，类对象所属类型就叫做元类，它用来表述类对象本身所具备的元数据。类方法就定义于此处，因为这些方法可以理解成类对象的实例方法。每个类仅有一个类对象，而每个类对象仅有一个与之相关的元类。当你发出一个类似 <code>[NSObject alloc]</code> 的消息时，你事实上是把这个消息发给了一个类对象 (Class Object) ，这个类对象必须是一个元类的实例，而这个元类同时也是一个根元类 (root meta class) 的实例。所有的元类最终都指向根元类为其超类。所有的元类的方法列表都有能够响应消息的类方法。所以当 <code>[NSObject alloc]</code> 这条消息发给类对象的时候，<code>objc_msgSend()</code> 会去它的元类里面去查找能够响应消息的方法，如果找到了，然后对这个类对象执行方法调用。 </p>
-<img src="/2018/09/09/%E3%80%8C%E5%88%A8%E6%A0%B9%E9%97%AE%E5%BA%95%E3%80%8D%E4%B9%8BRuntime%E7%B1%BB%E5%92%8C%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%AE%9A%E4%B9%89/class-diagram.jpg" class title="class-diagram">
+<img src="/2018/08/18/%E3%80%8C%E5%88%A8%E6%A0%B9%E9%97%AE%E5%BA%95%E3%80%8D%E4%B9%8BRuntime%E7%B1%BB%E5%92%8C%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%AE%9A%E4%B9%89/class-diagram.jpg" class title="class-diagram">
 
 <p>上图实线是 <code>superclass</code> 指针，虚线是<code>isa</code>指针。 有趣的是根元类的超类是 <code>NSObject</code>，而 <code>isa</code> 指向了自己，而 <code>NSObject</code>的超类为 <code>nil</code>，也就是它没有超类。 </p>
 <h3 id="cache-t"><a href="#cache-t" class="headerlink" title="cache_t"></a>cache_t</h3><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">cache_t</span> &#123;</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">bucket_t</span> *_<span class="title">buckets</span>;</span></span><br><span class="line">    <span class="keyword">mask_t</span> _mask;</span><br><span class="line">    <span class="keyword">mask_t</span> _occupied;</span><br><span class="line">... </span><br><span class="line"><span class="comment">//省略其他方法</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
@@ -529,20 +529,20 @@
 
 <p>它就是一个<a href="http://yulingtianxia.com/blog/2014/04/17/han-shu-zhi-zhen-yu-zhi-zhen-han-shu/" target="_blank" rel="noopener">函数指针</a>，这是由编译器生成的。当你发起一个 ObjC 消息之后，最终它会执行的那段代码，就是由这个函数指针指定的。而 <code>IMP</code> 这个函数指针就指向了这个方法的实现。既然得到了执行某个实例某个方法的入口，我们就可以绕开消息传递阶段，直接执行方法，这在后面会提到。 </p>
 <p>你会发现 <code>IMP</code> 指向的方法与 <code>objc_msgSend</code> 函数类型相同，参数都包含 <code>id</code> 和 <code>SEL</code> 类型。每个方法名都对应一个 <code>SEL</code> 类型的方法选择器，而每个实例对象中的 <code>SEL</code> 对应的方法实现肯定是唯一的，通过一组 <code>id</code> 和 <code>SEL</code> 参数就能确定唯一的方法实现地址；反之亦然。</p>
-<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>我们可以用如下这张图来分别表示 Objective-C 2.0 版本中类和对象的定义，及相关数据结构的关系：<img src="/2018/09/09/%E3%80%8C%E5%88%A8%E6%A0%B9%E9%97%AE%E5%BA%95%E3%80%8D%E4%B9%8BRuntime%E7%B1%BB%E5%92%8C%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%AE%9A%E4%B9%89/Runtime%E4%B9%8B%E7%B1%BB%E5%92%8C%E5%AF%B9%E8%B1%A1%E7%9A%84%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84.png" class title="Runtime之类和对象的数据结构"></p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>我们可以用如下这张图来分别表示 Objective-C 2.0 版本中类和对象的定义，及相关数据结构的关系：<img src="/2018/08/18/%E3%80%8C%E5%88%A8%E6%A0%B9%E9%97%AE%E5%BA%95%E3%80%8D%E4%B9%8BRuntime%E7%B1%BB%E5%92%8C%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%AE%9A%E4%B9%89/Runtime%E4%B9%8B%E7%B1%BB%E5%92%8C%E5%AF%B9%E8%B1%A1%E7%9A%84%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84.png" class title="Runtime之类和对象的数据结构"></p>
 <h2 id="拓展"><a href="#拓展" class="headerlink" title="拓展"></a>拓展</h2><h3 id="Tagged-Pointer"><a href="#Tagged-Pointer" class="headerlink" title="Tagged Pointer"></a>Tagged Pointer</h3><p><code>isa</code> 这里还涉及到 <strong>Tagged Pointer</strong> 等概念。因为 <code>isa_t</code> 使用 <code>union</code> 实现，所以可能表示多种形态，既可以当成是指针，也可以存储标志位。</p>
 <p><strong>Tagged Pointer：</strong>一种特殊标记的对象，Tagged Pointer 通过在其最后一个 bit 位设置为特殊标记位，并且把数据直接保存在指针本身中。Tagged Pointer 是一个”伪”对象，使用 Tagged Pointer 有 3 倍的访问速度提升，100 倍的创建、销毁速度提升。</p>
 <p><strong>Tips：</strong><a href="https://developer.apple.com/videos/play/wwdc2013/404/" target="_blank" rel="noopener">Advances in Objective-C</a></p>
 <p>在我们查看对象指针时，在 64 位系统中，我们会看到 16 进制地址如<code>0x00000001003041e0</code>，我们把它转换为二进制表示如下图</p>
-<img src="/2018/09/09/%E3%80%8C%E5%88%A8%E6%A0%B9%E9%97%AE%E5%BA%95%E3%80%8D%E4%B9%8BRuntime%E7%B1%BB%E5%92%8C%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%AE%9A%E4%B9%89/%E5%AF%B9%E8%B1%A1%E6%8C%87%E9%92%88%E4%BA%8C%E8%BF%9B%E5%88%B6%E8%A1%A8%E7%A4%BA.png" class title="对象指针二进制表示">
+<img src="/2018/08/18/%E3%80%8C%E5%88%A8%E6%A0%B9%E9%97%AE%E5%BA%95%E3%80%8D%E4%B9%8BRuntime%E7%B1%BB%E5%92%8C%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%AE%9A%E4%B9%89/%E5%AF%B9%E8%B1%A1%E6%8C%87%E9%92%88%E4%BA%8C%E8%BF%9B%E5%88%B6%E8%A1%A8%E7%A4%BA.png" class title="对象指针二进制表示">
 
 <p>在 64 位系统中，我们有 64 位可以表示一个对象指针，但是我们通常没有真正使用到所有这些位。由于内存对齐要求的存在，低位始终为0，对象必须始终位于指针大小倍数的地址中。由于地址空间有限，所以高位也始终为0。所以实际上我们只在一个真正的对象指针中使用了中间的这些位，而不会用到用到2^64，这些高位和低位总是0。</p>
-<img src="/2018/09/09/%E3%80%8C%E5%88%A8%E6%A0%B9%E9%97%AE%E5%BA%95%E3%80%8D%E4%B9%8BRuntime%E7%B1%BB%E5%92%8C%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%AE%9A%E4%B9%89/%E5%AF%B9%E8%B1%A1%E6%8C%87%E9%92%88%E4%BA%8C%E8%BF%9B%E5%88%B6%E8%A1%A8%E7%A4%BA%E9%AB%98%E5%9C%B0%E4%BD%8D%E6%80%BB%E6%98%AF0.png" class title="对象指针二进制表示高地位总是0">
+<img src="/2018/08/18/%E3%80%8C%E5%88%A8%E6%A0%B9%E9%97%AE%E5%BA%95%E3%80%8D%E4%B9%8BRuntime%E7%B1%BB%E5%92%8C%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%AE%9A%E4%B9%89/%E5%AF%B9%E8%B1%A1%E6%8C%87%E9%92%88%E4%BA%8C%E8%BF%9B%E5%88%B6%E8%A1%A8%E7%A4%BA%E9%AB%98%E5%9C%B0%E4%BD%8D%E6%80%BB%E6%98%AF0.png" class title="对象指针二进制表示高地位总是0">
 
 <p>苹果从这些始终为0的位中选择了低位并把它设置为1。以标识这不是一个真正的对象指针，然后就可以给其他位赋予一些其他的意义，苹果称这种指针为tagged pointer。</p>
-<img src="/2018/09/09/%E3%80%8C%E5%88%A8%E6%A0%B9%E9%97%AE%E5%BA%95%E3%80%8D%E4%B9%8BRuntime%E7%B1%BB%E5%92%8C%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%AE%9A%E4%B9%89/%E5%AF%B9%E8%B1%A1%E6%8C%87%E9%92%88%E4%BA%8C%E8%BF%9B%E5%88%B6%E8%A1%A8%E7%A4%BA%E4%BD%8E%E4%BD%8D%E8%AE%BE%E7%BD%AE%E4%B8%BA1.png" class title="对象指针二进制表示低位设置为1">
+<img src="/2018/08/18/%E3%80%8C%E5%88%A8%E6%A0%B9%E9%97%AE%E5%BA%95%E3%80%8D%E4%B9%8BRuntime%E7%B1%BB%E5%92%8C%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%AE%9A%E4%B9%89/%E5%AF%B9%E8%B1%A1%E6%8C%87%E9%92%88%E4%BA%8C%E8%BF%9B%E5%88%B6%E8%A1%A8%E7%A4%BA%E4%BD%8E%E4%BD%8D%E8%AE%BE%E7%BD%AE%E4%B8%BA1.png" class title="对象指针二进制表示低位设置为1">
 
-<p>例如：NSNumber指针，苹果在其它位中塞入的是一个数值。（PS：这些值实际上是通过与进程启动时初始化的随机值相结合而被混淆的）。<img src="/2018/09/09/%E3%80%8C%E5%88%A8%E6%A0%B9%E9%97%AE%E5%BA%95%E3%80%8D%E4%B9%8BRuntime%E7%B1%BB%E5%92%8C%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%AE%9A%E4%B9%89/NSNumber%E5%AF%B9%E8%B1%A1%E6%8C%87%E9%92%88%E4%BA%8C%E8%BF%9B%E5%88%B6%E8%A1%A8%E7%A4%BA.png" class title="NSNumber对象指针二进制表示"></p>
+<p>例如：NSNumber指针，苹果在其它位中塞入的是一个数值。（PS：这些值实际上是通过与进程启动时初始化的随机值相结合而被混淆的）。<img src="/2018/08/18/%E3%80%8C%E5%88%A8%E6%A0%B9%E9%97%AE%E5%BA%95%E3%80%8D%E4%B9%8BRuntime%E7%B1%BB%E5%92%8C%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%AE%9A%E4%B9%89/NSNumber%E5%AF%B9%E8%B1%A1%E6%8C%87%E9%92%88%E4%BA%8C%E8%BF%9B%E5%88%B6%E8%A1%A8%E7%A4%BA.png" class title="NSNumber对象指针二进制表示"></p>
 <p>在设置为 1 表示为 Tagged Pointer 对象之后，在最低位之后的 3 位，苹果给他赋予类型意义，由于只有 3 位，所以它可以表示 7 种数据类型</p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">OBJC_TAG_NSAtom            = <span class="number">0</span>, </span><br><span class="line">OBJC_TAG_1                 = <span class="number">1</span>, </span><br><span class="line">OBJC_TAG_NSString          = <span class="number">2</span>, </span><br><span class="line">OBJC_TAG_NSNumber          = <span class="number">3</span>, </span><br><span class="line">OBJC_TAG_NSIndexPath       = <span class="number">4</span>, </span><br><span class="line">OBJC_TAG_NSManagedObjectID = <span class="number">5</span>, </span><br><span class="line">OBJC_TAG_NSDate            = <span class="number">6</span>, </span><br><span class="line">OBJC_TAG_7                 = <span class="number">7</span></span><br></pre></td></tr></table></figure>
 
@@ -561,7 +561,7 @@
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">#import &lt;Foundation&#x2F;Foundation.h&gt;</span><br><span class="line"></span><br><span class="line">int main(int argc, const char * argv[]) &#123;</span><br><span class="line">    @autoreleasepool &#123;</span><br><span class="line">        &#x2F;&#x2F; insert code here...</span><br><span class="line">        NSObject *obj &#x3D; [[NSObject alloc] init];</span><br><span class="line">        NSLog(@&quot;Hello, World! %@&quot;,obj);</span><br><span class="line">    &#125;</span><br><span class="line">    return 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p> 打印语句加个断点。</p>
-<img src="/2018/09/09/%E3%80%8C%E5%88%A8%E6%A0%B9%E9%97%AE%E5%BA%95%E3%80%8D%E4%B9%8BRuntime%E7%B1%BB%E5%92%8C%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%AE%9A%E4%B9%89/%E5%AF%B9%E8%B1%A1%E5%AE%9E%E9%99%85%E5%8D%A0%E7%94%A8%E5%92%8C%E5%88%86%E9%85%8D%E5%88%B0%E5%86%85%E5%AD%98%E5%A4%A7%E5%B0%8F.png" class title="对象实际占用和分配到内存大小">
+<img src="/2018/08/18/%E3%80%8C%E5%88%A8%E6%A0%B9%E9%97%AE%E5%BA%95%E3%80%8D%E4%B9%8BRuntime%E7%B1%BB%E5%92%8C%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%AE%9A%E4%B9%89/%E5%AF%B9%E8%B1%A1%E5%AE%9E%E9%99%85%E5%8D%A0%E7%94%A8%E5%92%8C%E5%88%86%E9%85%8D%E5%88%B0%E5%86%85%E5%AD%98%E5%A4%A7%E5%B0%8F.png" class title="对象实际占用和分配到内存大小">
 
 <p>lldb中打印得出：对象实际占用的内存大小为8，实际分配的内存大小为16。</p>
 
@@ -577,10 +577,10 @@
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">#import &lt;Foundation&#x2F;Foundation.h&gt;</span><br><span class="line"></span><br><span class="line">@interface Person : NSObject</span><br><span class="line">@property (nonatomic, assign) int age;</span><br><span class="line">@property (nonatomic, assign) int height;</span><br><span class="line">@property (nonatomic, assign) int row;</span><br><span class="line">@end</span><br><span class="line"></span><br><span class="line">@implementation Person</span><br><span class="line"></span><br><span class="line">@end</span><br><span class="line"></span><br><span class="line">int main(int argc, const char * argv[]) &#123;</span><br><span class="line">    @autoreleasepool &#123;</span><br><span class="line">        Person *obj &#x3D; [[Person alloc] init];</span><br><span class="line">        obj.age &#x3D; 4;</span><br><span class="line">        obj.height &#x3D; 5;</span><br><span class="line">        obj.row &#x3D; 6;</span><br><span class="line">        NSLog(@&quot;Hello, World! %@&quot;,obj);</span><br><span class="line">    &#125;</span><br><span class="line">    return 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p>lldb打印对象内存情况如下</p>
-<img src="/2018/09/09/%E3%80%8C%E5%88%A8%E6%A0%B9%E9%97%AE%E5%BA%95%E3%80%8D%E4%B9%8BRuntime%E7%B1%BB%E5%92%8C%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%AE%9A%E4%B9%89/%E5%AF%B9%E8%B1%A1%E5%86%85%E5%AD%98%E6%83%85%E5%86%B5.png" class title="对象内存情况">
+<img src="/2018/08/18/%E3%80%8C%E5%88%A8%E6%A0%B9%E9%97%AE%E5%BA%95%E3%80%8D%E4%B9%8BRuntime%E7%B1%BB%E5%92%8C%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%AE%9A%E4%B9%89/%E5%AF%B9%E8%B1%A1%E5%86%85%E5%AD%98%E6%83%85%E5%86%B5.png" class title="对象内存情况">
 
 <p>对象实际占用内存大小为24，实际分配的内存大小为32。</p>
-<img src="/2018/09/09/%E3%80%8C%E5%88%A8%E6%A0%B9%E9%97%AE%E5%BA%95%E3%80%8D%E4%B9%8BRuntime%E7%B1%BB%E5%92%8C%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%AE%9A%E4%B9%89/%E5%AF%B9%E8%B1%A1%E5%AE%9E%E9%99%85%E5%8D%A0%E7%94%A8%E5%86%85%E5%AD%98%E5%A4%A7%E5%B0%8F.png" class title="对象实际占用内存大小">
+<img src="/2018/08/18/%E3%80%8C%E5%88%A8%E6%A0%B9%E9%97%AE%E5%BA%95%E3%80%8D%E4%B9%8BRuntime%E7%B1%BB%E5%92%8C%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%AE%9A%E4%B9%89/%E5%AF%B9%E8%B1%A1%E5%AE%9E%E9%99%85%E5%8D%A0%E7%94%A8%E5%86%85%E5%AD%98%E5%A4%A7%E5%B0%8F.png" class title="对象实际占用内存大小">
 
 <p>这里就出现一个比较奇怪的现象 , 实际需要内存大小 <strong>24</strong>, 为什么呢 ? 其实这里就是 <strong>结构体内存分配的原理</strong>了.</p>
 <blockquote>
@@ -610,7 +610,7 @@
 </blockquote>
 <h2 id="更新"><a href="#更新" class="headerlink" title="更新"></a>更新</h2><p>在2020年WWDC中，Runtime又有了一些更新。详见：<a href="https://developer.apple.com/videos/play/wwdc2020/10163/" target="_blank" rel="noopener" title="标题">2020 – Advancements in the Objective-C runtime</a>主要更新内容如下:</p>
 <h3 id="数据结构的变化"><a href="#数据结构的变化" class="headerlink" title="数据结构的变化"></a>数据结构的变化</h3><p>在介绍更新之前，先了解一下二进制类在磁盘中的表示。</p>
-<img src="/2018/09/09/%E3%80%8C%E5%88%A8%E6%A0%B9%E9%97%AE%E5%BA%95%E3%80%8D%E4%B9%8BRuntime%E7%B1%BB%E5%92%8C%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%AE%9A%E4%B9%89/%E4%BA%8C%E8%BF%9B%E5%88%B6%E7%B1%BB%E5%9C%A8%E7%A3%81%E7%9B%98%E4%B8%AD%E7%9A%84%E8%A1%A8%E7%A4%BA.png" class title="二进制类在磁盘中的表示">
+<img src="/2018/08/18/%E3%80%8C%E5%88%A8%E6%A0%B9%E9%97%AE%E5%BA%95%E3%80%8D%E4%B9%8BRuntime%E7%B1%BB%E5%92%8C%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%AE%9A%E4%B9%89/%E4%BA%8C%E8%BF%9B%E5%88%B6%E7%B1%BB%E5%9C%A8%E7%A3%81%E7%9B%98%E4%B8%AD%E7%9A%84%E8%A1%A8%E7%A4%BA.png" class title="二进制类在磁盘中的表示">
 
 <p>首先是类对象本身，包含最常访问的信息：指向元类，超类和方法缓存的指针，在类结构之中有指向包含更多数据的结构体<code>class_ro_t</code>的指针，包含了类的名称，方法，协议，实例变量等等编译期确定的信息。</p>
 <p>当类被 Runtime 加载之后，类的结构会发生一些变化，在了解这些变化之前，我们需要知道2个概念：</p>
@@ -618,14 +618,14 @@
 <p><strong>Dirty Memory：</strong>运行时会进行更改的内存块，类一旦被加载，就会变成<code>Dirty Memory</code>，例如，我们可以在 Runtime 给类动态的添加方法。</p>
 <p>这里要明确，<code>Dirty Memory</code>比<code>Clean Memory</code>要昂贵得多。因为它需要更多的内存信息，并且只要进程正在运行，就必须保留它。对于我们来说，越多的<code>Clean Memory</code>显然是更好的，因为它可以节约更多的内存。我们可以通过分离出永不更改的数据部分，将大多数类数据保留为<code>Clean Memory</code>，如何怎么做的呢？</p>
 <p>在介绍优化方法之前，我们先来看一下，在类加载之后，类的结构会变成如何呢？</p>
-<img src="/2018/09/09/%E3%80%8C%E5%88%A8%E6%A0%B9%E9%97%AE%E5%BA%95%E3%80%8D%E4%B9%8BRuntime%E7%B1%BB%E5%92%8C%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%AE%9A%E4%B9%89/%E7%B1%BB%E5%8A%A0%E8%BD%BD%E4%B9%8B%E5%90%8E%E7%9A%84%E7%BB%93%E6%9E%84.png" class title="类加载之后的结构">
+<img src="/2018/08/18/%E3%80%8C%E5%88%A8%E6%A0%B9%E9%97%AE%E5%BA%95%E3%80%8D%E4%B9%8BRuntime%E7%B1%BB%E5%92%8C%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%AE%9A%E4%B9%89/%E7%B1%BB%E5%8A%A0%E8%BD%BD%E4%B9%8B%E5%90%8E%E7%9A%84%E7%BB%93%E6%9E%84.png" class title="类加载之后的结构">
 
 <p>在类加载到 Runtime 中后会被分配用于读取/写入数据的结构体<code>class_rw_t</code>。</p>
 <blockquote>
 <p><strong>Tips：</strong><code>class_ro_t</code>是只读的，存放的是编译期间就确定的字段信息；而<code>class_rw_t</code>是在 runtime 时才创建的，它会先将<code>class_ro_t</code>的内容拷贝一份，再将类的分类的属性、方法、协议等信息添加进去，之所以要这么设计是因为 Objective-C 是动态语言，你可以在运行时更改它们方法，属性等，并且分类可以在不改变类设计的前提下，将新方法添加到类中。</p>
 </blockquote>
 <p>事实证明，<code>class_rw_t</code>会占用比<code>class_ro_t</code>占用更多的内存，在 iPhone 中，我们在系统测量了大约 30MB 的这些<code>class_rw_t</code>结构。应该如何优化这些内存呢？通过测量实际设备上的使用情况，我们发现大约 10％ 的类实际会存在动态的更改行为，如动态添加方法，使用 Category 方法等。因此，我们能可以把这部分动态的部分提取出来，我们称之为<code>class_rw_ext_t</code>，所以，结构会变成这个样子。</p>
-<img src="/2018/09/09/%E3%80%8C%E5%88%A8%E6%A0%B9%E9%97%AE%E5%BA%95%E3%80%8D%E4%B9%8BRuntime%E7%B1%BB%E5%92%8C%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%AE%9A%E4%B9%89/%E5%8A%A8%E6%80%81%E7%9A%84%E9%83%A8%E5%88%86%E6%8F%90%E5%8F%96%E4%B8%BAclass_rw_ext_t%E5%90%8E%E7%B1%BB%E7%9A%84%E7%BB%93%E6%9E%84.png" class title="动态的部分提取为class_rw_ext_t后类的结构">
+<img src="/2018/08/18/%E3%80%8C%E5%88%A8%E6%A0%B9%E9%97%AE%E5%BA%95%E3%80%8D%E4%B9%8BRuntime%E7%B1%BB%E5%92%8C%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%AE%9A%E4%B9%89/%E5%8A%A8%E6%80%81%E7%9A%84%E9%83%A8%E5%88%86%E6%8F%90%E5%8F%96%E4%B8%BAclass_rw_ext_t%E5%90%8E%E7%B1%BB%E7%9A%84%E7%BB%93%E6%9E%84.png" class title="动态的部分提取为class_rw_ext_t后类的结构">
 
 <p>经过拆分，可以把 90% 的类优化为<code>Clean Memory</code>，在系统层面，取得效果是节省了大约 14MB 的内存，使内存可用于更有效的用途。</p>
 <blockquote>
@@ -685,12 +685,12 @@
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/2018/08/18/%E3%80%8C%E5%88%A8%E6%A0%B9%E9%97%AE%E5%BA%95%E3%80%8D%E4%B9%8BRuntime%E6%B6%88%E6%81%AF%E5%8F%91%E9%80%81%E5%92%8C%E8%BD%AC%E5%8F%91/" rel="prev" title="刨根问底」之Runtime消息发送和转发">
-      <i class="fa fa-chevron-left"></i> 刨根问底」之Runtime消息发送和转发
+    <a href="/2018/08/10/%E3%80%8C%E5%88%A8%E6%A0%B9%E9%97%AE%E5%BA%95%E3%80%8D%E4%B9%8BRunloop/" rel="prev" title="「刨根问底」之RunLoop">
+      <i class="fa fa-chevron-left"></i> 「刨根问底」之RunLoop
     </a></div>
       <div class="post-nav-item">
-    <a href="/2018/10/01/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%8C%85%E4%BD%93%E5%A4%A7%E5%B0%8F/" rel="next" title="「性能优化」之包体大小">
-      「性能优化」之包体大小 <i class="fa fa-chevron-right"></i>
+    <a href="/2018/09/09/%E3%80%8C%E5%88%A8%E6%A0%B9%E9%97%AE%E5%BA%95%E3%80%8D%E4%B9%8BRuntime%E6%B6%88%E6%81%AF%E5%8F%91%E9%80%81%E5%92%8C%E8%BD%AC%E5%8F%91/" rel="next" title="「刨根问底」之Runtime消息发送和转发">
+      「刨根问底」之Runtime消息发送和转发 <i class="fa fa-chevron-right"></i>
     </a></div>
     </div>
       </footer>
@@ -764,7 +764,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">13</span>
+          <span class="site-state-item-count">16</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
