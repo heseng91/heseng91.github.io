@@ -41,7 +41,7 @@
 <meta property="og:image" content="http://heseng91.github.io/2018/08/18/%E3%80%8C%E5%88%A8%E6%A0%B9%E9%97%AE%E5%BA%95%E3%80%8D%E4%B9%8BRuntime%E7%B1%BB%E5%92%8C%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%AE%9A%E4%B9%89/%E7%B1%BB%E5%8A%A0%E8%BD%BD%E4%B9%8B%E5%90%8E%E7%9A%84%E7%BB%93%E6%9E%84.png">
 <meta property="og:image" content="http://heseng91.github.io/2018/08/18/%E3%80%8C%E5%88%A8%E6%A0%B9%E9%97%AE%E5%BA%95%E3%80%8D%E4%B9%8BRuntime%E7%B1%BB%E5%92%8C%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%AE%9A%E4%B9%89/%E5%8A%A8%E6%80%81%E7%9A%84%E9%83%A8%E5%88%86%E6%8F%90%E5%8F%96%E4%B8%BAclass_rw_ext_t%E5%90%8E%E7%B1%BB%E7%9A%84%E7%BB%93%E6%9E%84.png">
 <meta property="article:published_time" content="2018-08-18T00:18:38.000Z">
-<meta property="article:modified_time" content="2023-02-04T19:49:07.639Z">
+<meta property="article:modified_time" content="2023-02-09T13:10:46.242Z">
 <meta property="article:author" content="和僧">
 <meta property="article:tag" content="和僧-技术博客，技术博客">
 <meta name="twitter:card" content="summary">
@@ -200,7 +200,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2023-02-05 03:49:07" itemprop="dateModified" datetime="2023-02-05T03:49:07+08:00">2023-02-05</time>
+                <time title="修改时间：2023-02-09 21:10:46" itemprop="dateModified" datetime="2023-02-09T21:10:46+08:00">2023-02-09</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -553,7 +553,7 @@
 
 
 <h3 id="OC对象占用的大小"><a href="#OC对象占用的大小" class="headerlink" title="OC对象占用的大小"></a>OC对象占用的大小</h3><h4 id="初始OC对象占用内存"><a href="#初始OC对象占用内存" class="headerlink" title="初始OC对象占用内存"></a>初始OC对象占用内存</h4><p>OC中对象大部分继承至NSObject。NSObject类的定义如下：</p>
-<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">OBJC_AVAILABLE(<span class="number">10.0</span>, <span class="number">2.0</span>, <span class="number">9.0</span>, <span class="number">1.0</span>, <span class="number">2.0</span>)</span><br><span class="line">OBJC_ROOT_CLASS</span><br><span class="line">OBJC_EXPORT</span><br><span class="line">@interface NSObject &lt;NSObject&gt; &#123;</span><br><span class="line"><span class="meta">#<span class="meta-keyword">pragma</span> clang diagnostic push</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">pragma</span> clang diagnostic ignored <span class="meta-string">"-Wobjc-interface-ivars"</span></span></span><br><span class="line">    Class isa  OBJC_ISA_AVAILABILITY;</span><br><span class="line"><span class="meta">#<span class="meta-keyword">pragma</span> clang diagnostic pop</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">OBJC_AVAILABLE(<span class="number">10.0</span>, <span class="number">2.0</span>, <span class="number">9.0</span>, <span class="number">1.0</span>, <span class="number">2.0</span>)</span><br><span class="line">OBJC_ROOT_CLASS</span><br><span class="line">OBJC_EXPORT</span><br><span class="line">@interface NSObject &lt;NSObject&gt; &#123;</span><br><span class="line"><span class="meta">#<span class="meta-keyword">pragma</span> clang diagnostic push</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">pragma</span> clang diagnostic ignored <span class="meta-string">"-Wobjc-interface-ivars"</span></span></span><br><span class="line">    Class isa  OBJC_ISA_AVAILABILITY;</span><br><span class="line"><span class="meta">#<span class="meta-keyword">pragma</span> clang diagnostic pop</span></span><br><span class="line">&#125;</span><br><span class="line">+ (<span class="keyword">void</span>)load;</span><br><span class="line"></span><br><span class="line">+ (<span class="keyword">void</span>)initialize;</span><br><span class="line">...</span><br><span class="line"><span class="comment">// 省略其他方法</span></span><br><span class="line">@<span class="built_in">end</span></span><br></pre></td></tr></table></figure>
 
 <p>上文中提到Class其实就是一个指向 <code>struct objc_class</code> 结构体类型的指针.。那么也就是说 <code>NSObject</code> 对象对应的结构体只包含一个 <code>isa</code> 指针变量 ，一个指针变量在 64 位的机器上大小是 8 个字节。</p>
 <p>那是不是说一个 <code>NSObject</code> 对象就占用8个字节大小的内存呢？实际上不是的. 答案其实是: <strong>所有的OC对象至少为16字节</strong>.</p>
@@ -764,7 +764,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">16</span>
+          <span class="site-state-item-count">15</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
