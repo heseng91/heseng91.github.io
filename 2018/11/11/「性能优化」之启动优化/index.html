@@ -27,6 +27,7 @@
 <meta property="og:site_name" content="和僧">
 <meta property="og:description" content="启动是 App 给用户的第一印象，启动越慢用户流失的概率就越高，良好的启动速度是用户体验不可缺少的一环。本文先梳理app构建和启动流程，并结合app构建和启动流程讲述一些可优化点。">
 <meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://heseng91.github.io/2018/11/11/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96/clang%E7%BC%96%E8%AF%91%E6%BA%90%E4%BB%A3%E7%A0%81%E8%BD%AC%E5%8C%96%E7%94%9F%E6%88%90mach-o%E7%9A%84%E5%A4%A7%E8%87%B4%E6%B5%81%E7%A8%8B.png">
 <meta property="og:image" content="http://heseng91.github.io/2018/11/11/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96/%E5%8D%95Target%E6%9E%84%E5%BB%BA%E6%B5%81%E7%A8%8B.png">
 <meta property="og:image" content="http://heseng91.github.io/2018/11/11/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96/%E7%BC%96%E8%AF%91%E5%99%A8%E6%9E%84%E6%88%90.png">
 <meta property="og:image" content="http://heseng91.github.io/2018/11/11/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96/%E9%93%BE%E6%8E%A5%E7%94%9F%E6%88%90mach-o.png">
@@ -46,11 +47,11 @@
 <meta property="og:image" content="http://heseng91.github.io/2018/11/11/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96/%E4%BA%8C%E8%BF%9B%E5%88%B6%E9%87%8D%E6%8E%92.png">
 <meta property="og:image" content="http://heseng91.github.io/2018/11/11/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96/%E6%AE%B5%E9%87%8D%E5%91%BD%E5%90%8D.png">
 <meta property="article:published_time" content="2018-11-11T03:30:33.000Z">
-<meta property="article:modified_time" content="2022-11-02T16:52:52.424Z">
+<meta property="article:modified_time" content="2023-02-13T17:34:30.008Z">
 <meta property="article:author" content="和僧">
 <meta property="article:tag" content="和僧-技术博客，技术博客">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://heseng91.github.io/2018/11/11/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96/%E5%8D%95Target%E6%9E%84%E5%BB%BA%E6%B5%81%E7%A8%8B.png">
+<meta name="twitter:image" content="http://heseng91.github.io/2018/11/11/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96/clang%E7%BC%96%E8%AF%91%E6%BA%90%E4%BB%A3%E7%A0%81%E8%BD%AC%E5%8C%96%E7%94%9F%E6%88%90mach-o%E7%9A%84%E5%A4%A7%E8%87%B4%E6%B5%81%E7%A8%8B.png">
 
 <link rel="canonical" href="http://heseng91.github.io/2018/11/11/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96/">
 
@@ -205,7 +206,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-11-03 00:52:52" itemprop="dateModified" datetime="2022-11-03T00:52:52+08:00">2022-11-03</time>
+                <time title="修改时间：2023-02-14 01:34:30" itemprop="dateModified" datetime="2023-02-14T01:34:30+08:00">2023-02-14</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -249,7 +250,7 @@
 <p>前后端依赖统一格式的中间代码（IR），使得前后端可以独立的变化。新增一门语言只需要修改前端，而新增一个 CPU 架构只需要修改后端即可。</p>
 <p>Objective-C/C/C++ 使用的编译器前端是<a href="https://clang.llvm.org/docs/index.html" target="_blank" rel="noopener">clang</a>，swift 是 <a href="https://swift.org/compiler-stdlib/#compiler-architecture" target="_blank" rel="noopener">swiftc</a>，后端都是 <a href="https://llvm.org/" target="_blank" rel="noopener">LLVM</a>。</p>
 <p>clang 编译源代码转化生成mach-o的大致流程如下：</p>
-
+<img src="/2018/11/11/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96/clang%E7%BC%96%E8%AF%91%E6%BA%90%E4%BB%A3%E7%A0%81%E8%BD%AC%E5%8C%96%E7%94%9F%E6%88%90mach-o%E7%9A%84%E5%A4%A7%E8%87%B4%E6%B5%81%E7%A8%8B.png" class title="clang编译源代码转化生成mach-o的大致流程">
 
 <h3 id="pipeline"><a href="#pipeline" class="headerlink" title="pipeline"></a>pipeline</h3><p>除了代码文件之外，现代移动软件不可避免为会有一些资源文件（如 storyboard，asset ），这些资源文件也需要编译以加快加载速度，然后，同资源文件一起打包成.app。最后出乎安全考虑，还需要对.app进行签名，防篡改。</p>
 <p>以单 Target 为例，整个构建流程如下：</p>
@@ -340,8 +341,8 @@
 </ul>
 <p>在发布macOS 10.0(Cheetah)前，苹果为dyld增加了一个特性，即Prebinding预绑定。预绑定会尝试查找每个系统dylib和程序二进制文件中需要修正地址，然后动态加载程序会尝试加载所有这些地址中需要的文件，如果加载成功，它会编辑所有的二进制文件，使用预计算地址替换需要修正的地址。这样当下一次需要加载到相同的地址时，就不需要做任何额外的工作了。这大大加快了启动速度，但这意味着我们在每次启动时都要编辑你的二进制文件，这不仅不安全，也会有一些其它的问题。</p>
 <h5 id="dyld-2-2004-2007"><a href="#dyld-2-2004-2007" class="headerlink" title="dyld 2 (2004-2007)"></a>dyld 2 (2004-2007)</h5><p>鉴于dyld已经不能满足软件需要，并且也会有安全问题等等的问题。dyld 2作为苹果macOS Tiger的一部分被出了。dyld 2 是对dyld的完全重写，可以正确支持C++ initializer语义，同时扩展了mach-o格式并更新dyld,以获得了高效率C++库的支持。dyld 2使用正确的语义完整实现了本地的dlopen和dlsym功能，由此苹果弃用了传统API。dyld 2 是为提升速度而设计，因此只有有限的完整性检查，当时不像今天有这么多的恶意软件。也正因为只有有限的完整性检查，dyld 2会有安全问题，为此苹果不得不重新调整一些功能，使它在今天的平台上更安全。最后由于启动速度的大幅提升，我们可以减少Prebinding的工作量。相较于dyld 1的编辑程序数据，现在仅会编辑系统库，且可以仅在软件更新时做这些事情。现在Prebinding被用于所有的优化，但那是推动力。因此在软件更新过程中，可能会看到“优化系统性能”类似的文字。这就是在更新时进行Prebinding。当今这已被用于所有的优化。</p>
-<h5 id="dyld-2-x-2007-2017"><a href="#dyld-2-x-2007-2017" class="headerlink" title="dyld 2.x (2007-2017)"></a>dyld 2.x (2007-2017)</h5><p>相较于 dyld 2，过去的几年里我们做了很多非常重要的改进。</p>
-<p>1、首先，我们添加了大量的架构和平台。</p>
+<h5 id="dyld-2-x-2007-2017"><a href="#dyld-2-x-2007-2017" class="headerlink" title="dyld 2.x (2007-2017)"></a>dyld 2.x (2007-2017)</h5><p>相较于 dyld 2，苹果做了很多非常重要的改进。</p>
+<p>1、首先，添加了大量的架构和平台。</p>
 <ul>
 <li>自从dyld 2在PowerPC发布之后，增加了<code>x86</code>、<code>x86_64</code>、<code>arm</code>、<code>arm64</code>和许多的衍生平台。</li>
 <li>还推出了<code>iOS</code>、<code>tvOS</code>和<code>watchOS</code>，这些都需要新的dyld功能</li>
@@ -384,7 +385,7 @@
 </ul>
 <p>dyld 2是纯粹的in-process，即在程序进程内执行的，也就意味着只有当应用程序被启动时，dyld 2才能开始执行任务。</p>
 <p>相比dyld 2，dyld 3将安全敏感的部分和占用大量资源的部分移至进程外。</p>
-<p>安全敏感部分：在苹果看来，最大的安全敏感部分是：Parse mach-o headers 和 Find dependencies。因为被撰改的mach-o headers存在被攻击的风险，另外如果我们项目中使用了@rpath（搜索路径），通过篡改这些篡改这些路径或在正确的地方插入库，人们可以破坏应用程序。</p>
+<p>安全敏感部分：在苹果看来，最大的安全敏感部分是：Parse mach-o headers 和 Find dependencies。因为被撰改的mach-o headers存在被攻击的风险，另外如果我们项目中使用了@rpath（搜索路径），通过篡改这些路径或在正确的地方插入库，人们可以破坏应用程序。</p>
 <p>占用大量资源的部分：这里主要指的是symbol lookups。对于给定的库，除非执行了软件更新或更改了磁盘上的库，否则该库中的符号将始终处于相同的偏移量。所以这是可以缓存的。</p>
 <p>以下是dyld 2 和 dyld 3流程对比：</p>
 
