@@ -28,6 +28,7 @@
 <meta property="og:description" content="启动是 App 给用户的第一印象，启动越慢用户流失的概率就越高，良好的启动速度是用户体验不可缺少的一环。本文先梳理app构建和启动流程，并结合app构建和启动流程讲述一些可优化点。">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://heseng91.github.io/2018/11/11/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96/clang%E7%BC%96%E8%AF%91%E6%BA%90%E4%BB%A3%E7%A0%81%E8%BD%AC%E5%8C%96%E7%94%9F%E6%88%90mach-o%E7%9A%84%E5%A4%A7%E8%87%B4%E6%B5%81%E7%A8%8B.png">
+<meta property="og:image" content="http://heseng91.github.io/2018/11/11/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96/mach-o%E7%BB%84%E6%88%90%E9%83%A8%E5%88%86.png">
 <meta property="og:image" content="http://heseng91.github.io/2018/11/11/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96/%E5%8D%95Target%E6%9E%84%E5%BB%BA%E6%B5%81%E7%A8%8B.png">
 <meta property="og:image" content="http://heseng91.github.io/2018/11/11/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96/%E7%BC%96%E8%AF%91%E5%99%A8%E6%9E%84%E6%88%90.png">
 <meta property="og:image" content="http://heseng91.github.io/2018/11/11/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96/%E9%93%BE%E6%8E%A5%E7%94%9F%E6%88%90mach-o.png">
@@ -48,7 +49,7 @@
 <meta property="og:image" content="http://heseng91.github.io/2018/11/11/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96/%E4%BA%8C%E8%BF%9B%E5%88%B6%E9%87%8D%E6%8E%92.png">
 <meta property="og:image" content="http://heseng91.github.io/2018/11/11/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96/%E6%AE%B5%E9%87%8D%E5%91%BD%E5%90%8D.png">
 <meta property="article:published_time" content="2018-11-11T03:30:33.000Z">
-<meta property="article:modified_time" content="2023-02-14T04:27:53.318Z">
+<meta property="article:modified_time" content="2023-02-14T06:08:07.043Z">
 <meta property="article:author" content="和僧">
 <meta property="article:tag" content="和僧-技术博客，技术博客">
 <meta name="twitter:card" content="summary">
@@ -207,7 +208,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2023-02-14 12:27:53" itemprop="dateModified" datetime="2023-02-14T12:27:53+08:00">2023-02-14</time>
+                <time title="修改时间：2023-02-14 14:08:07" itemprop="dateModified" datetime="2023-02-14T14:08:07+08:00">2023-02-14</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -241,7 +242,7 @@
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">0 0001 0100</span><br><span class="line">1 ...</span><br><span class="line">2 ...</span><br><span class="line">3 ...</span><br><span class="line">4 1000 0111</span><br><span class="line">5 ...</span><br></pre></td></tr></table></figure>
 
 <p>那么以上表示的就是程序的第一条指令为一个跳转指令，它的目的地址是第5条指令。使用汇编后，如果我们把刚开始第5条指令开始的子程序命名为“foo”，那么第一条指令的汇编就是：jmp foo，相比 00010100要好记太多。</p>
-<p>然而虽然使用汇编语言之后，方便了人类记忆和编码，但是计算机并不认识助记符和符号（symbol），于是就需要使用二进制编制”汇编器” 来转译”助记符”或者叫做”汇编语言”，形成”机器码” 这样计算机就可以读懂了。汇编器在每次汇编程序的时候，会重新计算“foo”这个符号的地址，然后把所有引用到“foo”的指令修正到这个正确的地址。整个过程不需要人工参与，极大地提高了生产力。随着生产力的提高，软件的规模也开始日渐庞大，代码量开始快速膨胀。人们开始思考将不同功能的代码以一定的方式组织起来，使得更加容易阅读和理解，以便于日后修改和重复使用。自然而然，人们开始将代码按照功能和性质划分，分别形成不同的功能模块，不同的模块之间按照层次结构或其他结构来组织。随着软件规模变大，多则数百万行，如果都放在一个模块肯定无法想象。所以大型软件往往拥有成千上万个模块，这些模块互相依赖又相对独立。在一个程序被分割成多个模块以后，这些模块之间最后如何组合形成一个单一的程序是须解决的问题。模块之间如何组合的问题可以归结为模块之间如何通信的问题，通信可分两种，一种是模块间的函数调用，另外一种是模块间的变量访问。函数访问须知道目标函数的地址，变量访问也须知道目标变量的地址，所以这两种方式都可以归结为一种方式，那就是模块间符号的引用。模块间依靠符号来通信类似于拼图版，定义符号的模块多出一块区域，引用该符号的模块刚好少了那一块区域，两者一拼刚好完美组合，这个模块的拼接过程就是：链接。从原理上来讲，链接的工作无非就是把一些指令对其它符号的引用加以修正。</p>
+<p>然而虽然使用汇编语言之后，方便了人类记忆和编码，但是计算机并不认识助记符和符号（symbol），于是就需要使用二进制编制”汇编器” 来转译”助记符”或者叫做”汇编语言”形成”机器码” ，这样计算机就可以读懂了。汇编器在每次汇编程序的时候，会重新计算“foo”这个符号的地址，然后把所有引用到“foo”的指令修正到这个正确的地址。整个过程不需要人工参与，极大地提高了生产力。随着生产力的提高，软件的规模也开始日渐庞大，代码量开始快速膨胀。人们开始思考将不同功能的代码以一定的方式组织起来，使得更加容易阅读和理解，以便于日后修改和重复使用。自然而然，人们开始将代码按照功能和性质划分，分别形成不同的功能模块，不同的模块之间按照层次结构或其他结构来组织。随着软件规模变大，多则数百万行，如果都放在一个模块肯定无法想象。所以大型软件往往拥有成千上万个模块，这些模块互相依赖又相对独立。在一个程序被分割成多个模块以后，这些模块之间最后如何组合形成一个单一的程序是须解决的问题。模块之间如何组合的问题可以归结为模块之间如何通信的问题，通信可分两种，一种是模块间的函数调用，另外一种是模块间的变量访问。函数访问须知道目标函数的地址，变量访问也须知道目标变量的地址，所以这两种方式都可以归结为一种方式，那就是模块间符号的引用。模块间依靠符号来通信类似于拼图版，定义符号的模块多出一块区域，引用该符号的模块刚好少了那一块区域，两者一拼刚好完美组合，这个模块的拼接过程就是：链接。从原理上来讲，链接的工作无非就是把一些指令对其它符号的引用加以修正。</p>
 <p>汇编只是修饰了一下机器码。一般来说，一条汇编指令对应一条机器指令，所以汇编码和底层硬件的连接很紧密。汇编器仍然强迫程序员思考，用什么寄存器和内存地址。所以汇编语言编写起来也不容易，阅读和理解很难。而且汇编语言的编写严格依赖于特定的机器，所以在一种计算机编写的代码在应用于另一种算机时可能需要完全重写。</p>
 <p>为了进一步将程序员从直接使用地址编程的梦魇中解救出来，人们开始探索以一个更类似于数学定义或自然语言的简洁形式来编写程序的操作，它应与任何机器都无关，而且也可由一个程序翻译为可执行的代码。在这种背景下，以后很多人开始创作编程语言，编译器也应运而生。这些语言中就包括上世纪80年代初被发明的Objective-C，它需要<strong>编译器</strong>专门把高级语言转换成低级语言。大多数编译器由两部分组成：前端和后端。</p>
 <ul>
@@ -253,6 +254,25 @@
 <p>clang 编译源代码转化生成mach-o的大致流程如下：</p>
 <img src="/2018/11/11/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96/clang%E7%BC%96%E8%AF%91%E6%BA%90%E4%BB%A3%E7%A0%81%E8%BD%AC%E5%8C%96%E7%94%9F%E6%88%90mach-o%E7%9A%84%E5%A4%A7%E8%87%B4%E6%B5%81%E7%A8%8B.png" class title="clang编译源代码转化生成mach-o的大致流程">
 
+<blockquote>
+<p>Mach-O 是 iOS 可执行文件的格式，典型的 Mach-O 是主二进制和动态库。Mach-O 可以分为三部分：</p>
+<ul>
+<li>Header</li>
+<li>Load Commands</li>
+<li>Data</li>
+</ul>
+<img src="/2018/11/11/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96/mach-o%E7%BB%84%E6%88%90%E9%83%A8%E5%88%86.png" class title="mach-o组成部分">
+
+<p>Header 的最开始是 Magic Number，表示这是一个 Mach-O 文件，除此之外还包含一些 Flags，这些 flags 会影响 Mach-O 的解析。</p>
+<p><strong>Load Commands 存储 Mach-O 的布局信息</strong>，比如 Segment command 和 Data 中的 Segment/Section 是一一对应的。除了布局信息之外，还包含了依赖的动态库等启动 App 需要的信息。</p>
+<p><strong>Data 部分包含了实际的代码和数据</strong>，Data 被分割成很多个 Segment，每个 Segment 又被划分成很多个 Section，分别存放不同类型的数据。</p>
+<p>标准的三个 Segment 是 TEXT，DATA，LINKEDIT，也支持自定义：</p>
+<ul>
+<li><strong>TEXT</strong>，代码段，只读可执行，存储函数的二进制代码(<strong>text)，常量字符串(</strong>cstring)，Objective C 的类/方法名等信息</li>
+<li><strong>DATA</strong>，数据段，读写，存储 Objective C 的字符串(__cfstring)，以及运行时的元数据：class/protocol/method…</li>
+<li><strong>LINKEDIT</strong>，启动 App 需要的信息，如 bind &amp; rebase 的地址，代码签名，符号表…</li>
+</ul>
+</blockquote>
 <h3 id="pipeline"><a href="#pipeline" class="headerlink" title="pipeline"></a>pipeline</h3><p>除了代码文件之外，现代移动软件不可避免为会有一些资源文件（如 storyboard，asset ），这些资源文件也需要编译以加快加载速度，然后，同资源文件一起打包成.app。最后出乎安全考虑，还需要对.app进行签名，防篡改。</p>
 <p>以单 Target 为例，整个构建流程如下：</p>
 <img src="/2018/11/11/%E3%80%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E3%80%8D%E4%B9%8B%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96/%E5%8D%95Target%E6%9E%84%E5%BB%BA%E6%B5%81%E7%A8%8B.png" class title="单Target构建流程">
