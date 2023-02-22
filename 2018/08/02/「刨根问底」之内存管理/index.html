@@ -41,7 +41,7 @@
 <meta property="og:image" content="http://heseng91.github.io/2018/08/02/%E3%80%8C%E5%88%A8%E6%A0%B9%E9%97%AE%E5%BA%95%E3%80%8D%E4%B9%8B%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/%E5%93%A8%E5%85%B5%E5%AF%B9%E8%B1%A1.png">
 <meta property="og:image" content="http://heseng91.github.io/2018/08/02/%E3%80%8C%E5%88%A8%E6%A0%B9%E9%97%AE%E5%BA%95%E3%80%8D%E4%B9%8B%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/AutoreleasePoolPage%E5%8F%8C%E5%90%91%E9%93%BE%E8%A1%A8.png">
 <meta property="article:published_time" content="2018-08-02T00:02:00.000Z">
-<meta property="article:modified_time" content="2023-02-19T16:46:04.580Z">
+<meta property="article:modified_time" content="2023-02-20T05:50:45.388Z">
 <meta property="article:author" content="和僧">
 <meta property="article:tag" content="和僧-技术博客，技术博客">
 <meta name="twitter:card" content="summary">
@@ -200,7 +200,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2023-02-20 00:46:04" itemprop="dateModified" datetime="2023-02-20T00:46:04+08:00">2023-02-20</time>
+                <time title="修改时间：2023-02-20 13:50:45" itemprop="dateModified" datetime="2023-02-20T13:50:45+08:00">2023-02-20</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -993,6 +993,8 @@
 <p><code>autoreleasepool</code>在没有<code>runloop</code>的情况下何时释放呢？</p>
 <ol>
 <li><p>局部<code>autoreleasepool drain</code>的时候，就是常规的<code>page push</code>以及对应的<code>page pop</code>；</p>
+</li>
+<li><p>GCD -&gt; 处理完队列任务后调用 <code>_dispatch_last_resort_autorelease_pool_pop</code></p>
 </li>
 <li><p>线程退出的时候；那么线程退出释放是如何确定的呢？</p>
 <p>在<code>runtime</code>初始化的过程中，会调用<code>AutoReleasePoolPage::init</code>方法注册<code>tls_dealloc</code>， AutoreleasePoolPage 类的初始化方法如下：</p>
